@@ -47,7 +47,7 @@ import {
     getSessionId,
     getSessionError,
     getWaitRoomInfo
-  } from "./src/mplib.js";
+  } from "../src/mplib.js";
 // Define the configuration file for first database
 
 const firebaseConfig = {
