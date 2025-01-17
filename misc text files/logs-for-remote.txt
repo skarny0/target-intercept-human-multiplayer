@@ -1,0 +1,86 @@
+metadata.js:41 DEBUG MODE: true
+mplib.js:1157 Player id=_em01r305k
+mplib.js:1157 Server offset time: -9
+mplib.js:1157 No data available
+new-interface-all-agents.js:199 Session starting
+new-interface-all-agents.js:204 Current Session ID: null
+new-interface-all-agents.js:208 Current Player ID: _em01r305k
+new-interface-all-agents.js:212 All Players in Session: Array(0)
+new-interface-all-agents.js:225 No session ID found, joining session...
+new-interface-all-agents.js:199 Session starting
+new-interface-all-agents.js:204 Current Session ID: -OGWcuZomZVNUEkeQ4od
+new-interface-all-agents.js:208 Current Player ID: _em01r305k
+new-interface-all-agents.js:212 All Players in Session: Array(2)
+new-interface-all-agents.js:219 Remote Player ID: _3hwqmygdn
+new-interface-all-agents.js:231 Player Arrival Index: 2
+new-interface-all-agents.js:1042 Initializing game...
+new-interface-all-agents.js:983 Initializing experiment settings...
+new-interface-all-agents.js:1016 Assigned AI Teams 3 1
+new-interface-all-agents.js:1064 assignedCondition: 5
+new-interface-all-agents.js:1065 assignedTeamingCondition: 5
+new-interface-all-agents.js:1066 assignedSeed: Array(5)
+new-interface-all-agents.js:1067 block order condition blockOrderCondition
+new-interface-all-agents.js:1068 teaming block condition teamingCondition
+new-interface-all-agents.js:1122 Current Collab AI Mode 3
+new-interface-all-agents.js:1123 Current Settings Object
+new-interface-all-agents.js:1124 Current Block 0
+new-interface-all-agents.js:1125 Current Round 1
+new-interface-all-agents.js:1126 Current Max Targets 15
+new-interface-all-agents.js:1127 Current Seeds:  12
+new-interface-all-agents.js:1406 Player 2 is not moving
+mplib.js:1157 Connected to firebase
+97new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  12
+69new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:3231 player's new target location: 255.05078668561904 337.0454245871298
+new-interface-all-agents.js:3271 frames player not moving 167
+new-interface-all-agents.js:3272 ai frame delay relative to human : 38
+15new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  22
+18new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  30
+47new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  31
+6new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  40
+14new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:3231 player's new target location: 23.648460671607893 -482.8072289627106
+new-interface-all-agents.js:3271 frames player not moving 54
+new-interface-all-agents.js:3272 ai frame delay relative to human : 56
+new-interface-all-agents.js:3231 player's new target location: 305.0291039916321 268.09591144902896
+new-interface-all-agents.js:3271 frames player not moving 54
+new-interface-all-agents.js:3272 ai frame delay relative to human : 56
+34new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  43
+new-interface-all-agents.js:1638 AI Offline Score:  47
+8new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  52
+19new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:3231 player's new target location: 213.98440665573315 376.8937911689807
+new-interface-all-agents.js:3271 frames player not moving 42
+new-interface-all-agents.js:3272 ai frame delay relative to human : 62
+new-interface-all-agents.js:3231 player's new target location: 321.80473074770885 373.51192102689976
+new-interface-all-agents.js:3271 frames player not moving 42
+new-interface-all-agents.js:3272 ai frame delay relative to human : 62
+35new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:3231 player's new target location: 139.79226507587555 334.58682865154174
+new-interface-all-agents.js:3271 frames player not moving 13
+new-interface-all-agents.js:3272 ai frame delay relative to human : 55
+7new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  62
+77new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  70
+26new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:3231 player's new target location: 213.2108097184116 541.1883199119457
+new-interface-all-agents.js:3271 frames player not moving 70
+new-interface-all-agents.js:3272 ai frame delay relative to human : 59
+91new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  77
+6new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:3231 player's new target location: 349.1709026778865 466.43933117642837
+new-interface-all-agents.js:3271 frames player not moving 53
+new-interface-all-agents.js:3272 ai frame delay relative to human : 51
+20new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  87
+10new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1166 Visited Blocks 0

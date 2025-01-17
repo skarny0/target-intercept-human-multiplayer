@@ -1,0 +1,861 @@
+7new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  22
+11new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1638 AI Offline Score:  30
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 632.3927659004385 338.0719800684835
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 633.9851761329058 335.5294951321401
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 635.5775863653732 332.98701019579664
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 637.1699965978406 330.4445252594532
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 638.762406830308 327.90204032310976
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 640.3548170627754 325.3595553867663
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 641.9472272952428 322.8170704504229
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 643.5396375277102 320.27458551407943
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673397 -2.542484936343442
+new-interface-all-agents.js:1404 Player 2 Location 645.1320477601776 317.732100577736
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 646.724457992645 315.18961564139255
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 648.3168682251123 312.6471307050491
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 649.9092784575797 310.10464576870567
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 651.5016886900471 307.5621608323622
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 653.0940989225145 305.0196758960188
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 654.6865091549819 302.47719095967534
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 656.2789193874493 299.9347060233319
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 657.8713296199167 297.39222108698846
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 659.463739852384 294.849736150645
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 661.0561500848514 292.3072512143016
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 662.6485603173188 289.76476627795813
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 664.2409705497862 287.2222813416147
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 665.8333807822536 284.67979640527125
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 667.425791014721 282.1373114689278
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 669.0182012471884 279.59482653258436
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 670.6106114796557 277.0523415962409
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 672.2030217121231 274.5098566598975
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 673.7954319445905 271.96737172355404
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 675.3878421770579 269.4248867872106
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 676.9802524095253 266.88240185086715
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.5924102324673308 -2.5424849363434467
+new-interface-all-agents.js:1404 Player 2 Location 678.5726626419927 264.3399169145237
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 680.1650728744601 261.79743197818027
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 681.7574831069273 259.25494704183683
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 683.3498933393946 256.7124621054934
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 684.9423035718619 254.16997716914994
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 686.5347138043292 251.6274922328065
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 688.1271240367964 249.08500729646306
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 689.7195342692637 246.54252236011962
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 691.311944501731 244.00003742377618
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.59241023246733 -2.5424849363434476
+new-interface-all-agents.js:1404 Player 2 Location 692.9043547341983 241.45755248743274
+4new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  31
+6new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  40
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 629.4735880644596 337.3803148590578
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 626.5544102284807 336.6886496496321
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 623.6352323925018 335.9969844402064
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 620.716054556523 335.3053192307807
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 617.7968767205441 334.613654021355
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 614.8776988845652 333.9219888119293
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 611.9585210485864 333.2303236025036
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 609.0393432126075 332.53865839307787
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 606.1201653766286 331.84699318365216
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.919177835978838 -0.6916652094257068
+new-interface-all-agents.js:1404 Player 2 Location 603.2009875406497 331.15532797422645
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 600.2818097046709 330.46366276480074
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 597.362631868692 329.77199755537504
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 594.4434540327131 329.08033234594933
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 591.5242761967343 328.3886671365236
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 588.6050983607554 327.6970019270979
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 585.6859205247765 327.0053367176722
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 582.7667426887976 326.3136715082465
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 579.8475648528188 325.6220062988208
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 576.9283870168399 324.9303410893951
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788376 -0.6916652094257094
+new-interface-all-agents.js:1404 Player 2 Location 574.009209180861 324.2386758799694
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 571.0900313448822 323.54701067054367
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 568.1708535089033 322.85534546111796
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 565.2516756729244 322.16368025169226
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 562.3324978369455 321.47201504226655
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 559.4133200009667 320.78034983284084
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 556.4941421649878 320.08868462341513
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 553.5749643290089 319.3970194139894
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 550.6557864930301 318.7053542045637
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 547.7366086570512 318.013688995138
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 544.8174308210723 317.3220237857123
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788367 -0.6916652094257145
+new-interface-all-agents.js:1404 Player 2 Location 541.8982529850934 316.6303585762866
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 538.9790751491146 315.9386933668609
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 536.0598973131357 315.2470281574352
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 533.1407194771568 314.5553629480095
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 530.221541641178 313.86369773858377
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 527.3023638051991 313.17203252915806
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 524.3831859692202 312.48036731973235
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 521.4640081332414 311.78870211030664
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 518.5448302972625 311.09703690088094
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9191778359788336 -0.6916652094257262
+new-interface-all-agents.js:1404 Player 2 Location 515.6256524612836 310.40537169145523
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1638 AI Offline Score:  43
+new-interface-all-agents.js:1638 AI Offline Score:  47
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 447.5519706634497 274.33656202596757
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 445.2870050892616 272.36934801937275
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 443.02203951507346 270.40213401277794
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 440.75707394088533 268.4349200061831
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 438.4921083666972 266.4677059995883
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 436.2271427925091 264.5004919929935
+new-interface-all-agents.js:1638 AI Offline Score:  52
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 433.96217721832096 262.5332779863987
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 431.69721164413284 260.56606397980386
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 429.4322460699447 258.59884997320904
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 427.1672804957566 256.6316359666142
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 424.90231492156846 254.66442196001944
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.264965574188108 -1.967214006594792
+new-interface-all-agents.js:1404 Player 2 Location 422.63734934738034 252.69720795342465
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 420.3723837731922 250.72999394682986
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 418.1074181990041 248.76277994023508
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 415.84245262481596 246.7955659336403
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 413.57748705062784 244.8283519270455
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 411.3125214764397 242.86113792045072
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 409.0475559022516 240.89392391385593
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 406.78259032806346 238.92670990726114
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.2649655741881105 -1.9672140065947892
+new-interface-all-agents.js:1404 Player 2 Location 404.51762475387534 236.95949590066635
+new-interface-all-agents.js:399 Player 2 State Change: Object
+24new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 449.81693623763783 276.3037760325624
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 446.88553153793 276.9416369002527
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 443.9541268382221 277.57949776794305
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 441.02272213851427 278.2173586356334
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 438.0913174388064 278.8552195033237
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 435.15991273909856 279.49308037101406
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 432.2285080393907 280.1309412387044
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 429.29710333968285 280.76880210639473
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 426.365698639975 281.40666297408507
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 423.43429394026714 282.0445238417754
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707858 0.6378608676903464
+new-interface-all-agents.js:1404 Player 2 Location 420.5028892405593 282.68238470946574
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 417.57148454085143 283.3202455771561
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 414.6400798411436 283.9581064448464
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 411.7086751414357 284.59596731253674
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 408.77727044172786 285.2338281802271
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 405.84586574202 285.8716890479174
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 402.91446104231215 286.50954991560775
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 399.9830563426043 287.1474107832981
+new-interface-all-agents.js:1638 AI Offline Score:  62
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 397.05165164289645 287.7852716509884
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 394.1202469431886 288.42313251867876
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.9314046997078576 0.637860867690349
+new-interface-all-agents.js:1404 Player 2 Location 391.18884224348074 289.0609933863691
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 388.2574375437729 289.6988542540594
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 385.326032844065 290.33671512174976
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 382.39462814435717 290.9745759894401
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 379.4632234446493 291.61243685713043
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 376.53181874494146 292.25029772482077
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 373.6004140452336 292.8881585925111
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 370.66900934552575 293.52601946020144
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 367.7376046458179 294.1638803278918
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 364.80619994611004 294.8017411955821
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity -2.931404699707856 0.6378608676903568
+new-interface-all-agents.js:1404 Player 2 Location 361.8747952464022 295.43960206327245
+new-interface-all-agents.js:399 Player 2 State Change: Object
+64new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1638 AI Offline Score:  70
+4new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 334.04062536502863 320.281605252568
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 334.04062536502863 320.281605252568
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 334.04062536502863 320.281605252568
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 334.04062536502863 320.281605252568
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 336.22718183736424 318.22759191442066
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 338.41373830969985 316.1735785762733
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 340.60029478203546 314.119565238126
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 342.7868512543711 312.06555189997863
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 344.9734077267067 310.0115385618313
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 347.1599641990423 307.95752522368394
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 349.3465206713779 305.9035118855366
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 351.5330771437135 303.84949854738926
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 353.7196336160491 301.7954852092419
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 355.90619008838473 299.7414718710946
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 358.09274656072034 297.68745853294723
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 360.27930303305595 295.6334451947999
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 362.46585950539156 293.57943185665255
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 364.6524159777272 291.5254185185052
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 366.8389724500628 289.47140518035786
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 369.0255289223984 287.4173918422105
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 371.212085394734 285.3633785040632
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.0540133381473487
+new-interface-all-agents.js:1404 Player 2 Location 373.3986418670696 283.30936516591584
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 375.5851983394052 281.2553518277685
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 377.77175481174083 279.20133848962115
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 379.95831128407644 277.1473251514738
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 382.14486775641205 275.09331181332647
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 384.33142422874766 273.0392984751791
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 386.5179807010833 270.9852851370318
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 388.7045371734189 268.93127179888444
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 390.8910936457545 266.8772584607371
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 393.0776501180901 264.82324512258975
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335619 -2.054013338147348
+new-interface-all-agents.js:1404 Player 2 Location 395.2642065904257 262.7692317844424
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 397.4507630627613 260.71521844629507
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 399.63731953509694 258.6612051081477
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 401.82387600743255 256.6071917700004
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 404.01043247976816 254.55317843185304
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 406.19698895210377 252.4991650937057
+new-interface-all-agents.js:1398 Will hit target: true
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 408.3835454244394 250.44515175555836
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 410.570101896775 248.391138417411
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 412.7566583691106 246.33712507926367
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 414.9432148414462 244.28311174111633
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356194 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 417.1297713137818 242.229098402969
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 419.3163277861174 240.17508506482164
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 421.50288425845304 238.1210717266743
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 423.68944073078865 236.06705838852696
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 425.87599720312426 234.01304505037962
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 428.06255367545987 231.95903171223227
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 430.2491101477955 229.90501837408493
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 432.4356666201311 227.8510050359376
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 434.6222230924667 225.79699169779025
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 436.8087795648023 223.7429783596429
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 438.9953360371379 221.68896502149556
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.18655647233562 -2.0540133381473478
+new-interface-all-agents.js:1404 Player 2 Location 441.1818925094735 219.63495168334822
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 443.36844898180914 217.58093834520088
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 445.55500545414475 215.52692500705353
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 447.74156192648036 213.4729116689062
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 449.92811839881597 211.41889833075885
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 452.1146748711516 209.3648849926115
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 454.3012313434872 207.31087165446417
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 456.4877878158228 205.25685831631682
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 458.6743442881584 203.20284497816948
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.186556472335621 -2.0540133381473464
+new-interface-all-agents.js:1404 Player 2 Location 460.860900760494 201.14883164002214
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 463.04745723282963 199.0948183018748
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 465.23401370516524 197.04080496372745
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 467.42057017750085 194.9867916255801
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 469.60712664983646 192.93277828743277
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 471.79368312217207 190.87876494928543
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 473.9802395945077 188.82475161113808
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 476.1667960668433 186.77073827299074
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 478.3533525391789 184.7167249348434
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 480.5399090115145 182.66271159669606
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.1865564723356226 -2.054013338147344
+new-interface-all-agents.js:1404 Player 2 Location 482.7264654838501 180.6086982585487
+new-interface-all-agents.js:399 Player 2 State Change: Object
+13new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 588.9767702043382 301.0635723661228
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 590.7117192744265 303.5110101537284
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 592.4466683445148 305.95844794133404
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 594.1816174146031 308.40588572893967
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 595.9165664846914 310.8533235165453
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 597.6515155547797 313.3007613041509
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 599.386464624868 315.74819909175653
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 601.1214136949563 318.19563687936216
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 602.8563627650447 320.6430746669678
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882748 2.4474377876056073
+new-interface-all-agents.js:1404 Player 2 Location 604.591311835133 323.0905124545734
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 606.3262609052213 325.537950242179
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 608.0612099753096 327.98538802978464
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 609.7961590453979 330.43282581739027
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 611.5311081154862 332.8802636049959
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 613.2660571855745 335.3277013926015
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 615.0010062556628 337.77513918020713
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 616.7359553257511 340.22257696781276
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 618.4709043958394 342.6700147554184
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 620.2058534659277 345.117452543024
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 621.940802536016 347.5648903306296
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 623.6757516061043 350.01232811823525
+new-interface-all-agents.js:1638 AI Offline Score:  77
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882697 2.4474377876056113
+new-interface-all-agents.js:1404 Player 2 Location 625.4107006761926 352.45976590584087
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 627.1456497462809 354.9072036934465
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 628.8805988163692 357.3546414810521
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 630.6155478864575 359.80207926865774
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 632.3504969565458 362.24951705626336
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 634.0854460266341 364.696954843869
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 635.8203950967225 367.1443926314746
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 637.5553441668108 369.5918304190802
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 1.7349490700882604 2.4474377876056175
+new-interface-all-agents.js:1404 Player 2 Location 639.2902932368991 372.03926820668585
+11new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:399 Player 2 State Change: Object
+5new-interface-all-agents.js:1406 Player 2 is not moving
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1638 AI Offline Score:  87
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 0 0
+new-interface-all-agents.js:1404 Player 2 Location 587.2418211342499 298.6161345785172
+new-interface-all-agents.js:399 Player 2 State Change: Object
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 589.9945249774885 297.42339757841216
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 592.7472288207271 296.23066057830715
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 595.4999326639656 295.03792357820214
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 598.2526365072042 293.8451865780971
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 601.0053403504428 292.6524495779921
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 603.7580441936814 291.4597125778871
+new-interface-all-agents.js:1398 Will hit target: false
+new-interface-all-agents.js:1399 Player 2 Velocity 2.752703843238592 -1.1927370001050044
+new-interface-all-agents.js:1404 Player 2 Location 606.51074803692 290.2669755777821
+new-interface-all-agents.js:1166 Visited Blocks 0
