@@ -1289,6 +1289,8 @@ async function startGame(round, condition, block, seeds) {
     // settings.maxTargets = roundSettings.maxTargets;
     settings.maxTargets = 15;
 
+    console.log("settings.maxTargets", settings.maxTargets);
+
     // Debug setting for max targets
     // if (DEBUG) settings.maxTargets=8; // this was to get many targets for debuggin
    
