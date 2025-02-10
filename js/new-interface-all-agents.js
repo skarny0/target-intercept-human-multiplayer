@@ -217,7 +217,7 @@ async function startSession() {
     // If no session ID, we need to join first
     if (!sid) {
         console.log("No session ID found, joining session...");
-        await joinSession();
+        joinSession();
         return; // Let MPLIB call startSession again after join
     }
 
@@ -276,7 +276,7 @@ function updateOngoingSession() {
  * @param {string} childEvent - The type of event that triggered the change (e.g., 'child_added', 'child_changed').
  */
 function receiveStateChange(path, childKey, childValue, childEvent) {
-    if (childKey === remoteId) {
+    if (childKey === remoteId && settings.visualizeHumanPartner==1) {
         parseLocationDictionary(childValue);
         parseIntentions(childValue);
         parseObjectChanges(childValue);
@@ -722,11 +722,6 @@ let teamingSettings = {
         AICollab2 : 2}          // divide,
 };
 
-let simpleDifficultySettings = {
-    1: {0: {1: {AICollab: collabPlayer1,     // Pair A
-                maxTargets: 5}}}
-}
-
 let difficultySettings = {
     // 5 targets first
     1: {0: {1: {AICollab: collabPlayer1,     // Pair A
@@ -804,6 +799,74 @@ let difficultySettings = {
 
 };
 
+
+let newDifficultySettings = {
+    // Human first
+    1: {0: {collabPlayer: "human",
+            identity: "ambiguity on"},
+        1: {collabPlayer: "AI",
+            identity: "ambiguity on"}},
+    2: {0: {collabPlayer: "human",
+            identity: "ambiguity off"},
+        1: {collabPlayer: "AI",
+            identity: "ambiguity off"}},
+
+    // AI first
+    3: {0: {collabPlayer: "AI",
+            identity: "ambiguity on"},
+        1: {collabPlayer: "human",
+            identity: "ambiguity on"}},
+    4: {0: {collabPlayer: "AI",
+            identity: "ambiguity off"},
+        1: {collabPlayer: "human",
+            identity: "ambiguity off"}},
+}
+
+
+/*
+Forgoe current conditions and build out two manipulations, one for identity and one for the teaming order. 
+
+Teaming manipulation should be the order of the AI versus the human partner. 
+    This will be two conditions: 
+        1) human first, AI second
+        2) AI first, human second. 
+
+Identity condition:
+    This will be two conditions: 
+        1) ambiguity on
+        2) ambiguity off
+
+    more about ambiguity:
+        - the identity of the player, human or AI, is a shared icon that is ambiguously human or AI (add this icon later)
+        - the side-message from the second player, is an ambiguous message: "I may be a human or I may be an AI." (can already add in this message)
+
+On conditions: in total there will be four conditions that particiapnts can be assigned to. This will be reflected in difficulty settings.
+
+Things that need to be done:
+    - Unfold previous features of difficultySettings that parsed through the many agent types.
+        Assign just one AI agent that can be played with (i.e. all players, regardless of condition, can only play with omit)
+
+    - There should only be two rounds in the difficulty settings.
+    
+    - Key challenge, how do you pair up two actual humans using mplib if they're AI first, human second?
+
+    - Currently, there is only one round and you jump straight to the evaluation section.
+
+The functions that need refactoring:
+    - updateDifficultySettings
+    - updateAgentOrdering
+    - initExperimentSettings
+    - initializeGame: mainly the parameter, sessionStarted, needs to be thought of more carefully
+    - startGame
+    - endGame: mainly, the way we update game settings, redirect to new phases such as the survey block, and track progress in the experiment
+
+
+Starting with the base case:
+    - Humans pair up and then play a round with AI.
+    - New start locations for humans based on arrival idx
+    - Equal start locations for the AI location (current issue going on with this that needs exploration.)
+*/
+
 // function assigns the condition's agent types to the difficulty settings
 function updateDifficultySettings() {
     let newDifficultySettings = JSON.parse(JSON.stringify(difficultySettings)); // Create a deep copy
@@ -833,6 +896,7 @@ async function updateAgentOrdering() {
         AIplayer.collabOrder = 1;
         agent1Name = agentNames[AIplayer.collabType];
         agentOrder.push(agent1Name);
+
     } else if (currentRound == 2){
         AIplayer.collabOrder = 2;
         agent2Name = agentNames[AIplayer.collabType];
@@ -872,10 +936,11 @@ let currentRound = 1;
 let currentBlock = 0;
 let currentCondition = null;
 let currentTeamingCondition = null;
+let currentIdentityCondition = null;
 let curSeeds = null;   
 let noAssignment = true;
 
-let maxRounds = 1;
+let maxRounds = 2;
 let roundID = "round + " + currentRound;
 
 // Timing variables
@@ -992,7 +1057,19 @@ const player2 = {
 };
 
 let humanImg = new Image();
-humanImg.src = './images/human-head-small.png'; // Path to your robot head image
+humanImg.src = "./images/human-head-small.png";
+
+// humanImg.src = './images/human-head-small.png'; // Path to your robot head image
+let anonImg = new Image();
+// humanImg.src = './images/human-head-small.png'; // Path to your robot head image
+// anonImg.src = "./images/anon-icon.png";
+
+
+if (settings.visualizeHumanPartner == 1) {
+    anonImg.src = "./images/human-head-small.png";
+} else {
+    anonImg.src = "./images/anon-icon.png";
+}
 
 const camera = {
     x: world.width / 2,
@@ -1055,6 +1132,7 @@ let AIplayerLocation = [];
 
 let robotHeadImg = new Image();
 robotHeadImg.src = './images/simple-robot-250px.png'; // Path to your robot head image
+// robotHeadImg.src = "./images/cropped-amb.png";
 
 let AIcaughtTargets_offline = [];
 let AIplayerLocation_offline = [];
@@ -1112,6 +1190,7 @@ async function initExperimentSettings() {
 
     currentTeamingCondition = assignedTeamingCondition[0]+1;
 
+    // SK: leverage this logic, to put together human-human teams, human-ai teams.
     collabPlayer1 = teamingSettings[currentTeamingCondition].AICollab1;
     collabPlayer2 = teamingSettings[currentTeamingCondition].AICollab2;
 
@@ -1166,6 +1245,7 @@ async function initializeGame() {
                 conditionsArray = await initExperimentSettings();
             }
             */
+
             blockOrderCondition = conditionsArray[0];
             teamingBlockCondition = conditionsArray[1];
 
@@ -1207,7 +1287,7 @@ async function startGame(round, condition, block, seeds) {
 
 
     // settings.maxTargets = roundSettings.maxTargets;
-    settings.maxTargets = 5;
+    settings.maxTargets = 3;
 
     // Debug setting for max targets
     // if (DEBUG) settings.maxTargets=8; // this was to get many targets for debuggin
@@ -1267,7 +1347,13 @@ async function endGame() {
     if (currentRound < maxRounds) {//&& numSurveyCompleted < 3) {
         currentRound++;
         await runGameSequence("You've Completed a Round and earned " + totalScore + " points. Click OK to continue.");
+        settings.visualizeHumanPartner = 0;
+        settings.visualizeAIPlayer = 1;
+        if (currentRound > 1) {
+            await runGameSequence("Click OK to continue to the next round of play.");
+        }
         await resetGame();
+        // SK1: visualize the AI player instead of the human
         startGame(currentRound, currentCondition, currentBlock, curSeeds); // Start the next round
     } else if (currentRound >= maxRounds && blockInfo.completedBlock < 1) {// && numSurveyCompleted < 3) {
 
@@ -1360,6 +1446,8 @@ async function resetGame(){
     player.targetX  = canvas.width/2;
     player.targetY  = canvas.height/2;
     AIplayer.x, AIplayer.y = canvas.width/2  + 150; // MS5: Reset the player position
+    AIplayer.targetX = canvas.width/2;
+    AIplayer.targetY = canvas.height/2;
     AIplayer_offline.x, AIplayer_offline.y = canvas.width/2  + 150; // MS5: Reset the player position
 }
 
@@ -1505,7 +1593,7 @@ function updateObjects(settings) {
     }
 
 
-    if (player2.moving) {
+    if (settings.visualizeHumanPartner==1 && player2.moving) {
         // Consider ways to scale the human partner's movement speed to account for that last delta caused by the firebase delay
         // player2.x += (player2.dx * 1);
         // player2.y += (player2.dy * 1);
@@ -1514,7 +1602,7 @@ function updateObjects(settings) {
         player2.x += scaledSpeed.dx;
         player2.y += scaledSpeed.dy;
         // console.log("Player 2 Location", player2.x, player2.y);
-    } else {
+    } else if (settings.visualizeHumanPartner==1 && !player2.moving) {
         // console.log("Player 2 is not moving");
         // console.log("Other player's location:", otherPlayersLocations);
         // Get the most recent frame number from otherPlayersLocations
@@ -1533,8 +1621,10 @@ function updateObjects(settings) {
     player.x                = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
     player.y                = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
 
-    player2.x                = Math.max(player2.width / 2, Math.min(canvas.width - player2.width / 2, player2.x));
-    player2.y                = Math.max(player2.height / 2, Math.min(canvas.height - player2.height / 2, player2.y));
+    if (settings.visualizeHumanPartner==1) {    
+        player2.x                = Math.max(player2.width / 2, Math.min(canvas.width - player2.width / 2, player2.x));
+        player2.y                = Math.max(player2.height / 2, Math.min(canvas.height - player2.height / 2, player2.y));
+    }
 
     // MS5: Update AI player position if it is moving
     AIplayer.velocity       = settings.playerSpeed;
@@ -2277,7 +2367,7 @@ function drawPlayer() {
     // Draw coordinates text above player
     ctx.fillStyle = 'black';
     ctx.font = '12px Arial';
-    ctx.fillText(`(${Math.round(player.x)}, ${Math.round(player.y)})`, topLeftX, topLeftY - 5);
+    // if (DEBUG) ctx.fillText(`(${Math.round(player.x)}, ${Math.round(player.y)})`, topLeftX, topLeftY - 5);
 
     ctx.fillStyle = player.color;
     ctx.fillRect(topLeftX, topLeftY, player.width, player.height);
@@ -2292,12 +2382,12 @@ function drawPlayer2() {
     // Draw coordinates text above player
     ctx.fillStyle = 'black';
     ctx.font = '12px Arial';
-    ctx.fillText(`(${Math.round(player2.x)}, ${Math.round(player2.y)})`, topLeftX, topLeftY - 5);
+    // if (DEBUG) ctx.fillText(`(${Math.round(player2.x)}, ${Math.round(player2.y)})`, topLeftX, topLeftY - 5);
 
     ctx.fillStyle = player2.color;
     ctx.fillRect(topLeftX, topLeftY, player2.width, player2.height);
 
-    ctx.drawImage(humanImg, topLeftX, topLeftY, 50, 50);
+    ctx.drawImage(anonImg, topLeftX, topLeftY, 50, 50);
 }
 
 // MS5
@@ -2408,7 +2498,7 @@ function drawCompositeShape(obj) {
 
     // if (obj.willOverlap && DEBUG) drawDebugOverlap(obj, obj.willOverlap);
 
-    if (DEBUG) drawDebugID(obj);   
+    // if (DEBUG) drawDebugID(obj);   
 
     // Draw the outer circle first
     drawCircle(obj.x, obj.y, obj.size, obj.outerColor); // Outer circle
@@ -2886,35 +2976,22 @@ function displayAIStatus() {
 
     let curMaxTargets = settings.maxTargets;
 
-    if (AIplayer.collabOrder == 1 && curMaxTargets == 5) {
-        aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
+    if (settings.visualizeHumanPartner == 1) {
+        // aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
+        aiAssistRobot.src = "./images/anon-icon-250px.png";
         aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Hi there! I'm Green-Bot. I'll be controlling the green square.";
+        aiAssistRobotCaption.textContent = "Hi there! I may be a robot, but I also may be human. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
         aiAssistRobotCaption.style.backgroundColor = AIplayer.color;; // Semi-transparent green
         aiAssistRobotCaption.style.fontWeight = "bold";
-    } else if (AIplayer.collabOrder == 2 && curMaxTargets == 5) {
+    } else {
         aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
         aiAssistRobot.style.backgroundColor = AIplayer.color;
         aiAssistRobotCaption.textContent = "Howdy! I'm Purple-Bot. I'll be controlling the purple square.";
         aiAssistRobotCaption.style.opacity = "1";
         aiAssistRobotCaption.style.backgroundColor = "rgba(128, 0, 128, 0.5)"; // Semi-transparent purple
         aiAssistRobotCaption.style.fontWeight = "bold";
-    } else if (AIplayer.collabOrder == 1 && curMaxTargets == 15) {
-        aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
-        aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Ahoy! I'm Blue-Bot. I'll be controlling the blue square.";
-        aiAssistRobotCaption.style.opacity = "1";
-        aiAssistRobotCaption.style.backgroundColor = AIplayer.color;; // Semi-transparent brown
-        aiAssistRobotCaption.style.fontWeight = "bold";
-    } else if (AIplayer.collabOrder == 2 && curMaxTargets == 15) {
-        aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
-        aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "G'day! I'm Copper-Bot. I'll be controlling the copper-colored square.";
-        aiAssistRobotCaption.style.opacity = "1";
-        aiAssistRobotCaption.style.backgroundColor = AIplayer.color; // Semi-transparent blue
-        aiAssistRobotCaption.style.fontWeight = "bold";
-    } 
+    }
 }
 
 function drawLight(randChoice) {
@@ -3593,18 +3670,94 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
     });
 }
 //**************************************************** SURVEY -- FULL ****************************************************//
-async function loadFullSurvey(){
+// Define questions array at the top level
+const questions = [
+    { id: 'q01', text: 'The other player and I were a team.' },
+    { id: 'q02', text: 'The other player was competent.' },
+    { id: 'q03', text: 'I understood the other player\'s intentions.' },
+    { id: 'q04', text: 'The other player understood my intentions.' },
+    { id: 'q05', text: 'I contributed more to the team\'s performance.' },
+    { id: 'q06', text: 'The other player was easy to play with.' },
+    { id: 'q07', text: 'The other player was fun to play with.' },
+    { id: 'q08', text: 'The other player and I had a similar playing style.' },
+    { id: 'q09', text: 'The other player was human-like.' },
+];
+
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+function renderSurveyQuestions(questionsToRender) {
+    const tbody = $('#survey-questions-tbody');
+    tbody.empty(); // Clear any existing content
+
+    // Debug log to verify we're getting the questions
+    console.log('Rendering questions in order:', questionsToRender.map(q => q.id));
+
+    questionsToRender.forEach((question) => {
+        const row = `
+        <tr>
+            <td class="topic">${question.text}</td>
+            <td colspan="7">
+            <div class="radio-group">
+                <input type="radio" name="${question.id}_agent1" value="1">
+                <input type="radio" name="${question.id}_agent1" value="2">
+                <input type="radio" name="${question.id}_agent1" value="3">
+                <input type="radio" name="${question.id}_agent1" value="4">
+                <input type="radio" name="${question.id}_agent1" value="5">
+                <input type="radio" name="${question.id}_agent1" value="6">
+                <input type="radio" name="${question.id}_agent1" value="7">
+            </div>
+            </td>
+            <th class="separator-column"></th>
+            <td colspan="7">
+            <div class="radio-group">
+                <input type="radio" name="${question.id}_agent2" value="1">
+                <input type="radio" name="${question.id}_agent2" value="2">
+                <input type="radio" name="${question.id}_agent2" value="3">
+                <input type="radio" name="${question.id}_agent2" value="4">
+                <input type="radio" name="${question.id}_agent2" value="5">
+                <input type="radio" name="${question.id}_agent2" value="6">
+                <input type="radio" name="${question.id}_agent2" value="7">
+            </div>
+            </td>
+        </tr>
+        `;
+        tbody.append(row);
+    });
+
+    // Debug log to verify the HTML content after rendering
+    console.log('Table content after rendering:', tbody.html());
+}
+
+async function loadFullSurvey() {
     var DEBUG_SURVEY = DEBUG;
     var TOPIC_FULL_DICT = {
         "agent1": {},
         "agent2": {}
     };
-    var TOTAL_QUESTIONS = 8; // Matches the number of questions in the HTML
+    var TOTAL_QUESTIONS = questions.length;
 
+    // Create a shuffled copy of the questions array
+    const shuffledQuestions = shuffleArray(questions);
+    
+    // Debug log to verify shuffling
+    console.log('Questions shuffled:', shuffledQuestions.map(q => q.id));
+
+    // Render the shuffled questions
+    renderSurveyQuestions(shuffledQuestions);
+
+    // Reset any previous selections
     $('.radio-group input[type="radio"]').prop('checked', false);
 
-    // Function to update robot icons and colors
-    function updateRobotIcons() {
+    // Update robot icons and captions as before, change this code to match the new icons, scenarios
+     // Function to update robot icons and colors
+     function updateRobotIcons() {
         let agent1Icon = $('#agent1-icon');
         let agent2Icon = $('#agent2-icon');
         let agent1Caption = $('#agent1-caption');
@@ -3614,45 +3767,52 @@ async function loadFullSurvey(){
         agent1Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
         agent2Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
 
-        if (visitedBlocks == 1 && currentCondition <= 4) {
-            agent1Icon.addClass('robot-green');
-            agent2Icon.addClass('robot-purple');
-            agent1Caption.text('Green-Bot');
-            agent2Caption.text('Purple-Bot');
-        } else if (visitedBlocks == 2 && currentCondition <= 4) {
-            agent1Icon.addClass('robot-blue');
-            agent2Icon.addClass('robot-copper');
-            agent1Caption.text('Blue-Bot');
-            agent2Caption.text('Copper-Bot');
-        } else if (visitedBlocks == 1 && currentCondition > 4) {
-            agent1Icon.addClass('robot-blue');
-            agent2Icon.addClass('robot-copper');
-            agent1Caption.text('Blue-Bot');
-            agent2Caption.text('Copper-Bot');
-        } else if (visitedBlocks == 2 && currentCondition > 4) {
+        if (visitedBlocks == 1) {
             agent1Icon.addClass('robot-green');
             agent2Icon.addClass('robot-purple');
             agent1Caption.text('Green-Bot');
             agent2Caption.text('Purple-Bot');
         }
+
+        // if (visitedBlocks == 1 && currentCondition <= 4) {
+        //     agent1Icon.addClass('robot-green');
+        //     agent2Icon.addClass('robot-purple');
+        //     agent1Caption.text('Green-Bot');
+        //     agent2Caption.text('Purple-Bot');
+        // } else if (visitedBlocks == 2 && currentCondition <= 4) {
+        //     agent1Icon.addClass('robot-blue');
+        //     agent2Icon.addClass('robot-copper');
+        //     agent1Caption.text('Blue-Bot');
+        //     agent2Caption.text('Copper-Bot');
+        // } else if (visitedBlocks == 1 && currentCondition > 4) {
+        //     agent1Icon.addClass('robot-blue');
+        //     agent2Icon.addClass('robot-copper');
+        //     agent1Caption.text('Blue-Bot');
+        //     agent2Caption.text('Copper-Bot');
+        // } else if (visitedBlocks == 2 && currentCondition > 4) {
+        //     agent1Icon.addClass('robot-green');
+        //     agent2Icon.addClass('robot-purple');
+        //     agent1Caption.text('Green-Bot');
+        //     agent2Caption.text('Purple-Bot');
+        // }
     }
 
     // Call the function to update robot icons
     updateRobotIcons();
 
     function likertTopicAbility() {
-        let [question, agent] = $(this).attr("name").split("_");
-        TOPIC_FULL_DICT[agent][question] = Number($(this).val());
+        let [questionId, agent] = $(this).attr("name").split("_");
+        TOPIC_FULL_DICT[agent][questionId] = Number($(this).val());
 
         checkAllAnswered();
 
         if (DEBUG_SURVEY) {
-            console.log(
-                "Radio Button Selected:",
-                "Question:", question,
-                "Agent:", agent,
-                "Value:", TOPIC_FULL_DICT[agent][question]
-            );
+        console.log(
+            "Radio Button Selected:",
+            "Question:", questionId,
+            "Agent:", agent,
+            "Value:", TOPIC_FULL_DICT[agent][questionId]
+        );
         }
     }
 
@@ -3660,21 +3820,16 @@ async function loadFullSurvey(){
         var totalAnswered = 0;
 
         for (let agent in TOPIC_FULL_DICT) {
-            totalAnswered += Object.keys(TOPIC_FULL_DICT[agent]).length;
+        totalAnswered += Object.keys(TOPIC_FULL_DICT[agent]).length;
         }
 
         var allAnswered = totalAnswered === TOTAL_QUESTIONS * 2; // 2 agents
 
-        if (DEBUG_SURVEY) {
-            console.log("Total answered:", totalAnswered);
-            console.log("All answered:", allAnswered);
-            allAnswered = true;
-        }
-
         $('#survey-complete-button-full').prop('disabled', !allAnswered);
 
         if (DEBUG_SURVEY) {
-            console.log("Submit button " + (allAnswered ? "enabled" : "disabled"));
+        console.log("Total answered:", totalAnswered);
+        console.log("All answered:", allAnswered);
         }
     }
 
@@ -3683,19 +3838,22 @@ async function loadFullSurvey(){
         
         let path;
         if (numSurveyCompleted == 1) {
-            path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full1';
+        // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full1';
         } else if (numSurveyCompleted == 2) {
-            path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full2';
-
+        // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full2';
         }
 
+        // Save TOPIC_FULL_DICT to your database
         // await writeRealtimeDatabase(db1, path, TOPIC_FULL_DICT);
+
+        // Proceed to the next step
         await loadAIComparison();
 
         $("#ai-comparison-container").attr("hidden", false);
         $("#survey-full-container").attr("hidden", true);
     }
 
+    // Attach event handlers after rendering questions
     $('.radio-group input[type="radio"]').click(likertTopicAbility);
     $('#survey-complete-button-full').off().click(completeExperiment);
 

@@ -252,7 +252,7 @@ function sortArray(values) {
       if (a > b) return 1;
       return 0;
     });
-  }
+}
   
 
 function planSingleFrame(playerStartX, playerStartY, playerSpeed, objectPositionsX, objectPositionsY, objectVelocitiesX, objectVelocitiesY, objectValues, circleRadius, ID, alpha, frame ) {
