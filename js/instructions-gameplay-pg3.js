@@ -174,7 +174,9 @@ async function endGame(advanceRound = false) {
     if (passCounter >= 3 && !understandingCheckFailed) {
         //alert("You passed this comprehension check! Moving on to the last task.");
         await runGameSequence("You passed this comprehension check! Moving on to the next task. Click OK to continue.");
-        $('#comprehension-quiz-main-content').load('html/instructions-gameplay-pg4.html');
+        // $('#comprehension-quiz-main-content').load('html/instructions-gameplay-pg4.html');
+        $('#comprehension-quiz-main-content').load('html/competence-test.html');
+
         // console.log("Moving on to Integrity Pledge");
     }
 

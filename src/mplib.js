@@ -576,7 +576,7 @@ window.addEventListener('beforeunload', function (event) {
     }
 });
 
-/*
+
 // When a client's browser comes into focus, it becomes eligible for object control
 window.addEventListener('focus', function () {
     focusStatus = 'focus';
@@ -585,7 +585,6 @@ window.addEventListener('focus', function () {
         sessionUpdate('focus', si.playerId);
     }
 });
-
 // When a client's browser is out of focus, it becomes ineligible for object control
 window.addEventListener('blur', function () {
     focusStatus = 'blur';
@@ -594,7 +593,6 @@ window.addEventListener('blur', function () {
         sessionUpdate('blur', si.playerId);
     }
 });
-*/
 
 // Experimental feature: 
 // reading the state at a given path

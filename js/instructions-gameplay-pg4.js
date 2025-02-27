@@ -24,7 +24,7 @@ let highValueTargetCaught    = false;
 /// Importing functions and variables from the Firebase Psych library
 import { 
     writeRealtimeDatabase,writeURLParameters,readRealtimeDatabase,
-    blockRandomization,finalizeBlockRandomization,firebaseUserId 
+    blockRandomization,finalizeBlockRandomization 
 } from "./firebasepsych1.1.js";
 
 // database write function
@@ -128,7 +128,8 @@ let settings = {spawnProbability: .1,
                 valueHigh: 1,
                 playerSpeed: 1.5,
                 speedLow:  0.5, // lowest end of object speed distribution
-                speedHigh: 1.5 // highest end of object speed distribution
+                speedHigh: 1.5, // highest end of object speed distribution,
+                maxTargets: 10
 };
 
 function getDifficultySettingsFromURL() {
