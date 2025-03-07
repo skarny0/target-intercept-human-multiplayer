@@ -74,32 +74,48 @@ function getDebugParams(){
     return debugBoolean;
 }
 
-function getCollabTypeParams(){
+function getOrderParams(){
     const urlParams = new URLSearchParams(window.location.search);
-    let collabType = parseInt(urlParams.get('collab'), 5);
+    let order = parseInt(urlParams.get('order'), 2);
 
     // console.log("collabType: ", collabType);
 
-    if (collabType == 0){
-        collabType = 0
-    } else if (isNaN(collabType)){
-        collabType = 1
+    if (order == 0){
+        order = 0
+    } else if (isNaN(order)){
+        order = 1
     }
     
-    return collabType
+    return order
+}
+
+function getIdentityParams(){
+    const urlParams = new URLSearchParams(window.location.search);
+    let id = parseInt(urlParams.get('order'), 2);
+
+    // console.log("collabType: ", collabType);
+
+    if (id == 0){
+        id = 0
+    } else if (isNaN(id)){
+        id = 1
+    }
+    
+    return id
 }
 
 var DEBUG  = getDebugParams();      // Always start coding in DEBUG mode
-var COLLAB = getCollabTypeParams(); // 0=ignorant; 1=omit; 2=divide; 3=delay
+var ORDER = getOrderParams(); // 0=human first; 1=human second
+var IDENTITY = getIdentityParams();
 
 // console.log("collab: ", COLLAB);
 
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-debug-0224";
+   studyId    = "multiplayer-test-debug-0228";
 } else {
-    studyId   = "multiplayer-test-0224";
+    studyId   = "multiplayer-test-0228";
 }
 
 
@@ -115,7 +131,7 @@ let sessionConfig = {
     allowReplacements: true, // Allow replacing any players who leave an ongoing session?
     exitDelayWaitingRoom: 0, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
     maxHoursSession: 0, // Maximum hours where additional players are still allowed to be added to session (if zero, there is no time limit)
-    recordData: false // Record all data?  
+    recordData: true // Record all data?  
 };
 const verbosity = 2;
 
@@ -196,21 +212,56 @@ function updateWaitingRoom() {
     }
 }
 
+/* // Tentative code that handles the waiting room function for the identity condition == ambiguous
+function updateWaitingRoom() {
+    // ... existing code for switching screens ...
+    instructionsScreen.style.display = 'none';
+    waitingRoomScreen.style.display = 'block';
+  
+    // Get waiting room info
+    let [doCountDown, secondsLeft] = getWaitRoomInfo();
+    
+    // Get the containers
+    const welcomeContainer = document.querySelector('.welcome-container');
+    const countdownContainer = document.getElementById('countdownContainer');
+    
+    if (doCountDown) {
+        // Show countdown container, hide welcome
+        welcomeContainer.style.display = 'none';
+        countdownContainer.style.display = 'block';
+        
+        // Update countdown value
+        document.getElementById('countdownValue').textContent = secondsLeft;
+        messageWaitingRoom.innerText = `Game will start in ${secondsLeft} seconds...`;
+    } else {
+        // Show welcome container, hide countdown
+        welcomeContainer.style.display = 'block';
+        countdownContainer.style.display = 'none';
+        
+        // Update waiting message
+        let numPlayers = getNumberCurrentPlayers();
+        let numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
+        let str2 = `Waiting for ${numNeeded} additional ${numPlayers > 1 ? 'players' : 'player'}...`;
+        messageWaitingRoom.innerText = str2;
+    }
+}
+*/
+
 async function startSession() {
     console.log("Session starting");
     sessionStarted = true;
     $("#waitingRoomPage").attr("hidden", true);
 
     const sid = getSessionId();
-    console.log("Current Session ID:", sid);
+    if (DEBUG) console.log("Current Session ID:", sid);
     
     player.fbID  = getCurrentPlayerId();
     playerId = player.fbID;
-    console.log("Current Player ID:", playerId);
+    if (DEBUG) console.log("Current Player ID:", playerId);
 
     // log all players in session
     let allPlayers = getCurrentPlayerIds();
-    console.log("All Players in Session:", allPlayers);
+    if (DEBUG) console.log("All Players in Session:", allPlayers);
 
     for (let idx in allPlayers) {
         let id = allPlayers[idx];
@@ -223,13 +274,15 @@ async function startSession() {
 
     // If no session ID, we need to join first
     if (!sid) {
-        console.log("No session ID found, joining session...");
+        if (DEBUG) console.log("No session ID found, joining session...");
         joinSession();
         return; // Let MPLIB call startSession again after join
     }
 
     player.arrivalIdx = getCurrentPlayerArrivalIndex();
-    console.log("Player Arrival Index:", player.arrivalIdx);
+
+    
+    if (DEBUG) console.log("Player Arrival Index:", player.arrivalIdx);
     // Check for session errors
     const err = getSessionError();
     if (err.errorCode) {
@@ -241,10 +294,9 @@ async function startSession() {
     while (!gameInitialized) {
         await initializeGame();
         
-        // Write state after successful game initialization
-        // let path = `players/${playerId}/condition`;
-        // updateStateDirect(path, currentCondition, 'conditions');
     }
+    
+
 }
 
 function endSession() {
@@ -285,7 +337,7 @@ function updateOngoingSession() {
 function receiveStateChange(path, childKey, childValue, childEvent) {
     if (noAssignment) parseConditions(childValue)
 
-    if (AIroundComplete == false && currentRound == 2) parseStatus(childValue)
+    if (currentRound == 2 && childKey == remoteId) parseStatus(childValue)
 
     if (childKey === remoteId && settings.visualizeHumanPartner==1) {
         parseLocationDictionary(childValue);
@@ -308,45 +360,59 @@ function removePlayerState() {
 // *********************************************** Parse Session Changes *************************************************//
 // This is the read operation for the game setting for both players when they enter a session
 // In general listener, ensure that thsi 
-let initFrameFB;
-let fbCondition;
-function parseConditions(childValue){
-    // grab the first frame, frame 0
-    fbCondition = getConditionData(childValue);
+async function parseConditions(childValue){
 
-    currentCondition = fbCondition.order;
-    currentTeamingCondition = fbCondition.team;
+    // Easy parse for global data.
+    currentCondition = childValue.condition.curCondition;
 
+    let fbCondition = getConditionData(childValue);
+    // currentcondition = 
+    currentTeamingCondition = fbCondition;
+
+    // This flag triggers the beginning of the game!
     noAssignment = false;
 
+    // if (currentTeamingCondition.order == 1) await runGameSequence("Welcome! You are about to play a round of this target interception task. Your team's goal is to get as a high score as possible. When you are ready to start, click OK.");
+    
     startGame(currentRound, currentCondition, currentBlock, curSeeds);
     
     console.log(fbCondition);
 }
+
+
 /**
  * Searches the node condition and sets both player's games based off of this.
  *
  * @param {object} childValue - An object with frameKey -> frameData.
  * @returns {object} An object with { earliestFrame, condition }.
  */
+
 function getConditionData(childValue) {
+    // only global assingment
+   
     // let earliestFrame = -1;
-    let condition = null;
-    let teaming = null;
+    let order = null;
+    let identity = null;
 
-    console.log("ChildValue for Parsing Condition:", childValue.condition.order)
+    // console.log("ChildValue for Parsing Condition:", childValue.condition.order)
 
-    condition = childValue.condition.order;
+    order = childValue.condition.team.order;
 
-    teaming = childValue.condition.team; 
+    identity = childValue.condition.team.identity; 
 
-    return {'order': condition, 'team': teaming};
+    // if(DEBUG){
+    //     return {'order': ORDER, 'team': IDENTITY}
+    // } else {
+    //     return {'order': order, 'team': identity};
+    // }
+    return {'order': order, 'identity': identity};
 }
 
+let remoteComplete = false;
 function parseStatus(childValue){
-    let remoteStatus = null;
+    remoteComplete = childValue.AIcomplete;
 
-    remoteStatus = childValue.com
+    if (remoteComplete) handleCompleteness();
 }
 
 let otherPlayersLocations = {};
@@ -533,7 +599,7 @@ function parseIntentions(childValue) {
         player2.targetObjID = intention.ID;
     }
 
-    // Mark the object as intercepted
+    // Mark the object as marked
     objects.forEach((obj) => {
         if (obj.active && obj.ID === player2.targetObjID) {
             obj.marked2= true;
@@ -917,76 +983,74 @@ function updateDifficultySettings() {
     return newDifficultySettings;
 }
 
-// async function updateAgentOrdering() {
-//     // this function should handle the ordering and naming of the agents
-//     // if you are in the first round of that block, you should assign the correct agent.
 
-//      // This is needed to handle coloring of the AI player and naming
-//      if (currentRound == 1){
-//         AIplayer.collabOrder = 1;
-//         agent1Name = agentNames[AIplayer.collabType];
-//         agentOrder.push(agent1Name);
-
-//     } else if (currentRound == 2){
-//         AIplayer.collabOrder = 2;
-//         agent2Name = agentNames[AIplayer.collabType];
-//         agentOrder.push(agent2Name);
-//     }
-
-//     // console.log("Agent 1 & 2 Names", agent1Name, agent2Name);
-// }
-
-async function setAgent(){
-    // human first then ai
-    if (currentTeamingCondition.order == 1 && currentRound == 1){
-        settings.visualizeAIPlayer      == 0;
-        settings.visualizeHumanPartner  == 1;
-    } else if (currentTeamingCondition.order == 1 && currentRound == 2){
-        settings.visualizeAIPlayer      == 1;
-        settings.visualizeHumanPartner  == 0;
+/**
+ * Sets visualization settings based on teaming condition and current round
+ * to show either the AI player or human partner with appropriate identity handling
+ * 
+ * @returns {void}
+ */
+async function setAgent() {
+    // Destructure the order and identity properties
+    const { order, identity } = currentTeamingCondition;
+    
+    // Human first then AI
+    if (order == 0) {
+      if (currentRound == 1) {
+        settings.visualizeAIPlayer = 0;
+        settings.visualizeHumanPartner = 1;
+      } else if (currentRound == 2) {
+        // To pause before both humans begin rounds together
+        humanRoundComplete = true;
+        let pathBase = `players/${player.fbID}/humanComplete/`;
+        updateStateDirect(pathBase, humanRoundComplete, 'status')
+        settings.visualizeAIPlayer = 1;
+        settings.visualizeHumanPartner = 0;
+      }
     }
-
-    // ai first then human
-    if (currentTeamingCondition.order == 0 && currentRound == 1){
-        settings.visualizeAIPlayer      == 1;
-        settings.visualizeHumanPartner  == 0;
-    } else if (currentTeamingCondition.order == 1 && currentRound == 2){
-        settings.visualizeAIPlayer      == 0;
-        settings.visualizeHumanPartner  == 1;
+    // AI first then human
+    else if (order == 1) {
+      if (currentRound == 1) {
+        settings.visualizeAIPlayer = 1;
+        settings.visualizeHumanPartner = 0;
+      
+      } else if (currentRound == 2) {
+        AIroundComplete = true;
+        let pathBase = `players/${player.fbID}/AIcomplete/`;
+        updateStateDirect(pathBase, AIroundComplete, 'status')
+        settings.visualizeAIPlayer = 0;
+        settings.visualizeHumanPartner = 1;
+      }
     }
+    
+    // Handle identity ambiguity
+    if (identity == 1) { // Ambiguous identity - both use the same icon
+        humanImg.src = "./images/human-head-small.png";
+        robotHeadImg.src = "./images/human-head-small.png";
+        anonImg.src = "./images/human-head-small.png"
+      
+      // Update messaging for ambiguous identity
+      aiAssistRobotCaption.textContent = "Hi there! I may be a robot, but I also may be human.";
+    } else { // Transparent identity - use distinct icons
+      anonImg.src = "./images/human-head-small.png";
+      robotHeadImg.src = "./images/simple-robot-250px.png";
+      
+      // Update messaging for transparent identity
+      aiAssistRobotCaption.textContent = "Howdy! I'm an AI assistant. I'll be controlling the colored square.";
+    }
+    
+    // Log which agent is being shown with identity information
+    const visibleAgent = settings.visualizeHumanPartner ? "Human" : "AI";
+    const identityMode = identity == 1 ? "Ambiguous (shared icons)" : "Transparent (distinct icons)";
+    console.log(`Round ${currentRound}: ${visibleAgent} partner visible, Identity: ${identityMode}`);
 }
 
 // *********************************************** GAME INITIALIZATION ***********************************************//
-
-function getPermutations(array) {
-    // Base case: if array is empty, there is only one permutation: an empty array
-    if (array.length === 0) return [[]];
-
-    let permutations = [];
-
-    for (let i = 0; i < array.length; i++) {
-        let rest = array.slice(0, i).concat(array.slice(i + 1));
-        let restPermutations = getPermutations(rest);
-
-        for (let perm of restPermutations) {
-            permutations.push([array[i]].concat(perm));
-        }
-    }
-
-    return permutations;
-}
-
-const seedSet = [12, 123, 1234, 12345, 123456];
-const maxTargetSet = [5, 10, 15];
-// const perumutedTargets = getPermutations(maxTargetSet);
-// console.log(perumutedTargets);
-
 // Block randomization variables -- placed here for ordering dependency
 let currentRound = 1;
 let currentBlock = 0;
 let currentCondition = null;
 let currentTeamingCondition = null;
-let currentIdentityCondition = null;
 let curSeeds = [12, 123, 1234, 12345, 123456];   
 let noAssignment = true;
 
@@ -1107,7 +1171,9 @@ const player2 = {
 };
 
 let humanImg = new Image();
-humanImg.src = "./images/human-head-small.png";
+// humanImg.src = "./images/human-head-small.png";
+// if (currentTeamingCondition.identity == 1) humanImg.src = "/images/human-head-small.png";
+
 
 // humanImg.src = './images/human-head-small.png'; // Path to your robot head image
 let anonImg = new Image();
@@ -1115,11 +1181,11 @@ let anonImg = new Image();
 // anonImg.src = "./images/anon-icon.png";
 
 
-if (settings.visualizeHumanPartner == 1) {
-    anonImg.src = "./images/human-head-small.png";
-} else {
-    anonImg.src = "./images/anon-icon.png";
-}
+// if (settings.visualizeHumanPartner == 1) {
+//     anonImg.src = "./images/human-head-small.png";
+// } else {
+//     anonImg.src = "./images/anon-icon.png";
+// }
 
 const camera = {
     x: world.width / 2,
@@ -1226,7 +1292,7 @@ async function initExperimentSettings() {
     } else {
         assignedCondition = 5;
     }
-    let pathBase = `players/${player.fbID}/condition/order`;
+    let pathBase = `players/${player.fbID}/condition/curCondition`;
     updateStateDirect(pathBase, assignedCondition, 'conditions');
      // currentCondition = assignedCondition[0]+1;
 
@@ -1242,16 +1308,10 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        assignedTeamingCondition = {'order':0, 'identity': 0}; 
+        assignedTeamingCondition = {'order': 0, 'identity': 1}; 
     }
     pathBase = `players/${player.fbID}/condition/team`;
     updateStateDirect(pathBase, assignedTeamingCondition, 'conditions');
-
-
-
-    // will be used to sync up players if they start with AI first
-    pathBase = `players/${player.fbID}/status/AIcomplete`;
-    if (AIroundComplete == false) updateStateDirect(pathBase, AIroundComplete, 'status');
 
     return [blockOrderCondition, teamingBlockCondition];
 }
@@ -1265,6 +1325,12 @@ async function initializeGame() {
 
         return;
     }
+    // will be used to sync up players if they start with AI first
+    let pathBase = `players/${player.fbID}/AIcomplete/`;
+    if (AIroundComplete == false) updateStateDirect(pathBase, AIroundComplete, 'status');
+    
+    pathBase = `players/${player.fbID}/humanComplete/`;
+    if (humanRoundComplete == false) updateStateDirect(pathBase, humanRoundComplete, 'status')
 
     $("#full-game-container").attr("hidden", false);    
 
@@ -1272,10 +1338,10 @@ async function initializeGame() {
     gameInitialized = true;
 
     // Initialize your game parameters
-    var DEBUG = getDebugParams();
-    var COLLAB = getCollabTypeParams();
 
     playerId = getCurrentPlayerId();
+
+
 
 
     // Your existing initialization code
@@ -1307,10 +1373,51 @@ async function initializeGame() {
     // }
 }
 
+function setLocations(){
+    if (player.arrivalIdx == 1 && settings.visualizeHumanPartner == 1) {
+        // Place right for the first player
+        player.x = canvas.width/2 + 50;
+        player.y = canvas.height/2;
+        player.targetX = player.x;
+        player.targetY =  player.y;
+
+        // assume player2 is now on the left
+        player2.x = canvas.width/2 - 50;
+        player2.y = canvas.height/2;
+        player2.targetX = player2.x;
+        player2.targetY = player2.y;
+
+    } else if (player.arrivalIdx == 2 && settings.visualizeHumanPartner == 1){
+        // Place right for the first player
+        player.x = canvas.width/2 - 50;
+        player.y = canvas.height/2;
+        player.targetX = player.x;
+        player.targetY =  player.y;
+
+
+        // assume player2 is now on the left
+        player2.x = canvas.width/2 + 50;
+        player2.y = canvas.height/2;
+        player2.targetX = player2.x;
+        player2.targetY = player2.y;
+    }
+
+    if (settings.visualizeAIPlayer == 1) {
+        // Place right for the first player
+        player.x = canvas.width/2 + 50;
+        player.y = canvas.height/2;
+
+        // assume player2 is now on the left
+        AIplayer.x = canvas.width/2 - 50;
+        AIplayer.y = canvas.height/2;
+    }
+   
+}
 // Make sure that a session needs to have begun in order for the players to play with an AI
 
 // ****************************************************** UPDATE FUNCTIONS ********************************************************//
-let AIroundComplete = false;
+let AIroundComplete     = false;
+let humanRoundComplete  = false;
 
 // Start Game function
 async function startGame(round, condition, block, seeds) {
@@ -1320,43 +1427,19 @@ async function startGame(round, condition, block, seeds) {
     let blockSetting = difficultySettings[condition][block];
     roundSettings = blockSetting[currentRound];
 
-    await setAgent();
-
-    /*
-    if teaming order condition == 0 --> make the human go fist.
-    else... make the AI go first
-    */ 
+    setAgent();
+    setLocations();
 
     settings.AICollab   = 1;
-    AIplayer.collabType = roundSettings.AICollab;
-    // settings.AIStabilityThreshold = roundSettings.AIStabilityThreshold; // check if this is necessary!
-
-
-    // settings.maxTargets = roundSettings.maxTargets;
     settings.maxTargets = 15;
    
     // Change to the next seed
     if (block == 0) {
-        settings.randSeed = seeds[currentRound - 1];
+        // settings.randSeed = seeds[currentRound - 1];
+        settings.randSeed = 123
         // await updateAgentOrdering();
     } 
 
-    // if (currentRound == 1  && settings.maxTargets == 5) AIplayer.color = 'rgba(0, 128, 0, 0.5)'; // green transparent
-    // if (currentRound == 2 && settings.maxTargets == 5) AIplayer.color = 'rgba(128, 0, 128, 0.5)'; // purple transparent
-
-    // // if (settings.AICollab == 0  && settings.maxTargets == 15) AIplayer.color = 'rgba(128, 128, 128, 0.7)'; // iron transparent
-    // if (currentRound == 1  && settings.maxTargets == 15) AIplayer.color = 'rgba(0, 0, 255, 0.5)'; // blue transparent
-    // if (currentRound == 2 && settings.maxTargets == 15) AIplayer.color = 'rgba(184, 115, 51, 0.5)'; // copper transparent 
-
-    if (DEBUG){
-        //console.log("Default Settings AI Mode", settings.AIMode);
-        console.log("Current Collab AI Mode", roundSettings.AICollab);
-        console.log("Current Settings", roundSettings);
-        console.log("Current Block", currentBlock);
-        console.log("Current Round", currentRound);
-        console.log("Current Max Targets", settings.maxTargets);
-        console.log("Current Seeds: ", settings.randSeed);
-    }
     // Initialize with a seed
     randomGenerator = lcg(settings.randSeed);
     // Start the exponential moving average with a fixed response time of 1/3 of a second -- 10 frames
@@ -1377,7 +1460,6 @@ async function startGame(round, condition, block, seeds) {
     }
 }
 
-// End Game function
 async function endGame() {
     isGameRunning = false;
 
@@ -1385,54 +1467,47 @@ async function endGame() {
     // writeGameDatabase();
 
     // TODO: Push db feature that allows tracking of the other player's completion of the ai round
-
-    if (currentRound < maxRounds) {//&& numSurveyCompleted < 3) {
-        currentRound++;
+    // currentRound++;
+    if (currentRound <= maxRounds) {//&& numSurveyCompleted < 3) {
+        currentRound ++;
         await runGameSequence("You've Completed a Round and earned " + totalScore + " points. Click OK to continue.");
-        
-        // set the correct partner (human or ai) given the current round
-        await setAgent();
 
-        if (currentRound > 1) {
-            await runGameSequence("Click OK to continue to the next round of play.");
+        if (currentRound < 3){
+            if (currentRound > 1) await runGameSequence("Click OK to continue to the next round of play.");
+            await resetGame(); 
+            // set the correct partner (human or ai) given the current round
+            setAgent();
+
+            // Pause the game and wait for the other player to complete their ai round
+            if (currentTeamingCondition.order == 1) handleCompleteness();
+
+            startGame(currentRound, currentCondition, currentBlock, curSeeds); // Start the next round
         }
-        await resetGame();
-        // SK1: visualize the AI player instead of the human
-        startGame(currentRound, currentCondition, currentBlock, curSeeds); // Start the next round
-    } else if (currentRound >= maxRounds && blockInfo.completedBlock < 1) {// && numSurveyCompleted < 3) {
 
-        // All rounds in the current block are completed
-        blockInfo.completedBlock++;
-        blockInfo.completedBlockOrder.push(currentBlock);
-        console.log("Visited Blocks", visitedBlocks);
-        currentRound = 1; // Reset the round counter
-        currentBlock += 1; // Move to next block
-       
-        await runGameSequence("You've Completed a Block and earned " + totalScore + " points. Click OK to continue.");
-        await resetGame();
+    }   
 
-        visitedBlocks++;
+    if (currentRound > maxRounds) visitedBlocks ++;
+    // currentRound ++
 
-        if (visitedBlocks == 1) {
-            // prevSetting = settings
-            await loadFullSurvey();
-            $("#survey-full-container").attr("hidden", false);
-            // await loadAIComparison();
-            // $("#ai-comparison-container").attr("hidden", false);
-            $("#full-game-container").attr("hidden", true);
-        }
-    
-        if (visitedBlocks < 1) {
-            startGame(currentRound, currentCondition,currentBlock,curSeeds); // Start the next round
-        } else{
-            // console.log("End of Experiment");
-            await loadFullSurvey();
-            $("#survey-full-container").attr("hidden", false);
-            // loadAIComparison();
-            // $("#ai-comparison-container").attr("hidden", false);
-            $("#full-game-container").attr("hidden", true);
-            if (DEBUG) console.log("Agent order", agentOrder); 
-        }
+    if (visitedBlocks >= 1){
+        // visitedBlocks++
+        // prevSetting = settings
+        await loadFullSurvey();
+        $("#survey-full-container").attr("hidden", false);
+        // await loadAIComparison();
+        // $("#ai-comparison-container").attr("hidden", false);
+        $("#full-game-container").attr("hidden", true);
+    }
+}
+
+function handleCompleteness(){
+    // function to determine if the remote player has finished their ai round
+    if (!remoteComplete){
+        isPaused = true;  
+        // Display waiting popup with loading spinner
+        // waitingForPlayerAlert("Waiting for the other player to complete their round... Please stand by.");
+    } else{
+        isPaused = false;
     }
 }
 
@@ -1484,15 +1559,26 @@ async function resetGame(){
     // aiClicks_adjusted_offline       = [];
     AIcaughtTargets_offline         = [];
     // AIplayerLocation_offline        = [];
-    
-    player.x        = canvas.width/2;
-    player.y        = canvas.height/2;
-    player.targetX  = canvas.width/2;
-    player.targetY  = canvas.height/2;
-    AIplayer.x, AIplayer.y = canvas.width/2  + 150; // MS5: Reset the player position
+
+    setLocations();
+
+    // player.x        = canvas.width/2;
+    // player.y        = canvas.height/2;
+    // player.targetX  = canvas.width/2;
+    // player.targetY  = canvas.height/2;
+
+    // player2.x        = canvas.width/2;
+    // player2.y        = canvas.height/2;
+    // player2.targetX  = canvas.width/2;
+    // player2.targetY  = canvas.height/2;
+
+
+    AIplayer.x, AIplayer.y = canvas.width/2  + 50; // MS5: Reset the player position
     AIplayer.targetX = canvas.width/2;
     AIplayer.targetY = canvas.height/2;
-    AIplayer_offline.x, AIplayer_offline.y = canvas.width/2  + 150; // MS5: Reset the player position
+    AIplayer_offline.x, AIplayer_offline.y = canvas.width/2  + 50; // MS5: Reset the player position
+
+    // frameCountGame=0;
 }
 
 function gameLoop(timestamp) {
@@ -1565,29 +1651,32 @@ function updateObjects(settings) {
 
         isPaused = false;
     }
+
     if (deltaFrameCount == 10){
         deltaFrameCount = 0;
-        
-        let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-        updateStateDirect(`${pathBase}/x`, player.x, 'location');
-        updateStateDirect(`${pathBase}/y`, player.y, 'location');
+        // if (settings.visualizeHumanPartner == 1) writeMovement();   
+        if (settings.visualizeHumanPartner == 1){
+            let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
+            updateStateDirect(`${pathBase}/x`, player.x, 'location');
+            updateStateDirect(`${pathBase}/y`, player.y, 'location');
 
-        // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
-        // if (frameNumbers.length > 0) {
-        //     const mostRecentFrame = Math.max(...frameNumbers);
-        //     const position = otherPlayersLocations[mostRecentFrame];
-        //     player2.x = position.x;
-        //     player2.y = position.y;
-        // }
+            // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
+            // if (frameNumbers.length > 0) {
+            //     const mostRecentFrame = Math.max(...frameNumbers);
+            //     const position = otherPlayersLocations[mostRecentFrame];
+            //     player2.x = position.x;
+            //     player2.y = position.y;
+            // }
 
-        pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-        updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation');
-        updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation');
+            pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
+            updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation');
+            updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation');
 
-        pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-        updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity');
-        updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity');
-        updateStateDirect(`${pathBase}/moving`, player.moving, 'moving');
+            pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
+            updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity');
+            updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity');
+            updateStateDirect(`${pathBase}/moving`, player.moving, 'moving');
+        }
     }
     
     frameCountGame++;                           // MS: increment scene update count
@@ -1631,9 +1720,14 @@ function updateObjects(settings) {
         player.dx = 0;
         player.dy = 0;
 
-        let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-        updateStateDirect(`${pathBase}/x`, player.x, 'location');
-        updateStateDirect(`${pathBase}/y`, player.y, 'location');
+       
+        // if (settings.visualizeHumanPartner == 1) writeMovement();   
+
+        if (settings.visualizeHumanPartner){
+            let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
+            updateStateDirect(`${pathBase}/x`, player.x, 'location');
+            updateStateDirect(`${pathBase}/y`, player.y, 'location');
+        }
     }
 
 
@@ -1808,8 +1902,8 @@ function updateObjects(settings) {
                 player.score      += obj.value;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus`;
-                updateStateDirect(`${pathBase}/ID`, obj.ID, 'objectStatus');
-                updateStateDirect(`${pathBase}/intercepted`, obj.intercepted, 'objectStatus');
+                updateStateDirect(`${pathBase}/ID`, obj.ID, 'interception ID');
+                updateStateDirect(`${pathBase}/intercepted`, obj.intercepted, 'interception flag');
 
                 if (obj.ID == player.targetObjID){
                     player.moving = false; // stop player after catching intended target
@@ -2194,6 +2288,29 @@ function createComposite(settings) {
     return newObj;
 }
 
+function writeMovement(){
+    let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
+    updateStateDirect(`${pathBase}/x`, player.x, 'location');
+    updateStateDirect(`${pathBase}/y`, player.y, 'location');
+
+    // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
+    // if (frameNumbers.length > 0) {
+    //     const mostRecentFrame = Math.max(...frameNumbers);
+    //     const position = otherPlayersLocations[mostRecentFrame];
+    //     player2.x = position.x;
+    //     player2.y = position.y;
+    // }
+
+    pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
+    updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation');
+    updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation');
+
+    pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
+    updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity');
+    updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity');
+    updateStateDirect(`${pathBase}/moving`, player.moving, 'moving');
+}
+
 function setVelocityTowardsObservableArea(obj) {
     // Calculate angle towards the center
     let angleToCenter = Math.atan2(center.y - obj.y, center.x - obj.x);
@@ -2439,12 +2556,7 @@ function drawAIPlayer() {
     //ctx.strokeStyle = player.color;
     ctx.fillRect(topLeftX, topLeftY, player.width, player.height);
 
-    ctx.drawImage(robotHeadImg, topLeftX, topLeftY, 50, 50);
-
-    // write the current intended target id ot hte top left of hte palyer
-
-    // ctx.fillStyle = 'black';
-    // ctx.fillText(AIplayer.ID, topLeftX, topLeftY - 5);  
+    ctx.drawImage(anonImg, topLeftX, topLeftY, 50, 50);
 }
 
 function drawAIPlayerOffline() {
@@ -3018,20 +3130,34 @@ function displayAIStatus() {
 
     // TODO: fold in transparent versus ambiguous conditions in both these conditionals
 
-    if (settings.visualizeHumanPartner == 1) {
+    if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 1) {
         // aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
         aiAssistRobot.src = "./images/anon-icon-250px.png";
         aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Hi there! I may be a robot, but I also may be human. I'll be controlling the green square.";
+        aiAssistRobotCaption.textContent = "Hi there, I'll be your partner! I may be a robot or a human. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
         aiAssistRobotCaption.style.backgroundColor = AIplayer.color;; // Semi-transparent green
         aiAssistRobotCaption.style.fontWeight = "bold";
-    } else {
+    } else if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 0){
+        aiAssistRobot.src = "./images/human-head-small.png";
+        aiAssistRobot.style.backgroundColor = AIplayer.color;
+        aiAssistRobotCaption.textContent = "Howdy! I'm your human partner. I'll be controlling the green square.";
+        aiAssistRobotCaption.style.opacity = "1";
+        aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
+        aiAssistRobotCaption.style.fontWeight = "bold";
+    } else if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1){
+        aiAssistRobot.src =  "./images/anon-icon-250px.png";;
+        aiAssistRobot.style.backgroundColor = AIplayer.color;
+        aiAssistRobotCaption.textContent = "Hi there, I'll be your partner! I may be a robot or a human. I'll be controlling the green square.";
+        aiAssistRobotCaption.style.opacity = "1";
+        aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
+        aiAssistRobotCaption.style.fontWeight = "bold";
+    } else if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1){
         aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
         aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Howdy! I'm Purple-Bot. I'll be controlling the purple square.";
+        aiAssistRobotCaption.textContent = "Howdy! I'm an AI. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
-        aiAssistRobotCaption.style.backgroundColor = "rgba(128, 0, 128, 0.5)"; // Semi-transparent purple
+        aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
         aiAssistRobotCaption.style.fontWeight = "bold";
     }
 }
@@ -3095,6 +3221,91 @@ function showCustomAlert(message) {
             $('#customAlert').hide();
             resolve(); // This resolves the Promise allowing code execution to continue
         });
+    });
+}
+
+// Display message about waitnig for other player
+function waitForRemotePlayer() {
+    return new Promise(resolve => {
+        console.log("Waiting for remote player to complete AI round...");
+        
+        // If remote player is already ready, resolve immediately
+        if (remoteComplete) {
+            console.log("Remote player already completed AI round");
+            resolve();
+            return;
+        }
+        
+        // Otherwise, set up a checking interval
+        const checkInterval = setInterval(() => {
+            if (remoteComplete) {
+                clearInterval(checkInterval);
+                console.log("Remote player now completed AI round");
+                resolve();
+            } else {
+                console.log("Still waiting for remote player...");
+                // Optionally refresh the remote status directly
+                const remotePath = `players/${remoteId}`;
+                readState(remotePath).then(data => {
+                    if (data && data.AIcomplete) {
+                        remoteComplete = data.AIcomplete;
+                    }
+                });
+            }
+        }, 1000);
+    });
+}
+
+// Custom waiting alert for syncing with other player - auto-dismisses when no longer paused
+function waitingForPlayerAlert(message) {
+    return new Promise((resolve) => {
+        // Display the custom alert with the message
+        $('#customAlertMessage').text(message);
+        
+        // Hide the close button and OK button
+        $('#customAlert .custom-alert-close').hide();
+        $('#customAlert button').hide();
+        
+        // Show the alert
+        $('#customAlert').show();
+        
+        // Add a loading spinner
+        const loadingSpinner = $('<div class="loading-spinner"></div>');
+        $('#customAlertMessage').after(loadingSpinner);
+        
+        // Add CSS for the spinner if it doesn't exist
+        if (!$('#waiting-spinner-style').length) {
+            $('head').append(`
+                <style id="waiting-spinner-style">
+                    .loading-spinner {
+                        border: 5px solid #f3f3f3;
+                        border-top: 5px solid #3498db;
+                        border-radius: 50%;
+                        width: 30px;
+                        height: 30px;
+                        margin: 20px auto;
+                        animation: spin 2s linear infinite;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `);
+        }
+        
+        // Set up polling interval to check isPaused status
+        const checkPausedStatus = setInterval(() => {
+            if (!isPaused) {
+                // Game is no longer paused, close the alert
+                clearInterval(checkPausedStatus);
+                $('#customAlert').hide();
+                $('.loading-spinner').remove();
+                $('#customAlert .custom-alert-close').show();
+                $('#customAlert button').show();
+                resolve();
+            }
+        }, 500); // Check every 500ms
     });
 }
 
@@ -4012,3 +4223,4 @@ async function loadCompletePage(){
         $('#user-feedback-button').click(submitFeedback);
     });
 }
+    const countdownText = document.getElementById('countdown-text');

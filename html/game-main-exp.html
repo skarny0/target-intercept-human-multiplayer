@@ -30,11 +30,22 @@ This file contains all of the task information for the experiment.
           <div class="container-fluid gamePage activePage" id="waitingRoomPage">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h1>Waiting Room</h1>
-                    <div id="messageWaitingRoom"></div>
-                    <button class="btn btn-primary" id="joinBtn">Join Session</button>
+                    <div class="welcome-container" style="max-width: 800px; margin: 0 auto; padding: 2em;">
+                        <h1 style="font-size: 2.5em; color: #2c3e50; margin-bottom: 1em;">Welcome, read the following <i>carefully</i>!</h1>
+                        <div style="font-size: 1.5em; color: #34495e;">
+                            <p>You are about to play a round of this target interception task.</p>
+                            <p>Your first round will be with either a human or a robot.</p>
+                            <p>Your team's goal is to get the highest score possible.</p>
+                            <p>A round of play will begin immediately after we have matched you with a fellow participant!</p>
+                            <p>When you are ready to start, mark yourself as ready by clicking: 'Join Session'.</p>
+                        </div>
+                        <div id="messageWaitingRoom" style="font-size: 1.5em; margin: 1.5em 0; color: #7f8c8d;"></div>
+                        <button class="btn btn-primary btn-lg" id="joinBtn" style="font-size: 1.5em; padding: 0.5em 2em; border-radius: 8px;">
+                            Join Session
+                        </button>
+                    </div>
                 </div>
-              </div>
+            </div>
           </div>
 
       <!-- Game Container -->
