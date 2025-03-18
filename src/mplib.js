@@ -114,8 +114,11 @@ export function getNumberAllPlayers() {
 // This function returns the rank of the current player among the *currently* active players
 // Note that this index is not stable over time if new players can join an active session or currently active players can leave a session
 // without this action terminating the session  
+// export function getCurrentPlayerArrivalIndex() {
+//     return si.allPlayersEver[ si.playerId ].arrivalIndexActivePlayers;
+// }
 export function getCurrentPlayerArrivalIndex() {
-    return si.allPlayersEver[ si.playerId ].arrivalIndexActivePlayers;
+    return si.allPlayersEver[ si.playerId ].arrivalIndex;
 }
 
 // This function returns the rank of the current player among all players who were *ever* active 

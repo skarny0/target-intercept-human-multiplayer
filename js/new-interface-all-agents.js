@@ -129,7 +129,7 @@ let sessionConfig = {
     maxPlayersNeeded: 2, // Maximum number of players allowed in a session
     maxParallelSessions: 0, // Maximum number of sessions in parallel (if zero, there are no limit)
     allowReplacements: true, // Allow replacing any players who leave an ongoing session?
-    exitDelayWaitingRoom: 30, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
+    exitDelayWaitingRoom: 10, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
     maxHoursSession: 0, // Maximum hours where additional players are still allowed to be added to session (if zero, there is no time limit)
     recordData: true // Record all data?  
 };
@@ -390,6 +390,7 @@ async function startSession() {
 
     // Initialize game when we have a valid session
     // NOTE / TODO: Scaffold this init game call with the countdown
+    // NOTE: Only when game initialized does this trigeger the condition assignments for player 2
     while (!gameInitialized) {
         await initializeGame();
     }
@@ -1080,47 +1081,51 @@ async function setAgent() {
     
     // Human first then AI
     if (order == 0) {
-      if (currentRound == 1) {
-        settings.visualizeAIPlayer = 0;
-        settings.visualizeHumanPartner = 1;
-      } else if (currentRound == 2) {
-        // To pause before both humans begin rounds together
-        humanRoundComplete = true;
-        let pathBase = `players/${player.fbID}/humanComplete/`;
-        updateStateDirect(pathBase, humanRoundComplete, 'status')
-        settings.visualizeAIPlayer = 1;
-        settings.visualizeHumanPartner = 0;
-      }
-    }
-    // AI first then human
-    else if (order == 1) {
-      if (currentRound == 1) {
-        settings.visualizeAIPlayer = 1;
-        settings.visualizeHumanPartner = 0;
-      
-      } else if (currentRound == 2) {
-        AIroundComplete = true;
-        let pathBase = `players/${player.fbID}/AIcomplete/`;
-        updateStateDirect(pathBase, AIroundComplete, 'status')
-        settings.visualizeAIPlayer = 0;
-        settings.visualizeHumanPartner = 1;
-      }
+        if (currentRound == 1) {
+            settings.visualizeAIPlayer = 0;
+            settings.visualizeHumanPartner = 1;
+        } else if (currentRound == 2) {
+            // To pause before both humans begin rounds together
+            humanRoundComplete = true;
+            let pathBase = `players/${player.fbID}/humanComplete/`;
+            updateStateDirect(pathBase, humanRoundComplete, 'status')
+
+            settings.visualizeAIPlayer = 1;
+            settings.visualizeHumanPartner = 0;
+        }
+        player2.color = "rgba(0, 255, 0, 0.5)" // semi-transparent green
+        AIplayer.color = "rgba(0, 0, 255, 0.5)" // semi-transparent blue
+
+    } else if (order == 1) { // AI first then human  
+        if (currentRound == 1) {
+            settings.visualizeAIPlayer = 1;
+            settings.visualizeHumanPartner = 0;
+        
+        } else if (currentRound == 2) {
+            AIroundComplete = true;
+            let pathBase = `players/${player.fbID}/AIcomplete/`;
+            updateStateDirect(pathBase, AIroundComplete, 'status')
+
+            settings.visualizeAIPlayer = 0;
+            settings.visualizeHumanPartner = 1;
+        }
+        player2.color = "rgba(0, 0, 255, 0.5)" // semi-transparent blue
+        AIplayer.color = "rgba(0, 255, 0, 0.5)" // semi-transparent green
     }
     
     // Handle identity ambiguity
     if (identity == 1) { // Ambiguous identity - both use the same icon
+        // humanImg.src = "./images/human-head-small.png";
+        // robotHeadImg.src = "./images/human-head-small.png";
+        // anonImg.src = "./images/human-head-small.png"
+        humanImg.src = "";
+        robotHeadImg.src = "";
+        anonImg.src = ""
+
+    } else { // Transparent identity - use distinct icons
         humanImg.src = "./images/human-head-small.png";
         robotHeadImg.src = "./images/human-head-small.png";
         anonImg.src = "./images/human-head-small.png"
-      
-      // Update messaging for ambiguous identity
-      aiAssistRobotCaption.textContent = "Hi there! I may be a robot, but I also may be human.";
-    } else { // Transparent identity - use distinct icons
-      anonImg.src = "./images/human-head-small.png";
-      robotHeadImg.src = "./images/simple-robot-250px.png";
-      
-      // Update messaging for transparent identity
-      aiAssistRobotCaption.textContent = "Howdy! I'm an AI assistant. I'll be controlling the colored square.";
     }
     
     // Log which agent is being shown with identity information
@@ -1424,37 +1429,6 @@ async function initializeGame() {
     // Initialize your game parameters
 
     playerId = getCurrentPlayerId();
-
-
-
-
-    // Your existing initialization code
-    // if (noAssignment) {
-    //     if (DEBUG) {
-    //         // playerId = getCurrentPlayerId();
-    //         conditionsArray = await initExperimentSettings();
-
-    //         blockOrderCondition = conditionsArray[0];
-    //         teamingBlockCondition = conditionsArray[1];
-
-    //         // let path = `players/${playerId}/condition`;
-    //         // updateStateDirect(path, currentCondition, 'conditions');
-    //         // console.log("Attempted to write condition to Firebase");
-            
-    //         console.log('assignedCondition:', currentCondition);
-    //         console.log('assignedTeamingCondition:', currentTeamingCondition);
-    //         console.log('assignedSeed:', curSeeds);
-    //         console.log("block order condition", blockOrderCondition);
-    //         console.log("teaming block condition", teamingBlockCondition);
-    //     } else {
-    //         conditionsArray = await initExperimentSettings();
-    //         blockOrderCondition = conditionsArray[0];
-    //         teamingBlockCondition = conditionsArray[1];
-    //     }
-        
-    //     startGame(currentRound, currentCondition, currentBlock, curSeeds, currentTeamingCondition);
-    //     noAssignment = false;
-    // }
 }
 
 function setLocations(){
@@ -3215,34 +3189,39 @@ function displayAIStatus() {
 
     // TODO: fold in transparent versus ambiguous conditions in both these conditionals
 
-    if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 1) {
+    if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1) {
         // aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
-        aiAssistRobot.src = "./images/anon-icon-250px.png";
+        // aiAssistRobot.src = "./images/anon-icon-250px.png";
+        aiAssistRobot.src = "./images/Eyes-Emoji-PNG (1).png"
         aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Hi there, I'll be your partner! I may be a robot or a human. I'll be controlling the green square.";
+        aiAssistRobotCaption.textContent = "Hi there, I'm your partner and will be controlling the green square! I may be a robot or a human.";
         aiAssistRobotCaption.style.opacity = "1";
         aiAssistRobotCaption.style.backgroundColor = AIplayer.color;; // Semi-transparent green
         aiAssistRobotCaption.style.fontWeight = "bold";
-    } else if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 0){
+    } else if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 0){
         aiAssistRobot.src = "./images/human-head-small.png";
         aiAssistRobot.style.backgroundColor = AIplayer.color;
         aiAssistRobotCaption.textContent = "Howdy! I'm your human partner. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
-        aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
+        aiAssistRobotCaption.style.backgroundColor = AIplayer.color;;
+        // aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
         aiAssistRobotCaption.style.fontWeight = "bold";
-    } else if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1){
-        aiAssistRobot.src =  "./images/anon-icon-250px.png";;
-        aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Hi there, I'll be your partner! I may be a robot or a human. I'll be controlling the green square.";
+    } else if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 0){
+        aiAssistRobot.src =  "./images/human-head-small";
+        aiAssistRobot.style.backgroundColor = player2.color;
+        aiAssistRobotCaption.textContent = "Howdy! I'm your human partner. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
-        aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
+        aiAssistRobotCaption.style.backgroundColor = player2.color;;
+        // aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
         aiAssistRobotCaption.style.fontWeight = "bold";
-    } else if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1){
-        aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
-        aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Howdy! I'm an AI. I'll be controlling the green square.";
+    } else if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 1){
+        // aiAssistRobot.src = "./images/anon-icon-250px.png";
+        aiAssistRobot.src = "./images/Eyes-Emoji-PNG (1).png"
+        aiAssistRobot.style.backgroundColor = player2.color;
+        aiAssistRobotCaption.textContent = "Hi there, I'm your partner and will be controlling the green square! I may be a real human or a robot.";
         aiAssistRobotCaption.style.opacity = "1";
-        aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
+        aiAssistRobotCaption.style.backgroundColor = player2.color;;
+        // aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
         aiAssistRobotCaption.style.fontWeight = "bold";
     }
 }
