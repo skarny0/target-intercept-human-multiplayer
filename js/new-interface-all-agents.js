@@ -129,7 +129,7 @@ let sessionConfig = {
     maxPlayersNeeded: 2, // Maximum number of players allowed in a session
     maxParallelSessions: 0, // Maximum number of sessions in parallel (if zero, there are no limit)
     allowReplacements: true, // Allow replacing any players who leave an ongoing session?
-    exitDelayWaitingRoom: 0, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
+    exitDelayWaitingRoom: 30, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
     maxHoursSession: 0, // Maximum hours where additional players are still allowed to be added to session (if zero, there is no time limit)
     recordData: true // Record all data?  
 };
@@ -172,80 +172,178 @@ function joinWaitingRoom() {
     if (numPlayers === 1 && tempNoAssingnment){
         initExperimentSettings();
         tempNoAssingnment = false;
+        // updateStateDirect()
     }
     
     // Update waiting room message
     $("#messageWaitingRoom").text(`Waiting for ${numNeeded} more player(s)...`);
-    
-    // Toggle visibility
-    // $("#waitingRoomPage").attr("hidden", false);
-    // $("#full-game-container").attr("hidden", true);
 }
 
 function updateWaitingRoom() {
     /*
         Functionality to invoke when updating the waiting room.
-  
-        This function does the following:
-            - Displays the waiting room screen
-            - Checks the status of the waiting room through the getWaitRoomInfo() function
-                - If the flag doCountDown is true, then the game will start after a countdown
-                - otherwise continue waiting
-            - Displays a 'game will start' message if appropriate
+        This function properly shows/hides the countdown container based on 
+        the waiting room status from getWaitRoomInfo().
     */
    
-    // switch screens from instruction to waiting room
-    instructionsScreen.style.display = 'none';
-    waitingRoomScreen.style.display = 'block';
-  
-    // Waiting Room is full and we can start game
-    let [ doCountDown , secondsLeft ] = getWaitRoomInfo();
-    if (doCountDown) {
-        let str2 = `Game will start in ${ secondsLeft } seconds...`;
-        messageWaitingRoom.innerText = str2;
-    } else { // Still waiting for more players, update wait count
-        let numPlayers = getNumberCurrentPlayers(); // the current number of players
-        let numNeeded = sessionConfig.minPlayersNeeded - numPlayers; // Number of players still needed (in case the player is currently in a waiting room)
-        
-        let str2 = `Waiting for ${ numNeeded } additional ${ numPlayers > 1 ? 'players' : 'player' }...`;
-        messageWaitingRoom.innerText = str2;
-    }
-}
-
-/* // Tentative code that handles the waiting room function for the identity condition == ambiguous
-function updateWaitingRoom() {
-    // ... existing code for switching screens ...
-    instructionsScreen.style.display = 'none';
-    waitingRoomScreen.style.display = 'block';
-  
-    // Get waiting room info
-    let [doCountDown, secondsLeft] = getWaitRoomInfo();
-    
-    // Get the containers
+    // Get waiting room elements
+    const waitingRoomScreen = document.getElementById('waitingRoomPage');
     const welcomeContainer = document.querySelector('.welcome-container');
     const countdownContainer = document.getElementById('countdownContainer');
+    const messageWaitingRoom = document.getElementById('messageWaitingRoom');
+    const joinBtn = document.getElementById('joinBtn');
+    const countdownValue = document.getElementById('countdownValue');
+    
+    // Make sure waiting room is visible
+    waitingRoomScreen.style.display = 'block';
+  
+    // Get countdown status from mplib
+    let [doCountDown, secondsLeft] = getWaitRoomInfo();
+    
+    console.log("Waiting room update - Countdown active:", doCountDown, "Seconds left:", secondsLeft);
     
     if (doCountDown) {
-        // Show countdown container, hide welcome
+        // Remove all countdown-related elements
+        if (secondsLeft === 1) {
+            const waitingRoomScreen = document.getElementById('waitingRoomPage');
+            const overlayCountdown = document.getElementById('overlay-countdown');
+            const gameContainer = document.getElementById('full-game-container');
+            
+            // Remove the overlay first to ensure it's gone
+            if (overlayCountdown) {
+                overlayCountdown.remove();
+                // Double-check with alternative removal method
+                if (overlayCountdown.parentNode) {
+                    overlayCountdown.parentNode.removeChild(overlayCountdown);
+                }
+            }
+            
+            // Clean up any other overlay elements that might exist
+            const overlays = document.querySelectorAll('[id*="overlay"]');
+            overlays.forEach(overlay => overlay.remove());
+            
+            // Show game container and ensure waiting room is gone
+            if (gameContainer) gameContainer.style.display = 'block';
+            if (waitingRoomScreen) waitingRoomScreen.remove();
+            
+            // Final cleanup using jQuery to be thorough
+            $('#overlay-countdown').remove();
+            $('#waitingRoomPage').remove();
+            $('.gamePage').not('#full-game-container').remove();
+            
+            return;
+        }
+        // Hide the original elements
         welcomeContainer.style.display = 'none';
-        countdownContainer.style.display = 'block';
         
-        // Update countdown value
-        document.getElementById('countdownValue').textContent = secondsLeft;
+        // Create a brand new countdown display that overlays everything
+        let overlayCountdown = document.getElementById('overlay-countdown');
+        if (!overlayCountdown) {
+            overlayCountdown = document.createElement('div');
+            overlayCountdown.id = 'overlay-countdown';
+            overlayCountdown.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 30px;
+                z-index: 10000;
+                box-shadow: 0 0 20px rgba(0,0,0,0.3);
+                text-align: center;
+                min-width: 400px;
+            `;
+            
+            document.body.appendChild(overlayCountdown);
+        }
+        
+        // if (currentTeamingCondition.identity == 1){
+        //     console.log("")
+        // }
+        overlayCountdown.innerHTML = `
+             <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
+                <p>Your game will begin in:</p>
+                <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
+                    ${secondsLeft - 1} seconds
+                </div>
+            </div>
+            <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
+                <p><b>Important!</b></p>
+                <p>There will be one round with a real human and one with a real robot.</p>
+                <p>However, the identity of each player will remain ambiguous: You will be unsure if the human is human or the robot is a robot.</p>
+            </div>
+        `;
+        
+        // Also update the overlay styling to accommodate more content
+        overlayCountdown.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 40px;
+        z-index: 10000;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        text-align: center;
+        min-width: 600px;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        `;
+        
+        // Hide join button during countdown
+        if (joinBtn) joinBtn.style.display = 'none';
+        
+        // Also update message as fallback
         messageWaitingRoom.innerText = `Game will start in ${secondsLeft} seconds...`;
-    } else {
-        // Show welcome container, hide countdown
-        welcomeContainer.style.display = 'block';
-        countdownContainer.style.display = 'none';
+
+    } else { // When not in countdown mode
+        // Remove overlay if it exists
+        const overlayCountdown = document.getElementById('overlay-countdown');
+        if (overlayCountdown) {
+            document.body.removeChild(overlayCountdown);
+        }
         
-        // Update waiting message
-        let numPlayers = getNumberCurrentPlayers();
-        let numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
-        let str2 = `Waiting for ${numNeeded} additional ${numPlayers > 1 ? 'players' : 'player'}...`;
-        messageWaitingRoom.innerText = str2;
+        // Show regular waiting room content
+        welcomeContainer.style.display = 'block';
+        
+        // Update waiting message with player count
+        const numPlayers = getNumberCurrentPlayers();
+        const numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
+        
+        // Create a brand new countdown display that overlays everything
+        let overlayWaiting = document.getElementById('overlay-countdown');
+        if (!overlayWaiting) {
+            overlayWaiting = document.createElement('div');
+            overlayWaiting.id = 'overlay-countdown';
+            overlayWaiting.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 30px;
+                z-index: 10000;
+                box-shadow: 0 0 20px rgba(0,0,0,0.3);
+                text-align: center;
+                min-width: 400px;
+            `;
+            
+            document.body.appendChild(overlayWaiting);
+        }
+        
+        // Update the overlay content with waiting message
+        overlayWaiting.innerHTML = `
+            <h2 style="color: #2c3e50; margin-bottom: 1em;">Waiting for Players</h2>
+            <div style="font-size: 1.5em; color: #34495e;">
+                <p>Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...</p>
+            </div>
+        `;
     }
 }
-*/
 
 async function startSession() {
     console.log("Session starting");
@@ -291,11 +389,10 @@ async function startSession() {
     }
 
     // Initialize game when we have a valid session
+    // NOTE / TODO: Scaffold this init game call with the countdown
     while (!gameInitialized) {
         await initializeGame();
-        
     }
-    
 
 }
 
@@ -936,31 +1033,18 @@ Identity condition:
         - the identity of the player, human or AI, is a shared icon that is ambiguously human or AI (add this icon later)
         - the side-message from the second player, is an ambiguous message: "I may be a human or I may be an AI." (can already add in this message)
 
-On conditions: in total there will be four conditions that particiapnts can be assigned to. This will be reflected in difficulty settings.
-
-Things that need to be done:
-    - Unfold previous features of difficultySettings that parsed through the many agent types.
-        Assign just one AI agent that can be played with (i.e. all players, regardless of condition, can only play with omit)
-
-    - There should only be two rounds in the difficulty settings.
-    
-    - Key challenge, how do you pair up two actual humans using mplib if they're AI first, human second?
-
-    - Currently, there is only one round and you jump straight to the evaluation section.
 
 The functions that need refactoring:
     - updateDifficultySettings
-    - updateAgentOrdering
     - initExperimentSettings
-    - initializeGame: mainly the parameter, sessionStarted, needs to be thought of more carefully
     - startGame
     - endGame: mainly, the way we update game settings, redirect to new phases such as the survey block, and track progress in the experiment
 
 
 Starting with the base case:
-    - Humans pair up and then play a round with AI.
-    - New start locations for humans based on arrival idx
-    - Equal start locations for the AI location (current issue going on with this that needs exploration.)
+    - Humans pair up and then play a round with AI. [x]
+    - New start locations for humans based on arrival idx [x]
+    - Equal start locations for the AI location (current issue going on with this that needs exploration.) [x]
 */
 
 // function assigns the condition's agent types to the difficulty settings
@@ -1069,7 +1153,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = 10 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1720,7 +1804,6 @@ function updateObjects(settings) {
         player.dx = 0;
         player.dy = 0;
 
-       
         // if (settings.visualizeHumanPartner == 1) writeMovement();   
 
         if (settings.visualizeHumanPartner){
@@ -1730,6 +1813,8 @@ function updateObjects(settings) {
         }
     }
 
+
+    // TODO: review this code on the remote player's movement!
 
     if (settings.visualizeHumanPartner==1 && player2.moving) {
         // Consider ways to scale the human partner's movement speed to account for that last delta caused by the firebase delay
