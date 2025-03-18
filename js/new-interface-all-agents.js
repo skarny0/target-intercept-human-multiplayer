@@ -129,7 +129,7 @@ let sessionConfig = {
     maxPlayersNeeded: 2, // Maximum number of players allowed in a session
     maxParallelSessions: 0, // Maximum number of sessions in parallel (if zero, there are no limit)
     allowReplacements: true, // Allow replacing any players who leave an ongoing session?
-    exitDelayWaitingRoom: 10, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
+    exitDelayWaitingRoom: 3, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
     maxHoursSession: 0, // Maximum hours where additional players are still allowed to be added to session (if zero, there is no time limit)
     recordData: true // Record all data?  
 };
@@ -996,26 +996,15 @@ let difficultySettings = {
 
 let newDifficultySettings = {
     // Human first
-    1: {0: {collabPlayer: "human",
-            identity: "ambiguity on"},
-        1: {collabPlayer: "AI",
-            identity: "ambiguity on"}},
-    2: {0: {collabPlayer: "human",
-            identity: "ambiguity off"},
-        1: {collabPlayer: "AI",
-            identity: "ambiguity off"}},
-
-    // AI first
-    3: {0: {collabPlayer: "AI",
-            identity: "ambiguity on"},
-        1: {collabPlayer: "human",
-            identity: "ambiguity on"}},
-    4: {0: {collabPlayer: "AI",
-            identity: "ambiguity off"},
-        1: {collabPlayer: "human",
-            identity: "ambiguity off"}},
+    0: {order:      0,
+        identity:   0},
+    1: {order:      0,
+        identity:   1},
+    2: {order:      1,
+        identity:   0},
+    3: {order:      1,
+        identity:   1}
 }
-
 
 /*
 Forgoe current conditions and build out two manipulations, one for identity and one for the teaming order. 
@@ -1067,7 +1056,6 @@ function updateDifficultySettings() {
     // console.log("Updated DifficultySettings:", newDifficultySettings);
     return newDifficultySettings;
 }
-
 
 /**
  * Sets visualization settings based on teaming condition and current round
@@ -1124,7 +1112,7 @@ async function setAgent() {
 
     } else { // Transparent identity - use distinct icons
         humanImg.src = "./images/human-head-small.png";
-        robotHeadImg.src = "./images/human-head-small.png";
+        robotHeadImg.src = "./images/simple-robot-250px.png";
         anonImg.src = "./images/human-head-small.png"
     }
     
@@ -1260,21 +1248,7 @@ const player2 = {
 };
 
 let humanImg = new Image();
-// humanImg.src = "./images/human-head-small.png";
-// if (currentTeamingCondition.identity == 1) humanImg.src = "/images/human-head-small.png";
-
-
-// humanImg.src = './images/human-head-small.png'; // Path to your robot head image
 let anonImg = new Image();
-// humanImg.src = './images/human-head-small.png'; // Path to your robot head image
-// anonImg.src = "./images/anon-icon.png";
-
-
-// if (settings.visualizeHumanPartner == 1) {
-//     anonImg.src = "./images/human-head-small.png";
-// } else {
-//     anonImg.src = "./images/anon-icon.png";
-// }
 
 const camera = {
     x: world.width / 2,
@@ -1386,7 +1360,7 @@ async function initExperimentSettings() {
      // currentCondition = assignedCondition[0]+1;
 
     const teamingBlockCondition = 'teamingCondition'; // a string we use to represent the condition name
-    const numTeamingConditions = 2; // number of conditions
+    const numTeamingConditions = 4; // number of conditions
     let assignedTeamingCondition;
 
     if (!DEBUG){
@@ -1397,7 +1371,12 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        assignedTeamingCondition = {'order': 0, 'identity': 1}; 
+        let teamingDraw = null;
+        teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
+        // assignedTeamingCondition = {'order': 0, 'identity': 1}; 
+        console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
+        assignedTeamingCondition = newDifficultySettings[teamingDraw]
+       
     }
     pathBase = `players/${player.fbID}/condition/team`;
     updateStateDirect(pathBase, assignedTeamingCondition, 'conditions');
@@ -2615,7 +2594,7 @@ function drawAIPlayer() {
     //ctx.strokeStyle = player.color;
     ctx.fillRect(topLeftX, topLeftY, player.width, player.height);
 
-    ctx.drawImage(anonImg, topLeftX, topLeftY, 50, 50);
+    ctx.drawImage(robotHeadImg, topLeftX, topLeftY, 50, 50);
 }
 
 function drawAIPlayerOffline() {
@@ -3185,10 +3164,6 @@ function displayAIStatus() {
     const aiAssistRobot = document.getElementById("aiAssistRobot");
     const aiAssistRobotCaption = document.getElementById("aiAssistRobotCaption");
 
-    let curMaxTargets = settings.maxTargets;
-
-    // TODO: fold in transparent versus ambiguous conditions in both these conditionals
-
     if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1) {
         // aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
         // aiAssistRobot.src = "./images/anon-icon-250px.png";
@@ -3199,15 +3174,15 @@ function displayAIStatus() {
         aiAssistRobotCaption.style.backgroundColor = AIplayer.color;; // Semi-transparent green
         aiAssistRobotCaption.style.fontWeight = "bold";
     } else if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 0){
-        aiAssistRobot.src = "./images/human-head-small.png";
+        aiAssistRobot.src = "./images/simple-robot-250px.png";
         aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Howdy! I'm your human partner. I'll be controlling the green square.";
+        aiAssistRobotCaption.textContent = "Howdy! I'm your robot partner. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
         aiAssistRobotCaption.style.backgroundColor = AIplayer.color;;
         // aiAssistRobotCaption.style.backgroundColor = `rgba(${AIplayer.color.match(/\d+/g).slice(0,3).join(', ')}, 0.5)`; // Semi-transparent version of AIplayer color
         aiAssistRobotCaption.style.fontWeight = "bold";
     } else if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 0){
-        aiAssistRobot.src =  "./images/human-head-small";
+        aiAssistRobot.src =  "./images/human-head-small.png";
         aiAssistRobot.style.backgroundColor = player2.color;
         aiAssistRobotCaption.textContent = "Howdy! I'm your human partner. I'll be controlling the green square.";
         aiAssistRobotCaption.style.opacity = "1";
