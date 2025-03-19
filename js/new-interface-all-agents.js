@@ -803,7 +803,7 @@ function writeGameDatabase(){
     writeRealtimeDatabase(db1, path3, eventStream); 
     writeRealtimeDatabase(db1, path4, playerClicks);
     writeRealtimeDatabase(db1, path5, playerLocation);
-    writeRealtimeDatabase(db1, path6, roundSettings);
+    // writeRealtimeDatabase(db1, path6, roundSettings);
     writeRealtimeDatabase(db1, path7, roundTime);
     writeRealtimeDatabase(db1, path8, AIcaughtTargets);
     writeRealtimeDatabase(db1, path9, aiClicks);
@@ -996,14 +996,10 @@ let difficultySettings = {
 
 let newDifficultySettings = {
     // Human first
-    0: {order:      0,
-        identity:   0},
-    1: {order:      0,
-        identity:   1},
-    2: {order:      1,
-        identity:   0},
-    3: {order:      1,
-        identity:   1}
+    0: {order:    0, identity:   0},
+    1: {order:    0, identity:   1},
+    2: {order:    1, identity:   0},
+    3: {order:    1, identity:   1}
 }
 
 /*
@@ -1106,9 +1102,9 @@ async function setAgent() {
         // humanImg.src = "./images/human-head-small.png";
         // robotHeadImg.src = "./images/human-head-small.png";
         // anonImg.src = "./images/human-head-small.png"
-        humanImg.src = "";
-        robotHeadImg.src = "";
-        anonImg.src = ""
+        humanImg.src = "./images/human-head-small.png";
+        robotHeadImg.src = "./images/triangle-black.png";
+        anonImg.src = "./images/triangle-black.png";
 
     } else { // Transparent identity - use distinct icons
         humanImg.src = "./images/human-head-small.png";
@@ -1119,7 +1115,8 @@ async function setAgent() {
     // Log which agent is being shown with identity information
     const visibleAgent = settings.visualizeHumanPartner ? "Human" : "AI";
     const identityMode = identity == 1 ? "Ambiguous (shared icons)" : "Transparent (distinct icons)";
-    console.log(`Round ${currentRound}: ${visibleAgent} partner visible, Identity: ${identityMode}`);
+
+    if (DEBUG) console.log(`Round ${currentRound}: ${visibleAgent} partner visible, Identity: ${identityMode}`);
 }
 
 // *********************************************** GAME INITIALIZATION ***********************************************//
@@ -1362,19 +1359,24 @@ async function initExperimentSettings() {
     const teamingBlockCondition = 'teamingCondition'; // a string we use to represent the condition name
     const numTeamingConditions = 4; // number of conditions
     let assignedTeamingCondition;
+    let teamingDraw = null;
 
     if (!DEBUG){
-        assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
+        teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
+        // assignedTeamingCondition = {'order': 0, 'identity': 1}; 
+        console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
+        assignedTeamingCondition = newDifficultySettings[teamingDraw]
+        // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
     } else {
         // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
         /*
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        let teamingDraw = null;
-        teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
+        teamingDraw = 1; // options: 0-3, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
+        // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
         // assignedTeamingCondition = {'order': 0, 'identity': 1}; 
-        console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
+        // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
         assignedTeamingCondition = newDifficultySettings[teamingDraw]
        
     }
@@ -1399,6 +1401,9 @@ async function initializeGame() {
     
     pathBase = `players/${player.fbID}/humanComplete/`;
     if (humanRoundComplete == false) updateStateDirect(pathBase, humanRoundComplete, 'status')
+
+    // place div container that does the instruction countdown
+    // make sure the game is only intizlied as true after this... 
 
     $("#full-game-container").attr("hidden", false);    
 
@@ -1461,8 +1466,10 @@ async function startGame(round, condition, block, seeds) {
 
     currentRound = round; // Start at the specified round, or the current round
 
-    let blockSetting = difficultySettings[condition][block];
-    roundSettings = blockSetting[currentRound];
+    // let blockSetting = difficultySettings[condition][block];
+    // roundSettings = blockSetting[currentRound];
+
+    // roundSettings
 
     setAgent();
     setLocations();
@@ -3163,11 +3170,10 @@ function drawFilledArrow(ctx, toX, toY, arrowWidth) {
 function displayAIStatus() {
     const aiAssistRobot = document.getElementById("aiAssistRobot");
     const aiAssistRobotCaption = document.getElementById("aiAssistRobotCaption");
-
     if (settings.visualizeAIPlayer == 1 && currentTeamingCondition.identity == 1) {
         // aiAssistRobot.src = "./images/simple-robot-line-removebg-preview.png";
         // aiAssistRobot.src = "./images/anon-icon-250px.png";
-        aiAssistRobot.src = "./images/Eyes-Emoji-PNG (1).png"
+        aiAssistRobot.src = "./images/triangle-black-250px.png"
         aiAssistRobot.style.backgroundColor = AIplayer.color;
         aiAssistRobotCaption.textContent = "Hi there, I'm your partner and will be controlling the green square! I may be a robot or a human.";
         aiAssistRobotCaption.style.opacity = "1";
@@ -3191,7 +3197,7 @@ function displayAIStatus() {
         aiAssistRobotCaption.style.fontWeight = "bold";
     } else if (settings.visualizeHumanPartner == 1 && currentTeamingCondition.identity == 1){
         // aiAssistRobot.src = "./images/anon-icon-250px.png";
-        aiAssistRobot.src = "./images/Eyes-Emoji-PNG (1).png"
+        aiAssistRobot.src = "./images/triangle-black-250px.png"
         aiAssistRobot.style.backgroundColor = player2.color;
         aiAssistRobotCaption.textContent = "Hi there, I'm your partner and will be controlling the green square! I may be a real human or a robot.";
         aiAssistRobotCaption.style.opacity = "1";
