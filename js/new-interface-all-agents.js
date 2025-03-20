@@ -129,7 +129,7 @@ let sessionConfig = {
     maxPlayersNeeded: 2, // Maximum number of players allowed in a session
     maxParallelSessions: 0, // Maximum number of sessions in parallel (if zero, there are no limit)
     allowReplacements: true, // Allow replacing any players who leave an ongoing session?
-    exitDelayWaitingRoom: 10, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
+    exitDelayWaitingRoom: 0, // Number of countdown seconds before leaving waiting room (if zero, player leaves waiting room immediately)
     maxHoursSession: 0, // Maximum hours where additional players are still allowed to be added to session (if zero, there is no time limit)
     recordData: true // Record all data?  
 };
@@ -170,6 +170,7 @@ function joinWaitingRoom() {
     const numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
 
     if (numPlayers === 1 && tempNoAssingnment){
+        // console.trace("Call Stack Trace");
         initExperimentSettings();
         tempNoAssingnment = false;
         // updateStateDirect()
@@ -379,6 +380,16 @@ async function startSession() {
 
     player.arrivalIdx = getCurrentPlayerArrivalIndex();
 
+    // After joining the session can now get the callBack function to trigger
+     /* 
+    $("interimInstructionPage").attr("hidden", false);
+    while (countDown){
+        $("interimInstructionPage").attr("hidden", true);
+
+        initializeGame();
+    }
+    */
+
     
     if (DEBUG) console.log("Player Arrival Index:", player.arrivalIdx);
     // Check for session errors
@@ -391,6 +402,7 @@ async function startSession() {
     // Initialize game when we have a valid session
     // NOTE / TODO: Scaffold this init game call with the countdown
     // NOTE: Only when game initialized does this trigeger the condition assignments for player 2
+    console.log('teaming settings', currentTeamingCondition);
     while (!gameInitialized) {
         await initializeGame();
     }
@@ -433,6 +445,10 @@ function updateOngoingSession() {
  * @param {string} childEvent - The type of event that triggered the change (e.g., 'child_added', 'child_changed').
  */
 function receiveStateChange(path, childKey, childValue, childEvent) {
+    // console.trace("Trace at frame: " + frameCountGame);
+    // console.trace("Full trace");
+// Or to get a manipulable version
+
     if (noAssignment) parseConditions(childValue)
 
     if (currentRound == 2 && childKey == remoteId) parseStatus(childValue)
@@ -459,22 +475,28 @@ function removePlayerState() {
 // This is the read operation for the game setting for both players when they enter a session
 // In general listener, ensure that thsi 
 async function parseConditions(childValue){
+    // console.trace();
 
     // Easy parse for global data.
     currentCondition = childValue.condition.curCondition;
 
     let fbCondition = getConditionData(childValue);
+    // let seedCondtion = getSeedData(childValue);
     // currentcondition = 
     currentTeamingCondition = fbCondition;
 
     // This flag triggers the beginning of the game!
     noAssignment = false;
 
-    // if (currentTeamingCondition.order == 1) await runGameSequence("Welcome! You are about to play a round of this target interception task. Your team's goal is to get as a high score as possible. When you are ready to start, click OK.");
+    // await runGameSequence("Welcome! You are about to play a round of this target interception task. Your team's goal is to get as a high score as possible. When you are ready to start, click OK.");
     
+    await startCountdown(10); // Start a 10-second countdown
+
+    $("#full-game-container").attr("hidden", false);    
+
     startGame(currentRound, currentCondition, currentBlock, curSeeds);
     
-    console.log(fbCondition);
+    // console.log(fbCondition);
 }
 
 
@@ -486,23 +508,15 @@ async function parseConditions(childValue){
  */
 
 function getConditionData(childValue) {
-    // only global assingment
-   
-    // let earliestFrame = -1;
     let order = null;
     let identity = null;
 
-    // console.log("ChildValue for Parsing Condition:", childValue.condition.order)
-
     order = childValue.condition.team.order;
-
     identity = childValue.condition.team.identity; 
 
-    // if(DEBUG){
-    //     return {'order': ORDER, 'team': IDENTITY}
-    // } else {
-    //     return {'order': order, 'team': identity};
-    // }
+    // give the global assignment, curSeeds, the random seeds.
+    curSeeds = childValue.condition.seeds;
+
     return {'order': order, 'identity': identity};
 }
 
@@ -878,121 +892,11 @@ let agent2Name;
 let agentOrder = [];
 
 let agentNames = {
-    0: "Ignorant",
-    1: "Omit",
-    2: "Divide",
-    3: "Delay",
-    4: "Bottom-Feeder"
+    0: "Human-Transparent",
+    1: "Human-Opaque",
+    2: "Robot-Transparent",
+    3: "Robot-Opaque"
 }
-
-let teamingSettings = {
-    1: {AICollab1 : 0,          // ignorant
-        AICollab2 : 3},         // delay
-        
-    2: {AICollab1 : 0,          // ignorant
-        AICollab2 : 1},         // omit
-
-    3: {AICollab1 : 0,          // ignorant
-        AICollab2 : 4},         // bottom-feeder
-
-    4: {AICollab1 : 0,          // ignorant
-        AICollab2 : 2},         // divide
-
-    5: {AICollab1 : 3,          // delay
-        AICollab2 : 1},         // omit
-
-    6: {AICollab1 : 3,          // delay
-        AICollab2 : 4},         // bottom-feeder
-
-    7: {AICollab1 : 3,          // delay
-        AICollab2 : 2},         // divide
-
-    8: {AICollab1 : 1,          // omit
-        AICollab2 : 4},         // bottom-feeder
-
-    9: {AICollab1 : 1,          // omit
-        AICollab2 : 2},         // divide
-
-    10:{AICollab1 : 4,          // bottom-feeder    
-        AICollab2 : 2}          // divide,
-};
-
-let difficultySettings = {
-    // 5 targets first
-    1: {0: {1: {AICollab: collabPlayer1,     // Pair A
-                maxTargets: 5},  
-            2: {AICollab: collabPlayer2,
-                maxTargets: 5}},
-        1: {1: {AICollab: collabPlayer1,     // Pair A
-                maxTargets: 15},
-            2: {AICollab: collabPlayer2,
-                maxTargets: 15}}},
-
-    2: {0: {1: {AICollab: collabPlayer2,    // Pair B
-                maxTargets: 5},  
-            2: {AICollab: collabPlayer1,
-                maxTargets: 5}},
-        1: {1: {AICollab: collabPlayer1,    // Pair A
-                maxTargets: 15},
-            2: {AICollab: collabPlayer2,
-                maxTargets: 15}}},
-    
-    3: {0: {1: {AICollab:collabPlayer1,    // Pair A
-                maxTargets: 5},
-            2: {AICollab: collabPlayer2,
-                maxTargets: 5}},
-        1: {1: {AICollab: collabPlayer2,   // Pair B
-                maxTargets: 15},
-            2: {AICollab: collabPlayer1,
-                maxTargets: 15}}},
-
-    4: {0: {1: {AICollab: collabPlayer2,    // Pair B
-                maxTargets: 5}, 
-            2: {AICollab: collabPlayer1,
-                maxTargets: 5}},
-        1: {1: {AICollab: collabPlayer2,    // Pair B
-                maxTargets: 15},
-            2: {AICollab: collabPlayer1,
-                maxTargets: 15}}},
-
-     // 15 Targets first
-    5: {0: {1: {AICollab: collabPlayer1,     // Pair A
-                maxTargets: 15},  
-            2: {AICollab: collabPlayer2,
-                maxTargets: 15}},
-        1: {1: {AICollab: collabPlayer1,     // Pair A
-                maxTargets: 5},
-            2: {AICollab: collabPlayer2,
-                maxTargets: 5}}},
-
-    6: {0: {1: {AICollab: collabPlayer2,   // Pair B
-                maxTargets: 15},  
-            2: {AICollab: collabPlayer1,
-                maxTargets: 15}},
-        1: {1: {AICollab: collabPlayer1,    // Pair A
-                maxTargets: 5},
-            2: {AICollab: collabPlayer2,
-                maxTargets: 5}}},
-    
-    7: {0: {1: {AICollab: collabPlayer1,    // Pair A
-                maxTargets: 15},
-            2: {AICollab: collabPlayer2,
-                maxTargets: 15}},
-        1: {1: {AICollab: collabPlayer2,   // Pair B
-                maxTargets: 5},
-            2: {AICollab: collabPlayer1,
-                maxTargets: 5}}},
-
-    8: {0: {1: {AICollab: collabPlayer2,    // Pair B
-                maxTargets: 15}, 
-            2: {AICollab: collabPlayer1,
-                maxTargets: 15}},
-        1: {1: {AICollab: collabPlayer2,    // Pair B
-                maxTargets: 5},
-            2: {AICollab: collabPlayer1,
-                maxTargets: 5}}},
-
-};
 
 let newDifficultySettings = {
     // Human first
@@ -1002,57 +906,30 @@ let newDifficultySettings = {
     3: {order:    1, identity:   1}
 }
 
-/*
-Forgoe current conditions and build out two manipulations, one for identity and one for the teaming order. 
+function getAgentNames(){
+    if (currentTeamingCondition.order == 0){
+        if (currentTeamingCondition.identity == 0){
+            // give transparent names
+            agent1Name = agentNames[0];
+            agent2Name = agentNames[2];
+        } else {
+            // give opaque 
+            agent1Name = agentNames[1];
+            agent2Name = agentNames[3];
+        }
+    } else if (currentTeamingCondition.order == 1) {
+        if (currentTeamingCondition.identity == 0){
+            // give transparent names
+            agent1Name = agentNames[2];
+            agent2Name = agentNames[0];
 
-Teaming manipulation should be the order of the AI versus the human partner. 
-    This will be two conditions: 
-        1) human first, AI second
-        2) AI first, human second. 
-
-Identity condition:
-    This will be two conditions: 
-        1) ambiguity on
-        2) ambiguity off
-
-    more about ambiguity:
-        - the identity of the player, human or AI, is a shared icon that is ambiguously human or AI (add this icon later)
-        - the side-message from the second player, is an ambiguous message: "I may be a human or I may be an AI." (can already add in this message)
-
-
-The functions that need refactoring:
-    - updateDifficultySettings
-    - initExperimentSettings
-    - startGame
-    - endGame: mainly, the way we update game settings, redirect to new phases such as the survey block, and track progress in the experiment
-
-
-Starting with the base case:
-    - Humans pair up and then play a round with AI. [x]
-    - New start locations for humans based on arrival idx [x]
-    - Equal start locations for the AI location (current issue going on with this that needs exploration.) [x]
-*/
-
-// function assigns the condition's agent types to the difficulty settings
-function updateDifficultySettings() {
-    let newDifficultySettings = JSON.parse(JSON.stringify(difficultySettings)); // Create a deep copy
-
-    for (let condition in newDifficultySettings) {
-        for (let block in newDifficultySettings[condition]) {
-            for (let round in newDifficultySettings[condition][block]) {
-                if (newDifficultySettings[condition][block][round].AICollab === 0) {
-                    newDifficultySettings[condition][block][round].AICollab = teamingSettings[currentTeamingCondition].AICollab1;
-                } else if (newDifficultySettings[condition][block][round].AICollab === 1) {
-                    newDifficultySettings[condition][block][round].AICollab = teamingSettings[currentTeamingCondition].AICollab2;
-                }
-            }
+        } else {
+            // give opaque 
+            agent1Name = agentNames[3];
+            agent2Name = agentNames[1];
         }
     }
-
-    // console.log("Updated DifficultySettings:", newDifficultySettings);
-    return newDifficultySettings;
 }
-
 /**
  * Sets visualization settings based on teaming condition and current round
  * to show either the AI player or human partner with appropriate identity handling
@@ -1111,6 +988,8 @@ async function setAgent() {
         robotHeadImg.src = "./images/simple-robot-250px.png";
         anonImg.src = "./images/human-head-small.png"
     }
+
+    getAgentNames();
     
     // Log which agent is being shown with identity information
     const visibleAgent = settings.visualizeHumanPartner ? "Human" : "AI";
@@ -1125,7 +1004,7 @@ let currentRound = 1;
 let currentBlock = 0;
 let currentCondition = null;
 let currentTeamingCondition = null;
-let curSeeds = [12, 123, 1234, 12345, 123456];   
+let curSeeds;   
 let noAssignment = true;
 
 let maxRounds = 2;
@@ -1350,7 +1229,7 @@ async function initExperimentSettings() {
     if (!DEBUG){
         assignedCondition = await blockRandomization(db1, studyId, blockOrderCondition, numConditions, maxCompletionTimeMinutes, numDraws);
     } else {
-        assignedCondition = 5;
+        assignedCondition = {condition: 5};
     }
     let pathBase = `players/${player.fbID}/condition/curCondition`;
     updateStateDirect(pathBase, assignedCondition, 'conditions');
@@ -1378,10 +1257,18 @@ async function initExperimentSettings() {
         // assignedTeamingCondition = {'order': 0, 'identity': 1}; 
         // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
         assignedTeamingCondition = newDifficultySettings[teamingDraw]
-       
     }
     pathBase = `players/${player.fbID}/condition/team`;
     updateStateDirect(pathBase, assignedTeamingCondition, 'conditions');
+
+    // Give random set of 2 seeds
+    var seedValuesObject = {};
+    for (var i = 0; i < 2; i++) {
+        seedValuesObject[`${i}`] = generateRandomInt(1, 1000000);
+    }
+
+    pathBase = `players/${player.fbID}/condition/seeds`;
+    updateStateDirect(pathBase, seedValuesObject, 'conditions');
 
     return [blockOrderCondition, teamingBlockCondition];
 }
@@ -1405,10 +1292,11 @@ async function initializeGame() {
     // place div container that does the instruction countdown
     // make sure the game is only intizlied as true after this... 
 
-    $("#full-game-container").attr("hidden", false);    
-
+    // place the interim waiting/instructions screen here
+    
     console.log("Initializing game...");
     gameInitialized = true;
+    console.log('teaming settings', currentTeamingCondition);
 
     // Initialize your game parameters
 
@@ -1479,8 +1367,8 @@ async function startGame(round, condition, block, seeds) {
    
     // Change to the next seed
     if (block == 0) {
-        // settings.randSeed = seeds[currentRound - 1];
-        settings.randSeed = 123
+        settings.randSeed = seeds[currentRound - 1];
+        // settings.randSeed = 123
         // await updateAgentOrdering();
     } 
 
@@ -3755,6 +3643,60 @@ async function runGameSequence(message) {
     isPaused = false;
 }
 
+function startCountdown(secondsLeft) {
+    return new Promise((resolve) => {
+        // Create a brand new countdown display that overlays everything
+        let overlayCountdown = document.getElementById('overlay-countdown');
+        if (!overlayCountdown) {
+            overlayCountdown = document.createElement('div');
+            overlayCountdown.id = 'overlay-countdown';
+            overlayCountdown.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 40px;
+                z-index: 10000;
+                box-shadow: 0 0 20px rgba(0,0,0,0.3);
+                text-align: center;
+                min-width: 600px;
+                max-width: 800px;
+                max-height: 90vh;
+                overflow-y: auto;
+            `;
+            document.body.appendChild(overlayCountdown);
+        }
+
+        overlayCountdown.innerHTML = `
+            <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
+                <p>Your game will begin in:</p>
+                <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
+                    ${secondsLeft} seconds
+                </div>
+            </div>
+            <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
+                <p><b>Important!</b></p>
+                <p>There will be one round with a real human and one with a real robot.</p>
+                <p>However, the identity of each player will remain ambiguous: You will be unsure if the human is human or the robot is a robot.</p>
+            </div>
+        `;
+
+        // Countdown logic
+        const interval = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                clearInterval(interval);
+                overlayCountdown.remove();
+                resolve(); // Resolve the promise when countdown is complete
+            } else {
+                overlayCountdown.querySelector('.countdown-text div').textContent = `${secondsLeft} seconds`;
+            }
+        }, 1000);
+    });
+}
+
 // Helper function to determine if the click is on the object
 function isClickOnObject(obj, x, y) {
     // Calculate the center of the object
@@ -3777,6 +3719,132 @@ function isClickOnCenter(clickX,clickY){
 
 //***************************************************** AI COMPARISON ***************************************************//
 
+// async function loadAIComparison() {
+//     var DEBUG_SURVEY = DEBUG;
+
+//     // Survey Information
+//     var TOPIC_AI_COMPARISON_DICT = {
+//         "selectedAI": null,
+//     };
+
+//     // Clear previous inputs
+//     // Clear previous inputs and classes
+//     $('#ai-1-button').removeClass('robot-button-selected robot-button-iron robot-button-copper robot-button-green robot-button-purple robot-button-brown robot-button-blue');
+//     $('#ai-2-button').removeClass('robot-button-selected robot-button-iron robot-button-copper robot-button-green robot-button-purple robot-button-brown robot-button-blue');
+//     $('#survey-complete-button-comparison').prop('disabled', true);
+//     // $('#ai-1-button').removeClass('robot-button-selected');
+//     // $('#ai-2-button').removeClass('robot-button-selected');
+//     // $('#survey-complete-button-comparison').prop('disabled', true);
+
+//      // max targets is 5 first, then 15
+//      if (visitedBlocks == 1 && currentCondition <= 4) { // takse us to the correct survey ... 
+//         $('#ai-1-button').addClass('robot-button-green');
+//         $('#ai-2-button').addClass('robot-button-purple');
+//         $('#ai-1-button').next('figcaption').text('Green-Bot');
+//         $('#ai-2-button').next('figcaption').text('Purple-Bot');
+//     } else if (visitedBlocks == 2 && currentCondition <= 4 ) {
+//         // $('#ai-1-button').addClass('robot-button-iron');
+//         $('#ai-1-button').addClass('robot-button-blue');
+//         $('#ai-2-button').addClass('robot-button-copper');
+//         $('#ai-1-button').next('figcaption').text('Blue-Bot');
+//         $('#ai-2-button').next('figcaption').text('Copper-Bot');
+//     }
+
+//     // max targets is 15 first, then 5
+//     if (visitedBlocks == 1 && currentCondition > 4) { // takes us to the correct survey
+//         // $('#ai-1-button').addClass('robot-button-iron');
+//         $('#ai-1-button').addClass('robot-button-blue');
+//         $('#ai-2-button').addClass('robot-button-copper');
+//         $('#ai-1-button').next('figcaption').text('Blue-Bot');
+//         $('#ai-2-button').next('figcaption').text('Copper-Bot');
+//     } else if (visitedBlocks == 2 && currentCondition > 4) {
+//         $('#ai-1-button').addClass('robot-button-green');
+//         $('#ai-2-button').addClass('robot-button-purple');
+//         $('#ai-1-button').next('figcaption').text('Green-Bot');
+//         $('#ai-2-button').next('figcaption').text('Purple-Bot');
+//     }
+
+
+//     $(document).ready(function () {
+       
+
+//         function handleAISelection() {
+//             /*
+//                 Image Button Selection Controller.
+
+//                 Only one AI option can be selected.
+//                 Enable the submit button once an AI is selected.
+//             */
+//             // Retrieve the current AI that was selected
+//             let selectedAI = $(this).attr("id");
+
+//             if (selectedAI === 'ai-1-button') {
+//                 $('#ai-1-button').addClass('robot-button-selected');
+//                 $('#ai-2-button').removeClass('robot-button-selected');
+//                 TOPIC_AI_COMPARISON_DICT["selectedAI"] = agent1Name;
+//             } else {
+//                 $('#ai-2-button').addClass('robot-button-selected');
+//                 $('#ai-1-button').removeClass('robot-button-selected');
+//                 TOPIC_AI_COMPARISON_DICT["selectedAI"] = agent2Name;
+//             }
+
+//             // Enable the submit button
+//             $('#survey-complete-button-comparison').prop('disabled', false);
+
+//             if (DEBUG) {
+//                 console.log("AI Button Selected\n:", "Value :", TOPIC_AI_COMPARISON_DICT["selectedAI"]);
+//             }
+//         }
+
+//         async function completeExperiment() {
+//             /*
+//                 When submit button is clicked, the experiment is done.
+
+//                 This will submit the final selection and then load the
+//                 "Experiment Complete" page.
+//             */
+//             let SURVEY_END_TIME = new Date();
+
+//             // Write to database based on the number of surveys completed
+//             // numSurveyCompleted++;
+//             // AIComparisonComplete = True
+            
+//             if (numSurveyCompleted == 1) {
+//                 let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1' ;
+//                 // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT);
+//                 $("#ai-comparison-container").attr("hidden", true);
+//                 // $("#full-game-container").attr("hidden", false);
+//                 $("#ai-open-ended-feedback-container").attr("hidden", false);
+//                 loadAIopenEndedFeedback(numSurveyCompleted);
+                
+//             } else if (numSurveyCompleted == 2) {
+//                 let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2' ;
+//                 // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT);
+//                 $("#ai-comparison-container").attr("hidden", true);
+//                 // $("#full-game-container").attr("hidden", false);
+//                 $("#ai-open-ended-feedback-container").attr("hidden", false);
+//                 await loadAIopenEndedFeedback(numSurveyCompleted);
+//                 // push them to the final page of the experiment which redirects participants
+//                 // await runGameSequence("Congratulations on Finishing the Main Experiment! Click OK to Continue to the Feedback Survey.");
+//                 // finalizeBlockRandomization(db1, studyId, currentCondition);
+//                 // // finalizeBlockRandomization(db1, studyId, curSeeds);
+//                 // $("#ai-comparison-container").attr("hidden", true);
+//                 // $("#task-header").attr("hidden", true);
+//                 // $("#exp-complete-header").attr("hidden", false);
+//                 // $("#complete-page-content-container").attr("hidden", false);
+//                 // await loadCompletePage();
+//                 // $('#task-complete').load('html/complete.html');
+//             } 
+//         }
+
+//         // Handle AI selection for both buttons
+//         $('#ai-1-button').click(handleAISelection);
+//         $('#ai-2-button').click(handleAISelection);
+
+//         // Handle submitting survey
+//         $('#survey-complete-button-comparison').off().click(completeExperiment);
+//     });
+// }
 async function loadAIComparison() {
     var DEBUG_SURVEY = DEBUG;
 
@@ -3785,47 +3853,15 @@ async function loadAIComparison() {
         "selectedAI": null,
     };
 
-    // Clear previous inputs
     // Clear previous inputs and classes
     $('#ai-1-button').removeClass('robot-button-selected robot-button-iron robot-button-copper robot-button-green robot-button-purple robot-button-brown robot-button-blue');
     $('#ai-2-button').removeClass('robot-button-selected robot-button-iron robot-button-copper robot-button-green robot-button-purple robot-button-brown robot-button-blue');
     $('#survey-complete-button-comparison').prop('disabled', true);
-    // $('#ai-1-button').removeClass('robot-button-selected');
-    // $('#ai-2-button').removeClass('robot-button-selected');
-    // $('#survey-complete-button-comparison').prop('disabled', true);
 
-     // max targets is 5 first, then 15
-     if (visitedBlocks == 1 && currentCondition <= 4) { // takse us to the correct survey ... 
-        $('#ai-1-button').addClass('robot-button-green');
-        $('#ai-2-button').addClass('robot-button-purple');
-        $('#ai-1-button').next('figcaption').text('Green-Bot');
-        $('#ai-2-button').next('figcaption').text('Purple-Bot');
-    } else if (visitedBlocks == 2 && currentCondition <= 4 ) {
-        // $('#ai-1-button').addClass('robot-button-iron');
-        $('#ai-1-button').addClass('robot-button-blue');
-        $('#ai-2-button').addClass('robot-button-copper');
-        $('#ai-1-button').next('figcaption').text('Blue-Bot');
-        $('#ai-2-button').next('figcaption').text('Copper-Bot');
-    }
-
-    // max targets is 15 first, then 5
-    if (visitedBlocks == 1 && currentCondition > 4) { // takes us to the correct survey
-        // $('#ai-1-button').addClass('robot-button-iron');
-        $('#ai-1-button').addClass('robot-button-blue');
-        $('#ai-2-button').addClass('robot-button-copper');
-        $('#ai-1-button').next('figcaption').text('Blue-Bot');
-        $('#ai-2-button').next('figcaption').text('Copper-Bot');
-    } else if (visitedBlocks == 2 && currentCondition > 4) {
-        $('#ai-1-button').addClass('robot-button-green');
-        $('#ai-2-button').addClass('robot-button-purple');
-        $('#ai-1-button').next('figcaption').text('Green-Bot');
-        $('#ai-2-button').next('figcaption').text('Purple-Bot');
-    }
-
+    // Update AI comparison icons
+    updateAIComparisonIcons();
 
     $(document).ready(function () {
-       
-
         function handleAISelection() {
             /*
                 Image Button Selection Controller.
@@ -3863,36 +3899,17 @@ async function loadAIComparison() {
             */
             let SURVEY_END_TIME = new Date();
 
-            // Write to database based on the number of surveys completed
-            // numSurveyCompleted++;
-            // AIComparisonComplete = True
-            
             if (numSurveyCompleted == 1) {
-                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1' ;
-                // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT);
+                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1';
                 $("#ai-comparison-container").attr("hidden", true);
-                // $("#full-game-container").attr("hidden", false);
                 $("#ai-open-ended-feedback-container").attr("hidden", false);
                 loadAIopenEndedFeedback(numSurveyCompleted);
-                
             } else if (numSurveyCompleted == 2) {
-                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2' ;
-                // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT);
+                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2';
                 $("#ai-comparison-container").attr("hidden", true);
-                // $("#full-game-container").attr("hidden", false);
                 $("#ai-open-ended-feedback-container").attr("hidden", false);
                 await loadAIopenEndedFeedback(numSurveyCompleted);
-                // push them to the final page of the experiment which redirects participants
-                // await runGameSequence("Congratulations on Finishing the Main Experiment! Click OK to Continue to the Feedback Survey.");
-                // finalizeBlockRandomization(db1, studyId, currentCondition);
-                // // finalizeBlockRandomization(db1, studyId, curSeeds);
-                // $("#ai-comparison-container").attr("hidden", true);
-                // $("#task-header").attr("hidden", true);
-                // $("#exp-complete-header").attr("hidden", false);
-                // $("#complete-page-content-container").attr("hidden", false);
-                // await loadCompletePage();
-                // $('#task-complete').load('html/complete.html');
-            } 
+            }
         }
 
         // Handle AI selection for both buttons
@@ -3967,6 +3984,42 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
         $('#submit-feedback-button').off().click(completeExperiment);
     });
 }
+
+function updateAIComparisonIcons() {
+    let ai1Button = $('#ai-1-button');
+    let ai2Button = $('#ai-2-button');
+    let ai1Caption = ai1Button.next('figcaption');
+    let ai2Caption = ai2Button.next('figcaption');
+
+    // Remove any existing color classes
+    ai1Button.removeClass('robot-button-green robot-button-purple robot-button-blue robot-button-copper');
+    ai2Button.removeClass('robot-button-green robot-button-purple robot-button-blue robot-button-copper');
+
+    // Update icons and captions based on visitedBlocks and currentCondition
+    if (visitedBlocks == 1 && currentCondition <= 4) {
+        ai1Button.addClass('robot-button-green');
+        ai2Button.addClass('robot-button-purple');
+        ai1Caption.text('Green-Bot');
+        ai2Caption.text('Purple-Bot');
+    } else if (visitedBlocks == 2 && currentCondition <= 4) {
+        ai1Button.addClass('robot-button-blue');
+        ai2Button.addClass('robot-button-copper');
+        ai1Caption.text('Blue-Bot');
+        ai2Caption.text('Copper-Bot');
+    } else if (visitedBlocks == 1 && currentCondition > 4) {
+        ai1Button.addClass('robot-button-blue');
+        ai2Button.addClass('robot-button-copper');
+        ai1Caption.text('Blue-Bot');
+        ai2Caption.text('Copper-Bot');
+    } else if (visitedBlocks == 2 && currentCondition > 4) {
+        ai1Button.addClass('robot-button-green');
+        ai2Button.addClass('robot-button-purple');
+        ai1Caption.text('Green-Bot');
+        ai2Caption.text('Purple-Bot');
+    }
+}
+
+
 //**************************************************** SURVEY -- FULL ****************************************************//
 // Define questions array at the top level
 const questions = [
@@ -4055,44 +4108,140 @@ async function loadFullSurvey() {
 
     // Update robot icons and captions as before, change this code to match the new icons, scenarios
      // Function to update robot icons and colors
-     function updateRobotIcons() {
+    // function updateRobotIcons() {
+    //     let agent1Icon = $('#agent1-icon');
+    //     let agent2Icon = $('#agent2-icon');
+    //     let agent1Caption = $('#agent1-caption');
+    //     let agent2Caption = $('#agent2-caption');
+
+    //     // Remove any existing color classes
+    //     agent1Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
+    //     agent2Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
+
+    //     if (visitedBlocks == 1) {
+    //         agent1Icon.addClass('robot-green');
+    //         agent2Icon.addClass('robot-purple');
+    //         agent1Caption.text('Green-Bot');
+    //         agent2Caption.text('Purple-Bot');
+    //     }
+
+    //     // change the agent icon
+    //     if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0){
+    //         //route to human first transparent
+    //         // first icon should be human head, second should be robot
+    //     } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 0){
+    //         // route to ai first transparent
+    //         // first icon should be robot, then human
+
+    //     } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1){
+    //         // think about this a little bit
+    //     } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1){
+    //         // think about this a little bit
+
+    //     }
+ 
+
+    //     /*
+    //     // Human first then AI, Identity Transparent
+    //     if (settings.visualizeAIPartner && currentTeamingConditions.identity === 0) {
+    //         agent1Icon.addClass('human-green');
+    //         agent2Icon.addClass('robot-blue');
+    //     }  else if (settings.vsiualizeHumanPartner &&  currentTeamingConditions.identity === 0){
+    //         agent1Icon.addClass('triangle-green');
+    //         agent2Icon.addClass('triangle-blue');
+    //     } else if (currentTeamingConditions.identity === 1){
+    //         agent1Icon.addClass('triangle-green');
+    //         agent2Icon.addClass('triangle-blue');
+    //     }    
+    //     */
+    // }
+    // function updateRobotIcons() {
+    //     let agent1Icon = $('#agent1-icon');
+    //     let agent2Icon = $('#agent2-icon');
+    //     let agent1Caption = $('#agent1-caption');
+    //     let agent2Caption = $('#agent2-caption');
+    
+    //     // Remove any existing color classes
+    //     agent1Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
+    //     agent2Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
+    
+    //     if (visitedBlocks == 1) {
+    //         agent1Icon.addClass('robot-green');
+    //         agent2Icon.addClass('robot-purple');
+    //         agent1Caption.text('Green-Bot');
+    //         agent2Caption.text('Purple-Bot');
+    //     }
+    
+    //     // Change the agent icon based on current teaming conditions
+    //     if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0) {
+    //         // Human first, transparent identity
+    //         agent1Icon.attr('src', './images/human-head-small.png');
+    //         agent2Icon.attr('src', './images/simple-robot-250px.png');
+    //         agent1Caption.text('Human');
+    //         agent2Caption.text('Robot');
+    //     } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 0) {
+    //         // AI first, transparent identity
+    //         agent1Icon.attr('src', './images/simple-robot-250px.png');
+    //         agent2Icon.attr('src', './images/human-head-small.png');
+    //         agent1Caption.text('Robot');
+    //         agent2Caption.text('Human');
+    //     } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1) {
+    //         // Human first, opaque identity
+    //         agent1Icon.attr('src', './images/triangle-black-250px.png');
+    //         agent2Icon.attr('src', './images/triangle-black-250px.png');
+    //         agent1Caption.text('Player 1');
+    //         agent2Caption.text('Player 2');
+    //     } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 1) {
+    //         // AI first, opaque identity
+    //         agent1Icon.attr('src', './images/triangle-black-250px.png');
+    //         agent2Icon.attr('src', './images/triangle-black-250px.png');
+    //         agent1Caption.text('Player 1');
+    //         agent2Caption.text('Player 2');
+    //     }
+    // }
+    function updateRobotIcons() {
         let agent1Icon = $('#agent1-icon');
         let agent2Icon = $('#agent2-icon');
         let agent1Caption = $('#agent1-caption');
         let agent2Caption = $('#agent2-caption');
-
+    
         // Remove any existing color classes
         agent1Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
         agent2Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
-
+    
         if (visitedBlocks == 1) {
             agent1Icon.addClass('robot-green');
             agent2Icon.addClass('robot-purple');
             agent1Caption.text('Green-Bot');
             agent2Caption.text('Purple-Bot');
         }
-
-        // if (visitedBlocks == 1 && currentCondition <= 4) {
-        //     agent1Icon.addClass('robot-green');
-        //     agent2Icon.addClass('robot-purple');
-        //     agent1Caption.text('Green-Bot');
-        //     agent2Caption.text('Purple-Bot');
-        // } else if (visitedBlocks == 2 && currentCondition <= 4) {
-        //     agent1Icon.addClass('robot-blue');
-        //     agent2Icon.addClass('robot-copper');
-        //     agent1Caption.text('Blue-Bot');
-        //     agent2Caption.text('Copper-Bot');
-        // } else if (visitedBlocks == 1 && currentCondition > 4) {
-        //     agent1Icon.addClass('robot-blue');
-        //     agent2Icon.addClass('robot-copper');
-        //     agent1Caption.text('Blue-Bot');
-        //     agent2Caption.text('Copper-Bot');
-        // } else if (visitedBlocks == 2 && currentCondition > 4) {
-        //     agent1Icon.addClass('robot-green');
-        //     agent2Icon.addClass('robot-purple');
-        //     agent1Caption.text('Green-Bot');
-        //     agent2Caption.text('Purple-Bot');
-        // }
+    
+        // Change the agent icon based on current teaming conditions
+        if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0) {
+            // Human first, transparent identity
+            agent1Icon.attr('src', './images/human-head-small.png');
+            agent2Icon.attr('src', './images/simple-robot-250px.png');
+            agent1Caption.text('Human');
+            agent2Caption.text('Robot');
+        } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 0) {
+            // AI first, transparent identity
+            agent1Icon.attr('src', './images/simple-robot-250px.png');
+            agent2Icon.attr('src', './images/human-head-small.png');
+            agent1Caption.text('Robot');
+            agent2Caption.text('Human');
+        } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1) {
+            // Human first, opaque identity
+            agent1Icon.attr('src', './images/triangle-black-250px.png');
+            agent2Icon.attr('src', './images/triangle-black-250px.png');
+            agent1Caption.text('Player 1');
+            agent2Caption.text('Player 2');
+        } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 1) {
+            // AI first, opaque identity
+            agent1Icon.attr('src', './images/triangle-black-250px.png');
+            agent2Icon.attr('src', './images/triangle-black-250px.png');
+            agent1Caption.text('Player 1');
+            agent2Caption.text('Player 2');
+        }
     }
 
     // Call the function to update robot icons
