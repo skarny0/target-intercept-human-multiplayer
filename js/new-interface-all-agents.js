@@ -481,22 +481,14 @@ async function parseConditions(childValue){
     currentCondition = childValue.condition.curCondition;
 
     let fbCondition = getConditionData(childValue);
-    // let seedCondtion = getSeedData(childValue);
-    // currentcondition = 
     currentTeamingCondition = fbCondition;
 
     // This flag triggers the beginning of the game!
     noAssignment = false;
-
-    // await runGameSequence("Welcome! You are about to play a round of this target interception task. Your team's goal is to get as a high score as possible. When you are ready to start, click OK.");
-    
-    await startCountdown(10); // Start a 10-second countdown
-
-    $("#full-game-container").attr("hidden", false);    
+    await startCountdown(settings.countDownSeconds); // Start a 10-second countdown
+    $("#full-game-container").attr("hidden", false); // reveal the game container
 
     startGame(currentRound, currentCondition, currentBlock, curSeeds);
-    
-    // console.log(fbCondition);
 }
 
 
@@ -857,6 +849,7 @@ let roundSettings = {};
 
 let settings = {
     maxSeconds: 180,                    // maximum number of seconds per round --> 3 minutes (consider doing 2.5 minutes)
+    countDownSeconds: 3,                // SK: time waiting for countdown to complete before beginning round
     AIMode:0,                           // MS4: 0=no assistance; 1=always on; 2=adaptive
     AICollab: 0,                        // MS4: 0=ignorant; 1=intentional; 2=cognitive model
     alpha: 0.9,                         // MS8: discounting parameter for AI planner
@@ -1022,7 +1015,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 5 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1405,10 +1398,13 @@ async function endGame() {
         await runGameSequence("You've Completed a Round and earned " + totalScore + " points. Click OK to continue.");
 
         if (currentRound < 3){
-            if (currentRound > 1) await runGameSequence("Click OK to continue to the next round of play.");
+            // if (currentRound > 1) await runGameSequence("Click OK to continue to the next round of play.");
+            $("#full-game-container").attr("hidden", true);
+            await startCountdown(settings.countDownSeconds);
             await resetGame(); 
             // set the correct partner (human or ai) given the current round
             setAgent();
+            $("#full-game-container").attr("hidden", false);
 
             // Pause the game and wait for the other player to complete their ai round
             if (currentTeamingCondition.order == 1) handleCompleteness();
@@ -4106,99 +4102,7 @@ async function loadFullSurvey() {
     // Reset any previous selections
     $('.radio-group input[type="radio"]').prop('checked', false);
 
-    // Update robot icons and captions as before, change this code to match the new icons, scenarios
-     // Function to update robot icons and colors
-    // function updateRobotIcons() {
-    //     let agent1Icon = $('#agent1-icon');
-    //     let agent2Icon = $('#agent2-icon');
-    //     let agent1Caption = $('#agent1-caption');
-    //     let agent2Caption = $('#agent2-caption');
-
-    //     // Remove any existing color classes
-    //     agent1Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
-    //     agent2Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
-
-    //     if (visitedBlocks == 1) {
-    //         agent1Icon.addClass('robot-green');
-    //         agent2Icon.addClass('robot-purple');
-    //         agent1Caption.text('Green-Bot');
-    //         agent2Caption.text('Purple-Bot');
-    //     }
-
-    //     // change the agent icon
-    //     if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0){
-    //         //route to human first transparent
-    //         // first icon should be human head, second should be robot
-    //     } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 0){
-    //         // route to ai first transparent
-    //         // first icon should be robot, then human
-
-    //     } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1){
-    //         // think about this a little bit
-    //     } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1){
-    //         // think about this a little bit
-
-    //     }
- 
-
-    //     /*
-    //     // Human first then AI, Identity Transparent
-    //     if (settings.visualizeAIPartner && currentTeamingConditions.identity === 0) {
-    //         agent1Icon.addClass('human-green');
-    //         agent2Icon.addClass('robot-blue');
-    //     }  else if (settings.vsiualizeHumanPartner &&  currentTeamingConditions.identity === 0){
-    //         agent1Icon.addClass('triangle-green');
-    //         agent2Icon.addClass('triangle-blue');
-    //     } else if (currentTeamingConditions.identity === 1){
-    //         agent1Icon.addClass('triangle-green');
-    //         agent2Icon.addClass('triangle-blue');
-    //     }    
-    //     */
-    // }
-    // function updateRobotIcons() {
-    //     let agent1Icon = $('#agent1-icon');
-    //     let agent2Icon = $('#agent2-icon');
-    //     let agent1Caption = $('#agent1-caption');
-    //     let agent2Caption = $('#agent2-caption');
-    
-    //     // Remove any existing color classes
-    //     agent1Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
-    //     agent2Icon.removeClass('robot-green robot-purple robot-blue robot-copper');
-    
-    //     if (visitedBlocks == 1) {
-    //         agent1Icon.addClass('robot-green');
-    //         agent2Icon.addClass('robot-purple');
-    //         agent1Caption.text('Green-Bot');
-    //         agent2Caption.text('Purple-Bot');
-    //     }
-    
-    //     // Change the agent icon based on current teaming conditions
-    //     if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0) {
-    //         // Human first, transparent identity
-    //         agent1Icon.attr('src', './images/human-head-small.png');
-    //         agent2Icon.attr('src', './images/simple-robot-250px.png');
-    //         agent1Caption.text('Human');
-    //         agent2Caption.text('Robot');
-    //     } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 0) {
-    //         // AI first, transparent identity
-    //         agent1Icon.attr('src', './images/simple-robot-250px.png');
-    //         agent2Icon.attr('src', './images/human-head-small.png');
-    //         agent1Caption.text('Robot');
-    //         agent2Caption.text('Human');
-    //     } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1) {
-    //         // Human first, opaque identity
-    //         agent1Icon.attr('src', './images/triangle-black-250px.png');
-    //         agent2Icon.attr('src', './images/triangle-black-250px.png');
-    //         agent1Caption.text('Player 1');
-    //         agent2Caption.text('Player 2');
-    //     } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 1) {
-    //         // AI first, opaque identity
-    //         agent1Icon.attr('src', './images/triangle-black-250px.png');
-    //         agent2Icon.attr('src', './images/triangle-black-250px.png');
-    //         agent1Caption.text('Player 1');
-    //         agent2Caption.text('Player 2');
-    //     }
-    // }
+    // Icons above the likert are adapted to the conditions
     function updateRobotIcons() {
         let agent1Icon = $('#agent1-icon');
         let agent2Icon = $('#agent2-icon');
@@ -4211,12 +4115,10 @@ async function loadFullSurvey() {
     
         if (visitedBlocks == 1) {
             agent1Icon.addClass('robot-green');
-            agent2Icon.addClass('robot-purple');
-            agent1Caption.text('Green-Bot');
-            agent2Caption.text('Purple-Bot');
+            agent2Icon.addClass('robot-blue');
         }
     
-        // Change the agent icon based on current teaming conditions
+        // Main logic here to update icons
         if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0) {
             // Human first, transparent identity
             agent1Icon.attr('src', './images/human-head-small.png');
