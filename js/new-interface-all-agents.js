@@ -4014,8 +4014,8 @@ async function loadAIComparison() {
             //     $("#ai-open-ended-feedback-container").attr("hidden", false);
             //     await loadAIopenEndedFeedback(numSurveyCompleted);
             // }
-            let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2';
-            await writeRealtimeDatabase(db1, path, feedbackData);
+            let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIchoice';
+            await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
             $("#ai-comparison-container").attr("hidden", true);
             $("#ai-open-ended-feedback-container").attr("hidden", false);
             await loadAIopenEndedFeedback(numSurveyCompleted);
