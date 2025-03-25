@@ -1310,7 +1310,8 @@ async function initExperimentSettings() {
     let assignedCondition;
 
     if (!DEBUG){
-        assignedCondition = await blockRandomization(db1, studyId, blockOrderCondition, numConditions, maxCompletionTimeMinutes, numDraws);
+        assignedCondition = {condition: 5};
+        // assignedCondition = await blockRandomization(db1, studyId, blockOrderCondition, numConditions, maxCompletionTimeMinutes, numDraws);
     } else {
         assignedCondition = {condition: 5};
     }
