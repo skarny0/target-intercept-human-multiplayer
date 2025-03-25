@@ -4054,32 +4054,14 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
             };
 
             // // Example of writing the feedback to the database
-            // let path = studyId + '/participantData/' + firebaseUserId1 + '/AIopenEndedFeedback';
+            let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded';
             await writeRealtimeDatabase(db1, path, feedbackData);
-            
-            if (numSurveyCompleted == 1) {
-                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded1' ;
-                await writeRealtimeDatabase(db1, path, feedbackData);
-            } else if (numSurveyCompleted == 2) {
-                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded2' ;
-                await writeRealtimeDatabase(db1, path, feedbackData);
-            }
 
-            if (numSurveyCompleted == 2) {
-                // push them to the final page of the experiment which redirects participants
-                $("#ai-open-ended-feedback-container").attr("hidden", true);
-                $("#task-header").attr("hidden", true);
-                $("#exp-complete-header").attr("hidden", false);
-                $("#complete-page-content-container").attr("hidden", false);
-                // finalizeBlockRandomization(db1, studyId, blockOrderCondition);
-                // finalizeBlockRandomization(db1, studyId, teamingBlockCondition);
-                await loadCompletePage();
-            } else {
-                // update AI order settings
-                await updateAgentOrdering();
-                $("#ai-open-ended-feedback-container").attr("hidden", true);
-                $("#full-game-container").attr("hidden", false);
-            }
+            $("#ai-open-ended-feedback-container").attr("hidden", true);
+            $("#task-header").attr("hidden", true);
+            $("#exp-complete-header").attr("hidden", false);
+            $("#complete-page-content-container").attr("hidden", false);
+            
         }
 
         // Handle submitting feedback
@@ -4098,27 +4080,33 @@ function updateAIComparisonIcons() {
     ai2Button.removeClass('robot-button-green robot-button-purple robot-button-blue robot-button-copper');
 
     // Update icons and captions based on visitedBlocks and currentCondition
-    if (visitedBlocks == 1 && currentCondition <= 4) {
-        ai1Button.addClass('robot-button-green');
-        ai2Button.addClass('robot-button-purple');
-        ai1Caption.text('Green-Bot');
-        ai2Caption.text('Purple-Bot');
-    } else if (visitedBlocks == 2 && currentCondition <= 4) {
-        ai1Button.addClass('robot-button-blue');
-        ai2Button.addClass('robot-button-copper');
-        ai1Caption.text('Blue-Bot');
-        ai2Caption.text('Copper-Bot');
-    } else if (visitedBlocks == 1 && currentCondition > 4) {
-        ai1Button.addClass('robot-button-blue');
-        ai2Button.addClass('robot-button-copper');
-        ai1Caption.text('Blue-Bot');
-        ai2Caption.text('Copper-Bot');
-    } else if (visitedBlocks == 2 && currentCondition > 4) {
-        ai1Button.addClass('robot-button-green');
-        ai2Button.addClass('robot-button-purple');
-        ai1Caption.text('Green-Bot');
-        ai2Caption.text('Purple-Bot');
+    if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 0) {
+        // Human first, transparent identity
+        ai1Button.attr('src', './images/human-head-small.png');
+        ai2Button.attr('src', './images/simple-robot-250px.png');
+        ai1Caption.text('Human');
+        ai2Caption.text('Robot');
+    } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 0) {
+        // AI first, transparent identity
+        ai1Button.attr('src', './images/simple-robot-250px.png');
+        ai2Button.attr('src', './images/human-head-small.png');
+        ai1Caption.text('Robot');
+        ai2Caption.text('Human');
+    } else if (currentTeamingCondition.order == 0 && currentTeamingCondition.identity == 1) {
+        // Human first, opaque identity
+        ai1Button.attr('src', './images/triangle-black-250px.png');
+        ai2Button.attr('src', './images/triangle-black-250px.png');
+        ai1Caption.text('Player 1');
+        ai2Caption.text('Player 2');
+    } else if (currentTeamingCondition.order == 1 && currentTeamingCondition.identity == 1) {
+        // AI first, opaque identity
+        ai1Button.attr('src', './images/triangle-black-250px.png');
+        ai2Button.attr('src', './images/triangle-black-250px.png');
+        ai1Caption.text('Player 1');
+        ai2Caption.text('Player 2');
     }
+    ai1Button.addClass('robot-button-green');
+    ai2Button.addClass('robot-button-blue');
 }
 
 
