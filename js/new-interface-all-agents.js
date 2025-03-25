@@ -13,6 +13,7 @@ the game.
 */
 
 $("#waitingRoomPage").attr("hidden", false);
+$("#waitingRoomScroller").attr("hidden", true);
 $("#full-game-container").attr("hidden", true);
 $("#survey-workload-container").attr("hidden", true);
 $("#survey-full-container").attr("hidden", true);
@@ -190,166 +191,252 @@ function updateWaitingRoom() {
     // Get waiting room elements
     const waitingRoomScreen = document.getElementById('waitingRoomPage');
     const welcomeContainer = document.querySelector('.welcome-container');
-    const countdownContainer = document.getElementById('countdownContainer');
-    const messageWaitingRoom = document.getElementById('messageWaitingRoom');
-    const joinBtn = document.getElementById('joinBtn');
-    const countdownValue = document.getElementById('countdownValue');
+    // const countdownContainer = document.getElementById('countdownContainer');
+    // const messageWaitingRoom = document.getElementById('messageWaitingRoom');
+    // const joinBtn = document.getElementById('joinBtn');
+    // const countdownValue = document.getElementById('countdownValue');
     
     // Make sure waiting room is visible
     waitingRoomScreen.style.display = 'block';
-  
-    // Get countdown status from mplib
-    let [doCountDown, secondsLeft] = getWaitRoomInfo();
-    
-    console.log("Waiting room update - Countdown active:", doCountDown, "Seconds left:", secondsLeft);
-    
-    if (doCountDown) {
-        // Remove all countdown-related elements
-        if (secondsLeft === 1) {
-            const waitingRoomScreen = document.getElementById('waitingRoomPage');
-            const overlayCountdown = document.getElementById('overlay-countdown');
-            const gameContainer = document.getElementById('full-game-container');
-            
-            // Remove the overlay first to ensure it's gone
-            if (overlayCountdown) {
-                overlayCountdown.remove();
-                // Double-check with alternative removal method
-                if (overlayCountdown.parentNode) {
-                    overlayCountdown.parentNode.removeChild(overlayCountdown);
-                }
-            }
-            
-            // Clean up any other overlay elements that might exist
-            const overlays = document.querySelectorAll('[id*="overlay"]');
-            overlays.forEach(overlay => overlay.remove());
-            
-            // Show game container and ensure waiting room is gone
-            if (gameContainer) gameContainer.style.display = 'block';
-            if (waitingRoomScreen) waitingRoomScreen.remove();
-            
-            // Final cleanup using jQuery to be thorough
-            $('#overlay-countdown').remove();
-            $('#waitingRoomPage').remove();
-            $('.gamePage').not('#full-game-container').remove();
-            
-            return;
-        }
-        // Hide the original elements
-        welcomeContainer.style.display = 'none';
-        
-        // Create a brand new countdown display that overlays everything
-        let overlayCountdown = document.getElementById('overlay-countdown');
-        if (!overlayCountdown) {
-            overlayCountdown = document.createElement('div');
-            overlayCountdown.id = 'overlay-countdown';
-            overlayCountdown.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #f8f9fa;
-                border-radius: 10px;
-                padding: 30px;
-                z-index: 10000;
-                box-shadow: 0 0 20px rgba(0,0,0,0.3);
-                text-align: center;
-                min-width: 400px;
-            `;
-            
-            document.body.appendChild(overlayCountdown);
-        }
-        
-        // if (currentTeamingCondition.identity == 1){
-        //     console.log("")
-        // }
-        overlayCountdown.innerHTML = `
-             <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
-                <p>Your game will begin in:</p>
-                <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
-                    ${secondsLeft - 1} seconds
-                </div>
-            </div>
-            <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
-                <p><b>Important!</b></p>
-                <p>There will be one round with a real human and one with a real robot.</p>
-                <p>However, the identity of each player will remain ambiguous: You will be unsure if the human is human or the robot is a robot.</p>
-            </div>
-        `;
-        
-        // Also update the overlay styling to accommodate more content
-        overlayCountdown.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 40px;
-        z-index: 10000;
-        box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        text-align: center;
-        min-width: 600px;
-        max-width: 800px;
-        max-height: 90vh;
-        overflow-y: auto;
-        `;
-        
-        // Hide join button during countdown
-        if (joinBtn) joinBtn.style.display = 'none';
-        
-        // Also update message as fallback
-        messageWaitingRoom.innerText = `Game will start in ${secondsLeft} seconds...`;
 
-    } else { // When not in countdown mode
-        // Remove overlay if it exists
-        const overlayCountdown = document.getElementById('overlay-countdown');
-        if (overlayCountdown) {
-            document.body.removeChild(overlayCountdown);
-        }
-        
-        // Show regular waiting room content
-        welcomeContainer.style.display = 'block';
-        
-        // Update waiting message with player count
-        const numPlayers = getNumberCurrentPlayers();
-        const numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
-        
-        // Create a brand new countdown display that overlays everything
-        let overlayWaiting = document.getElementById('overlay-countdown');
-        if (!overlayWaiting) {
-            overlayWaiting = document.createElement('div');
-            overlayWaiting.id = 'overlay-countdown';
-            overlayWaiting.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: #f8f9fa;
-                border-radius: 10px;
-                padding: 30px;
-                z-index: 10000;
-                box-shadow: 0 0 20px rgba(0,0,0,0.3);
-                text-align: center;
-                min-width: 400px;
-            `;
-            
-            document.body.appendChild(overlayWaiting);
-        }
-        
-        // Update the overlay content with waiting message
-        overlayWaiting.innerHTML = `
-            <h2 style="color: #2c3e50; margin-bottom: 1em;">Waiting for Players</h2>
-            <div style="font-size: 1.5em; color: #34495e;">
-                <p>Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...</p>
-            </div>
-        `;
+    // Remove overlay if it exists
+    const overlayCountdown = document.getElementById('overlay-countdown');
+    if (overlayCountdown) {
+        document.body.removeChild(overlayCountdown);
     }
+    
+    // Show regular waiting room content
+    welcomeContainer.style.display = 'block';
+    
+    // Update waiting message with player count
+    const numPlayers = getNumberCurrentPlayers();
+    const numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
+    
+    // Create a brand new countdown display that overlays everything
+    let overlayWaiting = document.getElementById('overlay-countdown');
+    if (!overlayWaiting) {
+        overlayWaiting = document.createElement('div');
+        overlayWaiting.id = 'overlay-countdown';
+        overlayWaiting.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            z-index: 10000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            text-align: center;
+            min-width: 400px;
+        `;
+        
+        document.body.appendChild(overlayWaiting);
+    }
+    
+    // Update the overlay content with waiting message
+    overlayWaiting.innerHTML = `
+        <h2 style="color: #2c3e50; margin-bottom: 1em;">Waiting for Players</h2>
+        <div style="font-size: 1.5em; color: #34495e;">
+            <p>Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...</p>
+        </div>
+    `;
 }
+
+// function updateWaitingRoom() {
+//     /*
+//         Functionality to invoke when updating the waiting room.
+//         This function displays an animated waiting screen while 
+//         waiting for other players to join, but only when there's
+//         exactly one player in the waiting room.
+//     */
+   
+//     // Get waiting room elements
+//     const waitingRoomScreen = document.getElementById('waitingRoomPage');
+//     const welcomeContainer = document.querySelector('.welcome-container');
+//     const messageWaitingRoom = document.getElementById('messageWaitingRoom');
+    
+//     // Make sure waiting room is visible
+//     waitingRoomScreen.style.display = 'block';
+    
+//     // Show regular waiting room content
+//     welcomeContainer.style.display = 'block';
+    
+//     // Update waiting message with player count using mplib functions
+//     const numPlayers = getNumberCurrentPlayers();
+//     const numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
+    
+//     // Only show the waiting animation when there's exactly one player in the room
+//     if (numPlayers === 1) {
+//         // Create a brand new waiting display that overlays everything
+//         let overlayWaiting = document.getElementById('overlay-waiting');
+//         if (!overlayWaiting) {
+//             overlayWaiting = document.createElement('div');
+//             overlayWaiting.id = 'overlay-waiting';
+//             overlayWaiting.style.cssText = `
+//                 position: fixed;
+//                 top: 50%;
+//                 left: 50%;
+//                 transform: translate(-50%, -50%);
+//                 background-color: #f8f9fa;
+//                 border-radius: 10px;
+//                 padding: 30px;
+//                 z-index: 10000;
+//                 box-shadow: 0 0 20px rgba(0,0,0,0.3);
+//                 text-align: center;
+//                 min-width: 400px;
+//             `;
+            
+//             document.body.appendChild(overlayWaiting);
+//         }
+        
+//         // Get current player info for personalization
+//         const currentPlayerId = getCurrentPlayerId();
+//         const playerRank = getCurrentPlayerArrivalIndex();
+        
+//         // Update the overlay content with waiting message and animation
+//         overlayWaiting.innerHTML = `
+//             <h2 style="color: #2c3e50; margin-bottom: 1em;">Waiting Room</h2>
+//             <div style="font-size: 1.5em; color: #34495e; margin-bottom: 20px;">
+//                 <p>Welcome, Player ${playerRank}!</p>
+//                 <p>Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...</p>
+//             </div>
+//             <div class="loading-animation" style="margin: 30px auto;">
+//                 <div class="spinner" style="
+//                     border: 5px solid #f3f3f3;
+//                     border-top: 5px solid #3498db;
+//                     border-radius: 50%;
+//                     width: 50px;
+//                     height: 50px;
+//                     animation: spin 2s linear infinite;
+//                     margin: 0 auto;
+//                 "></div>
+//             </div>
+//             <div style="margin-top: 20px; font-style: italic; color: #7f8c8d;">
+//                 The game will start automatically when enough players have joined
+//             </div>
+//             <style>
+//                 @keyframes spin {
+//                     0% { transform: rotate(0deg); }
+//                     100% { transform: rotate(360deg); }
+//                 }
+                
+//                 @keyframes pulse {
+//                     0% { transform: scale(1); }
+//                     50% { transform: scale(1.1); }
+//                     100% { transform: scale(1); }
+//                 }
+                
+//                 .player-avatar {
+//                     animation: pulse 2s infinite;
+//                 }
+                
+//                 .empty-player-slot {
+//                     animation: pulse 2s infinite;
+//                     animation-delay: 1s;
+//                 }
+//             </style>
+//         `;
+        
+//         // Add player avatars/indicators based on current players
+//         const playerCountDisplay = document.createElement('div');
+//         playerCountDisplay.style.cssText = `
+//             margin-top: 20px;
+//             display: flex;
+//             justify-content: center;
+//             gap: 15px;
+//         `;
+        
+//         // Get all current player IDs
+//         const playerIds = getCurrentPlayerIds();
+        
+//         // Create visual representation of players
+//         playerIds.forEach((id, index) => {
+//             const playerAvatar = document.createElement('div');
+//             playerAvatar.className = 'player-avatar';
+//             playerAvatar.style.cssText = `
+//                 width: 40px;
+//                 height: 40px;
+//                 border-radius: 50%;
+//                 background-color: ${id === currentPlayerId ? '#e74c3c' : '#3498db'};
+//                 display: flex;
+//                 align-items: center;
+//                 justify-content: center;
+//                 color: white;
+//                 font-weight: bold;
+//                 box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+//             `;
+//             playerAvatar.innerHTML = `P${index + 1}`;
+            
+//             if (id === currentPlayerId) {
+//                 playerAvatar.title = "You";
+//                 playerAvatar.style.border = "2px solid #2ecc71";
+//             }
+            
+//             playerCountDisplay.appendChild(playerAvatar);
+//         });
+        
+//         // Add empty slots for missing players
+//         for (let i = 0; i < numNeeded; i++) {
+//             const emptySlot = document.createElement('div');
+//             emptySlot.className = 'empty-player-slot';
+//             emptySlot.style.cssText = `
+//                 width: 40px;
+//                 height: 40px;
+//                 border-radius: 50%;
+//                 border: 2px dashed #bdc3c7;
+//                 display: flex;
+//                 align-items: center;
+//                 justify-content: center;
+//                 color: #95a5a6;
+//             `;
+//             emptySlot.innerHTML = `?`;
+//             playerCountDisplay.appendChild(emptySlot);
+//         }
+        
+//         // Add player display to overlay
+//         overlayWaiting.appendChild(playerCountDisplay);
+        
+//         // Update message waiting room as fallback
+//         messageWaitingRoom.innerText = `Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...`;
+//     } else {
+//         // Remove the waiting overlay if there's not exactly one player
+//         let overlayWaiting = document.getElementById('overlay-waiting');
+//         if (overlayWaiting) {
+//             document.body.removeChild(overlayWaiting);
+//         }
+        
+//         // Update message for other cases
+//         if (numPlayers === 0) {
+//             // This would be an unusual case - no players
+//             messageWaitingRoom.innerText = "No players detected. Please refresh the page.";
+//         } else if (numPlayers >= sessionConfig.minPlayersNeeded) {
+//             // We have enough players, game should be starting soon
+//             messageWaitingRoom.innerText = "All players have joined! Game starting...";
+//         } else {
+//             // More than one player but still waiting for more
+//             messageWaitingRoom.innerText = `Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...`;
+//         }
+//     }
+    
+//     // If all players have joined, remove the waiting room display
+//     if (numNeeded <= 0) {
+//         let overlayWaiting = document.getElementById('overlay-waiting');
+//         if (overlayWaiting) {
+//             document.body.removeChild(overlayWaiting);
+//         }
+        
+//         if (waitingRoomScreen) {
+//             waitingRoomScreen.style.display = 'none';
+//         }
+//     }
+// }
 
 async function startSession() {
     console.log("Session starting");
     sessionStarted = true;
     $("#waitingRoomPage").attr("hidden", true);
+    $("#waitingRoomScroller").attr("hidden", false);
 
     const sid = getSessionId();
     if (DEBUG) console.log("Current Session ID:", sid);
@@ -406,6 +493,7 @@ async function startSession() {
     while (!gameInitialized) {
         await initializeGame();
     }
+    // $("wawitinRoomStep2").attr("hidden", false);
 
 }
 
@@ -475,6 +563,9 @@ function removePlayerState() {
 // This is the read operation for the game setting for both players when they enter a session
 // In general listener, ensure that thsi 
 async function parseConditions(childValue){
+    // we found a matching partner!
+    $("#waitingRoomScroller").attr("hidden", true);
+    
     // Easy parse for global data.
     currentCondition = childValue.condition.curCondition;
 

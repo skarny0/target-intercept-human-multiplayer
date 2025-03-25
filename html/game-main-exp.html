@@ -27,7 +27,7 @@ This file contains all of the task information for the experiment.
     </head>
     <body>
        <!-- Waiting Room Screen -->
-          <div class="container-fluid gamePage activePage" id="waitingRoomPage">
+        <div class="container-fluid gamePage activePage" id="waitingRoomPage">
             <div class="row">
                 <div class="col-12 text-center">
                     <div class="welcome-container" style="max-width: 800px; margin: 0 auto; padding: 2em;">
@@ -57,7 +57,25 @@ This file contains all of the task information for the experiment.
                     </div>
                 </div>
             </div>
-          </div>
+        </div>
+        <div class = "container-fluid" id="waitingRoomScroller">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="waiting-message" style="max-width: 800px; margin: 0 auto; padding: 2em;">
+                        <h2 style="font-size: 2em; color: #2c3e50; margin-bottom: 1em;">Please wait</h2>
+                        <div style="font-size: 1.5em; color: #34495e;">
+                            <p>We're waiting for another player to join the session.</p>
+                            <p>This should only take a moment...</p>
+                        </div>
+                        <div class="loading-spinner" style="margin: 2em auto;">
+                            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
       <!-- Game Container -->
         <div class="container-fluid" id = 'full-game-container'>
