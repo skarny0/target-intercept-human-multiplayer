@@ -938,7 +938,7 @@ let roundSettings = {};
 // NOTE: Start with default parameters --> make changes that are critical between rounds (to remove duplication)
 
 let settings = {
-    maxSeconds: 360,                    // maximum number of seconds per round --> 3 minutes (consider doing 2.5 minutes)
+    maxSeconds: 240,                    // maximum number of seconds per round --> 3 minutes (consider doing 2.5 minutes)
     countDownSeconds: 10,               // SK: time waiting for countdown to complete before beginning round
     AIMode:0,                           // MS4: 0=no assistance; 1=always on; 2=adaptive
     AICollab: 0,                        // MS4: 0=ignorant; 1=intentional; 2=cognitive model
