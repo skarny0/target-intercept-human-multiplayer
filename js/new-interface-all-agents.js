@@ -475,8 +475,6 @@ function removePlayerState() {
 // This is the read operation for the game setting for both players when they enter a session
 // In general listener, ensure that thsi 
 async function parseConditions(childValue){
-    // console.trace();
-
     // Easy parse for global data.
     currentCondition = childValue.condition.curCondition;
 
@@ -485,12 +483,13 @@ async function parseConditions(childValue){
 
     // This flag triggers the beginning of the game!
     noAssignment = false;
+    
     await startCountdown(settings.countDownSeconds); // Start a 10-second countdown
+    
     $("#full-game-container").attr("hidden", false); // reveal the game container
 
     startGame(currentRound, currentCondition, currentBlock, curSeeds);
 }
-
 
 /**
  * Searches the node condition and sets both player's games based off of this.
@@ -848,14 +847,14 @@ let roundSettings = {};
 // NOTE: Start with default parameters --> make changes that are critical between rounds (to remove duplication)
 
 let settings = {
-    maxSeconds: 180,                    // maximum number of seconds per round --> 3 minutes (consider doing 2.5 minutes)
-    countDownSeconds: 3,                // SK: time waiting for countdown to complete before beginning round
+    maxSeconds: 360,                    // maximum number of seconds per round --> 3 minutes (consider doing 2.5 minutes)
+    countDownSeconds: 10,               // SK: time waiting for countdown to complete before beginning round
     AIMode:0,                           // MS4: 0=no assistance; 1=always on; 2=adaptive
     AICollab: 0,                        // MS4: 0=ignorant; 1=intentional; 2=cognitive model
     alpha: 0.9,                         // MS8: discounting parameter for AI planner
     AIDisplayMode: 1,                   // MS4: 0=show movement path; 1=show where to click; 2=show which targets to intercept
     AIMaxDisplayLength: 3,              // MS4: can be used to truncate the AI path length shown
-    visualizeHumanPartner: 1,          // MS5: 0:default; 1=visualize human partner running in background
+    visualizeHumanPartner: 1,           // MS5: 0:default; 1=visualize human partner running in background
     visualizeAIPlayer: 0,               // MS5: 0:default; 1=visualize AI player running in background
     visualizeAIPlayerOffline: 1,        // MS5: 0:default; 1=visualize AI player running in background
     AIStabilityThreshold: 1.2,          // MS7: minimum proportional improvement before recommendation changes
@@ -1245,9 +1244,8 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        teamingDraw = 1; // options: 0-3, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
+        teamingDraw = 0; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
         // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
-        // assignedTeamingCondition = {'order': 0, 'identity': 1}; 
         // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
         assignedTeamingCondition = newDifficultySettings[teamingDraw]
     }
@@ -1346,11 +1344,6 @@ let humanRoundComplete  = false;
 async function startGame(round, condition, block, seeds) {
 
     currentRound = round; // Start at the specified round, or the current round
-
-    // let blockSetting = difficultySettings[condition][block];
-    // roundSettings = blockSetting[currentRound];
-
-    // roundSettings
 
     setAgent();
     setLocations();
@@ -1585,8 +1578,8 @@ function updateObjects(settings) {
         // if (settings.visualizeHumanPartner == 1) writeMovement();   
         if (settings.visualizeHumanPartner == 1){
             let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-            updateStateDirect(`${pathBase}/x`, player.x, 'location');
-            updateStateDirect(`${pathBase}/y`, player.y, 'location');
+            updateStateDirect(`${pathBase}/x`, player.x, 'xloc_'+roundID);
+            updateStateDirect(`${pathBase}/y`, player.y, 'yloc_'+roundID);
 
             // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
             // if (frameNumbers.length > 0) {
@@ -1597,13 +1590,13 @@ function updateObjects(settings) {
             // }
 
             pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-            updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation');
-            updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation');
+            updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
+            updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
 
             pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-            updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity');
-            updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity');
-            updateStateDirect(`${pathBase}/moving`, player.moving, 'moving');
+            updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
+            updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
+            updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);
         }
     }
     
@@ -1652,8 +1645,8 @@ function updateObjects(settings) {
 
         if (settings.visualizeHumanPartner){
             let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-            updateStateDirect(`${pathBase}/x`, player.x, 'location');
-            updateStateDirect(`${pathBase}/y`, player.y, 'location');
+            updateStateDirect(`${pathBase}/x`, player.x, 'location_'+roundID);
+            updateStateDirect(`${pathBase}/y`, player.y, 'location_'+roundID);
         }
     }
 
@@ -1831,8 +1824,8 @@ function updateObjects(settings) {
                 player.score      += obj.value;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus`;
-                updateStateDirect(`${pathBase}/ID`, obj.ID, 'interception ID');
-                updateStateDirect(`${pathBase}/intercepted`, obj.intercepted, 'interception flag');
+                updateStateDirect(`${pathBase}/ID`, obj.ID, 'interceptID_'+roundID);
+                updateStateDirect(`${pathBase}/intercepted`, obj.intercepted, 'interceptionBool_'+roundID);
 
                 if (obj.ID == player.targetObjID){
                     player.moving = false; // stop player after catching intended target
@@ -2219,8 +2212,8 @@ function createComposite(settings) {
 
 function writeMovement(){
     let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-    updateStateDirect(`${pathBase}/x`, player.x, 'location');
-    updateStateDirect(`${pathBase}/y`, player.y, 'location');
+    updateStateDirect(`${pathBase}/x`, player.x, 'xloc'+roundID);
+    updateStateDirect(`${pathBase}/y`, player.y, 'yloc'+roundID);
 
     // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
     // if (frameNumbers.length > 0) {
@@ -2231,13 +2224,13 @@ function writeMovement(){
     // }
 
     pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-    updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation');
-    updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation');
+    updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
+    updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
 
     pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-    updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity');
-    updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity');
-    updateStateDirect(`${pathBase}/moving`, player.moving, 'moving');
+    updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
+    updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
+    updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);
 }
 
 function setVelocityTowardsObservableArea(obj) {
@@ -3532,19 +3525,19 @@ $(document).ready( function(){
                 // ********* Update location to firebase for remote partner ********* //
                 // let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
                 let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-                updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation');
-                updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation');
+                updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
+                updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention');
+                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention_'+roundID);
                 console.log("player.targetObjID:", player.targetObjID);
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-                updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity');
-                updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity');
-                updateStateDirect(`${pathBase}/moving`, player.moving, 'moving');   
-                updateStateDirect(`${pathBase}/frame`, frameCountGame, 'frame');
-                updateStateDirect(`${pathBase}/sentTime`, Date.now(), 'sentTime');
+                updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
+                updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
+                updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);   
+                updateStateDirect(`${pathBase}/frame`, frameCountGame, 'frame_'+roundID);
+                updateStateDirect(`${pathBase}/sentTime`, Date.now(), 'sentTime_'+roundID);
 
 
                 // (Sanity Check) Only in the case that the object speed is beyond the player speed 
@@ -3591,7 +3584,7 @@ $(document).ready( function(){
                 player.targetObjID = -1;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention');
+                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention_'+roundID);
                 console.log("player.targetObjID:", player.targetObjID);
 
                 let eventType       = 'clickCenter';
@@ -3665,19 +3658,37 @@ function startCountdown(secondsLeft) {
             document.body.appendChild(overlayCountdown);
         }
 
-        overlayCountdown.innerHTML = `
-            <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
-                <p>Your game will begin in:</p>
-                <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
-                    ${secondsLeft} seconds
+        if (currentTeamingCondition.identity == 0){
+            overlayCountdown.innerHTML = `
+                <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
+                    <p>Your game will begin in:</p>
+                    <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
+                        ${secondsLeft} seconds
+                    </div>
                 </div>
-            </div>
-            <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
-                <p><b>Important!</b></p>
-                <p>There will be one round with a real human and one with a real robot.</p>
-                <p>However, the identity of each player will remain ambiguous: You will be unsure if the human is human or the robot is a robot.</p>
-            </div>
-        `;
+                <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
+                    <p style="font-size: 2.5em; font-weight: bold; color: #e74c3c; text-transform: uppercase; text-align: center; margin: 30px 0;">⚠️ Important! ⚠️</p>
+                    <p>There will be one round with a real human and one with a real robot.</p>
+                    <p>The identity of each player will be apparent.</p>
+                    <p>Your human partner is an actual human.</p>
+                    <p>The robot is a real robot.</p>
+                </div>
+            `;
+        } else {
+            overlayCountdown.innerHTML = `
+                <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
+                    <p>Your game will begin in:</p>
+                    <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
+                        ${secondsLeft} seconds
+                    </div>
+                </div>
+                <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
+                    <p style="font-size: 2.5em; font-weight: bold; color: #e74c3c; text-transform: uppercase; text-align: center; margin: 30px 0;">⚠️ Important! ⚠️</p>
+                    <p>There will be one round with a real human and one with a real robot.</p>
+                    <p>However, the identity of each player will remain ambiguous: You will be unsure if the human is human or the robot is a robot.</p>
+                </div>
+            `;
+        }
 
         // Countdown logic
         const interval = setInterval(() => {
