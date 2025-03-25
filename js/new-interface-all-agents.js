@@ -4001,17 +4001,24 @@ async function loadAIComparison() {
             */
             let SURVEY_END_TIME = new Date();
 
-            if (numSurveyCompleted == 1) {
-                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1';
-                $("#ai-comparison-container").attr("hidden", true);
-                $("#ai-open-ended-feedback-container").attr("hidden", false);
-                loadAIopenEndedFeedback(numSurveyCompleted);
-            } else if (numSurveyCompleted == 2) {
-                let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2';
-                $("#ai-comparison-container").attr("hidden", true);
-                $("#ai-open-ended-feedback-container").attr("hidden", false);
-                await loadAIopenEndedFeedback(numSurveyCompleted);
-            }
+            // if (numSurveyCompleted == 1) {
+            //     let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1';
+            //     await writeRealtimeDatabase(db1, path, feedbackData);
+            //     $("#ai-comparison-container").attr("hidden", true);
+            //     $("#ai-open-ended-feedback-container").attr("hidden", false);
+            //     loadAIopenEndedFeedback(numSurveyCompleted);
+            // } else if (numSurveyCompleted == 2) {
+            //     let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2';
+            //     writeRealtimeDatabase(path)
+            //     $("#ai-comparison-container").attr("hidden", true);
+            //     $("#ai-open-ended-feedback-container").attr("hidden", false);
+            //     await loadAIopenEndedFeedback(numSurveyCompleted);
+            // }
+            let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2';
+            await writeRealtimeDatabase(db1, path, feedbackData);
+            $("#ai-comparison-container").attr("hidden", true);
+            $("#ai-open-ended-feedback-container").attr("hidden", false);
+            await loadAIopenEndedFeedback(numSurveyCompleted);
         }
 
         // Handle AI selection for both buttons
