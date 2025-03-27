@@ -4068,6 +4068,8 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
             $("#task-header").attr("hidden", true);
             $("#exp-complete-header").attr("hidden", false);
             $("#complete-page-content-container").attr("hidden", false);
+
+            await loadCompletePage();
             
         }
 
