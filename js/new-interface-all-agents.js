@@ -114,9 +114,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-debug-0325";
+   studyId    = "multiplayer-test-debug-0401";
 } else {
-    studyId   = "multiplayer-test-0325";
+    studyId   = "multiplayer-test-0401";
 }
 
 
@@ -243,195 +243,6 @@ function updateWaitingRoom() {
     `;
 }
 
-// function updateWaitingRoom() {
-//     /*
-//         Functionality to invoke when updating the waiting room.
-//         This function displays an animated waiting screen while 
-//         waiting for other players to join, but only when there's
-//         exactly one player in the waiting room.
-//     */
-   
-//     // Get waiting room elements
-//     const waitingRoomScreen = document.getElementById('waitingRoomPage');
-//     const welcomeContainer = document.querySelector('.welcome-container');
-//     const messageWaitingRoom = document.getElementById('messageWaitingRoom');
-    
-//     // Make sure waiting room is visible
-//     waitingRoomScreen.style.display = 'block';
-    
-//     // Show regular waiting room content
-//     welcomeContainer.style.display = 'block';
-    
-//     // Update waiting message with player count using mplib functions
-//     const numPlayers = getNumberCurrentPlayers();
-//     const numNeeded = sessionConfig.minPlayersNeeded - numPlayers;
-    
-//     // Only show the waiting animation when there's exactly one player in the room
-//     if (numPlayers === 1) {
-//         // Create a brand new waiting display that overlays everything
-//         let overlayWaiting = document.getElementById('overlay-waiting');
-//         if (!overlayWaiting) {
-//             overlayWaiting = document.createElement('div');
-//             overlayWaiting.id = 'overlay-waiting';
-//             overlayWaiting.style.cssText = `
-//                 position: fixed;
-//                 top: 50%;
-//                 left: 50%;
-//                 transform: translate(-50%, -50%);
-//                 background-color: #f8f9fa;
-//                 border-radius: 10px;
-//                 padding: 30px;
-//                 z-index: 10000;
-//                 box-shadow: 0 0 20px rgba(0,0,0,0.3);
-//                 text-align: center;
-//                 min-width: 400px;
-//             `;
-            
-//             document.body.appendChild(overlayWaiting);
-//         }
-        
-//         // Get current player info for personalization
-//         const currentPlayerId = getCurrentPlayerId();
-//         const playerRank = getCurrentPlayerArrivalIndex();
-        
-//         // Update the overlay content with waiting message and animation
-//         overlayWaiting.innerHTML = `
-//             <h2 style="color: #2c3e50; margin-bottom: 1em;">Waiting Room</h2>
-//             <div style="font-size: 1.5em; color: #34495e; margin-bottom: 20px;">
-//                 <p>Welcome, Player ${playerRank}!</p>
-//                 <p>Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...</p>
-//             </div>
-//             <div class="loading-animation" style="margin: 30px auto;">
-//                 <div class="spinner" style="
-//                     border: 5px solid #f3f3f3;
-//                     border-top: 5px solid #3498db;
-//                     border-radius: 50%;
-//                     width: 50px;
-//                     height: 50px;
-//                     animation: spin 2s linear infinite;
-//                     margin: 0 auto;
-//                 "></div>
-//             </div>
-//             <div style="margin-top: 20px; font-style: italic; color: #7f8c8d;">
-//                 The game will start automatically when enough players have joined
-//             </div>
-//             <style>
-//                 @keyframes spin {
-//                     0% { transform: rotate(0deg); }
-//                     100% { transform: rotate(360deg); }
-//                 }
-                
-//                 @keyframes pulse {
-//                     0% { transform: scale(1); }
-//                     50% { transform: scale(1.1); }
-//                     100% { transform: scale(1); }
-//                 }
-                
-//                 .player-avatar {
-//                     animation: pulse 2s infinite;
-//                 }
-                
-//                 .empty-player-slot {
-//                     animation: pulse 2s infinite;
-//                     animation-delay: 1s;
-//                 }
-//             </style>
-//         `;
-        
-//         // Add player avatars/indicators based on current players
-//         const playerCountDisplay = document.createElement('div');
-//         playerCountDisplay.style.cssText = `
-//             margin-top: 20px;
-//             display: flex;
-//             justify-content: center;
-//             gap: 15px;
-//         `;
-        
-//         // Get all current player IDs
-//         const playerIds = getCurrentPlayerIds();
-        
-//         // Create visual representation of players
-//         playerIds.forEach((id, index) => {
-//             const playerAvatar = document.createElement('div');
-//             playerAvatar.className = 'player-avatar';
-//             playerAvatar.style.cssText = `
-//                 width: 40px;
-//                 height: 40px;
-//                 border-radius: 50%;
-//                 background-color: ${id === currentPlayerId ? '#e74c3c' : '#3498db'};
-//                 display: flex;
-//                 align-items: center;
-//                 justify-content: center;
-//                 color: white;
-//                 font-weight: bold;
-//                 box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-//             `;
-//             playerAvatar.innerHTML = `P${index + 1}`;
-            
-//             if (id === currentPlayerId) {
-//                 playerAvatar.title = "You";
-//                 playerAvatar.style.border = "2px solid #2ecc71";
-//             }
-            
-//             playerCountDisplay.appendChild(playerAvatar);
-//         });
-        
-//         // Add empty slots for missing players
-//         for (let i = 0; i < numNeeded; i++) {
-//             const emptySlot = document.createElement('div');
-//             emptySlot.className = 'empty-player-slot';
-//             emptySlot.style.cssText = `
-//                 width: 40px;
-//                 height: 40px;
-//                 border-radius: 50%;
-//                 border: 2px dashed #bdc3c7;
-//                 display: flex;
-//                 align-items: center;
-//                 justify-content: center;
-//                 color: #95a5a6;
-//             `;
-//             emptySlot.innerHTML = `?`;
-//             playerCountDisplay.appendChild(emptySlot);
-//         }
-        
-//         // Add player display to overlay
-//         overlayWaiting.appendChild(playerCountDisplay);
-        
-//         // Update message waiting room as fallback
-//         messageWaitingRoom.innerText = `Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...`;
-//     } else {
-//         // Remove the waiting overlay if there's not exactly one player
-//         let overlayWaiting = document.getElementById('overlay-waiting');
-//         if (overlayWaiting) {
-//             document.body.removeChild(overlayWaiting);
-//         }
-        
-//         // Update message for other cases
-//         if (numPlayers === 0) {
-//             // This would be an unusual case - no players
-//             messageWaitingRoom.innerText = "No players detected. Please refresh the page.";
-//         } else if (numPlayers >= sessionConfig.minPlayersNeeded) {
-//             // We have enough players, game should be starting soon
-//             messageWaitingRoom.innerText = "All players have joined! Game starting...";
-//         } else {
-//             // More than one player but still waiting for more
-//             messageWaitingRoom.innerText = `Waiting for ${numNeeded} more ${numNeeded === 1 ? 'player' : 'players'} to join...`;
-//         }
-//     }
-    
-//     // If all players have joined, remove the waiting room display
-//     if (numNeeded <= 0) {
-//         let overlayWaiting = document.getElementById('overlay-waiting');
-//         if (overlayWaiting) {
-//             document.body.removeChild(overlayWaiting);
-//         }
-        
-//         if (waitingRoomScreen) {
-//             waitingRoomScreen.style.display = 'none';
-//         }
-//     }
-// }
-
 async function startSession() {
     console.log("Session starting");
     sessionStarted = true;
@@ -469,17 +280,6 @@ async function startSession() {
     }
 
     player.arrivalIdx = getCurrentPlayerArrivalIndex();
-
-    // After joining the session can now get the callBack function to trigger
-     /* 
-    $("interimInstructionPage").attr("hidden", false);
-    while (countDown){
-        $("interimInstructionPage").attr("hidden", true);
-
-        initializeGame();
-    }
-    */
-
     
     if (DEBUG) console.log("Player Arrival Index:", player.arrivalIdx);
     // Check for session errors
@@ -578,7 +378,11 @@ async function parseConditions(childValue){
     // This flag triggers the beginning of the game!
     noAssignment = false;
     
-    await startCountdown(settings.countDownSeconds); // Start a 10-second countdown
+    if (!DEBUG) {
+        await startCountdown(settings.countDownSeconds); // Start a 10-second countdown
+    } else{
+        await startCountdown(3); // Start a 10-second countdown
+    }
     
     $("#full-game-container").attr("hidden", false); // reveal the game container
 
@@ -647,6 +451,7 @@ function getMostRecentPlayerData(childValue) {
                 x: frameData.location.x,
                 y: frameData.location.y
             };
+            
         }
 
         // Check target location
@@ -662,17 +467,31 @@ function getMostRecentPlayerData(childValue) {
 
         // Check velocity
         if (!mostRecentVelocity &&
-            frameData.velocity &&
-            typeof frameData.velocity.dx === 'number' &&
-            typeof frameData.velocity.dy === 'number' &&
-            typeof frameData.velocity.moving === 'boolean') {
+            frameData.location &&
+            typeof frameData.location.dx === 'number' &&
+            typeof frameData.location.dy === 'number' &&
+            typeof frameData.location.moving === 'boolean') {
             highestFrame = frameNum;
             mostRecentVelocity = {
-                dx: frameData.velocity.dx,
-                dy: frameData.velocity.dy,
-                moving: frameData.velocity.moving
+                dx: frameData.location.dx,
+                dy: frameData.location.dy,
+                moving: frameData.location.moving
             };
         }
+
+         // if (!mostRecentVelocity &&
+        //     frameData.velocity &&
+        //     typeof frameData.velocity.dx === 'number' &&
+        //     typeof frameData.velocity.dy === 'number' &&
+        //     typeof frameData.velocity.moving === 'boolean') {
+        //     highestFrame = frameNum;
+        //     mostRecentVelocity = {
+        //         dx: frameData.velocity.dx,
+        //         dy: frameData.velocity.dy,
+        //         moving: frameData.velocity.moving
+        //     };
+        // }
+        
 
         // If we've found all data types, we can break early
         if (mostRecentLocation && mostRecentTarget && mostRecentVelocity) {
@@ -718,7 +537,7 @@ function updatePlayer2Movement() {
     if (frameNumbers.length === 0) return; // No recorded frames
 
     const mostRecentFrame = Math.max(...frameNumbers);
-    const position = otherPlayersLocations[mostRecentFrame];
+    // const position = otherPlayersLocations[mostRecentFrame]; // not using this for now
     const target = otherPlayersTargets[mostRecentFrame];
     const velocity = otherPlayersVelocities[mostRecentFrame];
 
@@ -863,8 +682,101 @@ function parseScreenFocus(childValue){
 // *********************************************** Write to Database *****************************************************//
 
 // database write function
-function writeGameDatabase(){
+// function writeGameDatabase(){
 
+//     let pathBase = `players/${player.fbID}/survey/likert`;
+//     // updateStateDirect(`${pathBase}/x`, player.x, 'xloc_'+roundID);
+
+//     // let pathBase = `players/${player.fbID}/humanComplete/`;
+//     // updateStateDirect(pathBase, humanRoundComplete, 'status')
+
+//     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
+
+//     let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
+//     let path13  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/seedCondition';
+//     let path24  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingCondition';
+//     let path25 = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingOrder';
+
+//     // console.log("Writing to database");
+//     let path1   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/spawnData';
+//     let path2   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/caughtTargets';
+//     let path3   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/eventStream'; 
+//     let path4   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerClicks';
+//     let path5   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerLocation';
+//     let path6   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/settings';
+//     let path7   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/roundTime';
+//     let path11  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerScore';
+ 
+//     // let path14  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_Adjusted';
+//     let path8   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIcaughtTargets';
+//     let path9   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks';
+//     let path10  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/aiScore';
+//     let path17  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIeventStream';
+
+//     let path18  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIcaughtTargets_offline';
+//     let path19  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_offline';
+//     let path20 = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/aiScore_offline';
+//     // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_Adjusted_offline';
+//     // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIplayerLocation_offline';
+//     // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIplayerLocation';
+//     let path23  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIeventStream_offline';
+
+
+//     writeRealtimeDatabase(db1, path1, spawnData);
+//     writeRealtimeDatabase(db1, path2, caughtTargets);
+//     writeRealtimeDatabase(db1, path3, eventStream); 
+//     writeRealtimeDatabase(db1, path4, playerClicks);
+//     writeRealtimeDatabase(db1, path5, playerLocation);
+//     // writeRealtimeDatabase(db1, path6, roundSettings);
+//     writeRealtimeDatabase(db1, path7, roundTime);
+//     writeRealtimeDatabase(db1, path8, AIcaughtTargets);
+//     writeRealtimeDatabase(db1, path9, aiClicks);
+//     writeRealtimeDatabase(db1, path10, aiScore);
+//     writeRealtimeDatabase(db1, path11, score);
+//     writeRealtimeDatabase(db1, path12, currentCondition);
+//     writeRealtimeDatabase(db1, path13, curSeeds);
+//     // writeRealtimeDatabase(db1, path14, aiClicks_adjusted);
+//     // writeRealtimeDatabase(db1, path15, drtResponses);
+//     // writeRealtimeDatabase(db1, path16, drtFalseAlarm);
+//     writeRealtimeDatabase(db1, path17, AIeventStream);
+//     writeRealtimeDatabase(db1, path18, AIcaughtTargets_offline);
+//     writeRealtimeDatabase(db1, path19, aiClicks_offline);
+//     writeRealtimeDatabase(db1, path20, aiScore_offline);
+//     // writeRealtimeDatabase(db1, path21, AIplayerLocation_offline);
+//     // writeRealtimeDatabase(db1, path22, AIplayerLocation);
+//     writeRealtimeDatabase(db1, path23, AIeventStream_offline);
+//     writeRealtimeDatabase(db1, path24, currentTeamingCondition);
+//     writeRealtimeDatabase(db1, path25, agentOrder);
+// }
+function writeGameDatabase(){
+    // First, write summary statistics to the MPLib database
+    let summaryStatsBase = `players/${player.fbID}/summaryStats`;
+    
+    // Player statistics
+    updateStateDirect(`${summaryStatsBase}/playerScore`, player.score, 'playerScore');
+    updateStateDirect(`${summaryStatsBase}/totalScore`, totalScore, 'totalScore');
+    updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
+    updateStateDirect(`${summaryStatsBase}/round`, currentRound, 'currentRound');
+    
+    // Player2 statistics - add otherPlayersObjects for partner object updates
+    if (settings.visualizeHumanPartner === 1) {
+        updateStateDirect(`${summaryStatsBase}/player2`, player2, 'player2Object');
+        updateStateDirect(`${summaryStatsBase}/otherPlayersObjects`, otherPlayersObjects, 'player2Interceptions');
+    }
+    
+    // AI statistics if applicable
+    if (settings.visualizeAIPlayer === 1) {
+        updateStateDirect(`${summaryStatsBase}/aiScore`, aiScore, 'aiScore');
+        updateStateDirect(`${summaryStatsBase}/aiTargetsIntercepted`, AIcaughtTargets.length, 'aiTargetsIntercepted');
+    }
+    // Round timing
+    updateStateDirect(`${summaryStatsBase}/roundTime`, roundTime, 'roundTime');
+    
+    // Teaming condition info
+    updateStateDirect(`${summaryStatsBase}/teamingOrder`, currentTeamingCondition.order, 'teamingOrder');
+    updateStateDirect(`${summaryStatsBase}/teamingIdentity`, currentTeamingCondition.identity, 'teamingIdentity');
+    
+    // Regular Firebase database writing
     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
 
     let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
@@ -1108,7 +1020,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = 5 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 15 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1498,6 +1410,7 @@ async function endGame() {
             if (currentTeamingCondition.order == 1) handleCompleteness();
 
             startGame(currentRound, currentCondition, currentBlock, curSeeds); // Start the next round
+            writeGameDatabase();
         }
 
     }   
@@ -1506,6 +1419,7 @@ async function endGame() {
     // currentRound ++
 
     if (visitedBlocks >= 1){
+        writeGameDatabase();
         // visitedBlocks++
         // prevSetting = settings
         await loadFullSurvey();
@@ -1513,6 +1427,7 @@ async function endGame() {
         // await loadAIComparison();
         // $("#ai-comparison-container").attr("hidden", false);
         $("#full-game-container").attr("hidden", true);
+        
     }
 }
 
@@ -1673,18 +1588,21 @@ function updateObjects(settings) {
         // if (settings.visualizeHumanPartner == 1) writeMovement();   
         if (settings.visualizeHumanPartner == 1){
             let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-            updateStateDirect(`${pathBase}/x`, player.x, 'xloc_'+roundID);
-            updateStateDirect(`${pathBase}/y`, player.y, 'yloc_'+roundID);
+            // updateStateDirect(`${pathBase}/x`, player.x, 'xloc_'+roundID);
+            // updateStateDirect(`${pathBase}/y`, player.y, 'yloc_'+roundID);
 
-            // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
-            // if (frameNumbers.length > 0) {
-            //     const mostRecentFrame = Math.max(...frameNumbers);
-            //     const position = otherPlayersLocations[mostRecentFrame];
-            //     player2.x = position.x;
-            //     player2.y = position.y;
-            // }
+            let locationDict = {'x':player.x, 'y':player.y, 
+                                'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
+                                'frame':frameCountGame, 'round':currentRound
+            };
+            updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
 
             pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
+            let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
+                                      'frame':frameCountGame, 'round':currentRound
+            };
+            updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
+          
             updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
             updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
 
@@ -1692,7 +1610,7 @@ function updateObjects(settings) {
             updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
             updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
             updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);
-        }
+        }   
     }
     
     frameCountGame++;                           // MS: increment scene update count
@@ -3619,9 +3537,14 @@ $(document).ready( function(){
 
                 // ********* Update location to firebase for remote partner ********* //
                 // let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
+                // let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
+                // updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
+                // updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
                 let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-                updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
-                updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
+                let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
+                                        'frame':frameCountGame, 'round':currentRound
+                };
+                updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
                 updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention_'+roundID);
@@ -3632,7 +3555,7 @@ $(document).ready( function(){
                 updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
                 updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);   
                 updateStateDirect(`${pathBase}/frame`, frameCountGame, 'frame_'+roundID);
-                updateStateDirect(`${pathBase}/sentTime`, Date.now(), 'sentTime_'+roundID);
+                // updateStateDirect(`${pathBase}/sentTime`, Date.now(), 'sentTime_'+roundID);
 
 
                 // (Sanity Check) Only in the case that the object speed is beyond the player speed 
