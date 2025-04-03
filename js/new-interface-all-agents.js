@@ -479,20 +479,6 @@ function getMostRecentPlayerData(childValue) {
             };
         }
 
-         // if (!mostRecentVelocity &&
-        //     frameData.velocity &&
-        //     typeof frameData.velocity.dx === 'number' &&
-        //     typeof frameData.velocity.dy === 'number' &&
-        //     typeof frameData.velocity.moving === 'boolean') {
-        //     highestFrame = frameNum;
-        //     mostRecentVelocity = {
-        //         dx: frameData.velocity.dx,
-        //         dy: frameData.velocity.dy,
-        //         moving: frameData.velocity.moving
-        //     };
-        // }
-        
-
         // If we've found all data types, we can break early
         if (mostRecentLocation && mostRecentTarget && mostRecentVelocity) {
             break;
@@ -681,73 +667,6 @@ function parseScreenFocus(childValue){
 
 // *********************************************** Write to Database *****************************************************//
 
-// database write function
-// function writeGameDatabase(){
-
-//     let pathBase = `players/${player.fbID}/survey/likert`;
-//     // updateStateDirect(`${pathBase}/x`, player.x, 'xloc_'+roundID);
-
-//     // let pathBase = `players/${player.fbID}/humanComplete/`;
-//     // updateStateDirect(pathBase, humanRoundComplete, 'status')
-
-//     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
-
-//     let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
-//     let path13  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/seedCondition';
-//     let path24  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingCondition';
-//     let path25 = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingOrder';
-
-//     // console.log("Writing to database");
-//     let path1   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/spawnData';
-//     let path2   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/caughtTargets';
-//     let path3   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/eventStream'; 
-//     let path4   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerClicks';
-//     let path5   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerLocation';
-//     let path6   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/settings';
-//     let path7   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/roundTime';
-//     let path11  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerScore';
- 
-//     // let path14  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_Adjusted';
-//     let path8   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIcaughtTargets';
-//     let path9   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks';
-//     let path10  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/aiScore';
-//     let path17  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIeventStream';
-
-//     let path18  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIcaughtTargets_offline';
-//     let path19  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_offline';
-//     let path20 = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/aiScore_offline';
-//     // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_Adjusted_offline';
-//     // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIplayerLocation_offline';
-//     // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIplayerLocation';
-//     let path23  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIeventStream_offline';
-
-
-//     writeRealtimeDatabase(db1, path1, spawnData);
-//     writeRealtimeDatabase(db1, path2, caughtTargets);
-//     writeRealtimeDatabase(db1, path3, eventStream); 
-//     writeRealtimeDatabase(db1, path4, playerClicks);
-//     writeRealtimeDatabase(db1, path5, playerLocation);
-//     // writeRealtimeDatabase(db1, path6, roundSettings);
-//     writeRealtimeDatabase(db1, path7, roundTime);
-//     writeRealtimeDatabase(db1, path8, AIcaughtTargets);
-//     writeRealtimeDatabase(db1, path9, aiClicks);
-//     writeRealtimeDatabase(db1, path10, aiScore);
-//     writeRealtimeDatabase(db1, path11, score);
-//     writeRealtimeDatabase(db1, path12, currentCondition);
-//     writeRealtimeDatabase(db1, path13, curSeeds);
-//     // writeRealtimeDatabase(db1, path14, aiClicks_adjusted);
-//     // writeRealtimeDatabase(db1, path15, drtResponses);
-//     // writeRealtimeDatabase(db1, path16, drtFalseAlarm);
-//     writeRealtimeDatabase(db1, path17, AIeventStream);
-//     writeRealtimeDatabase(db1, path18, AIcaughtTargets_offline);
-//     writeRealtimeDatabase(db1, path19, aiClicks_offline);
-//     writeRealtimeDatabase(db1, path20, aiScore_offline);
-//     // writeRealtimeDatabase(db1, path21, AIplayerLocation_offline);
-//     // writeRealtimeDatabase(db1, path22, AIplayerLocation);
-//     writeRealtimeDatabase(db1, path23, AIeventStream_offline);
-//     writeRealtimeDatabase(db1, path24, currentTeamingCondition);
-//     writeRealtimeDatabase(db1, path25, agentOrder);
-// }
 function writeGameDatabase(){
     // First, write summary statistics to the MPLib database
     let summaryStatsBase = `players/${player.fbID}/summaryStats`;
