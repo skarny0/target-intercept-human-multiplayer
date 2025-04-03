@@ -114,9 +114,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-debug-0401";
+   studyId    = "multiplayer-test-0403-debug";
 } else {
-    studyId   = "multiplayer-test-0401";
+    studyId   = "multiplayer-test-0403";
 }
 
 
@@ -582,11 +582,9 @@ function parseIntentions(childValue) {
         const frameNum = parseInt(frameKey);
         const frameData = childValue[frameKey];
 
-        if (frameData.playerIntention && 
-            typeof frameData.playerIntention.ID === 'number') {
-
+        if (frameData.playerIntention) {
             otherPlayersIntentions[frameNum] = {
-                ID: frameData.playerIntention.ID
+                ID: frameData.playerIntention.id
             };
         }
     }
@@ -1504,11 +1502,8 @@ function updateObjects(settings) {
 
     if (deltaFrameCount == 10){
         deltaFrameCount = 0;
-        // if (settings.visualizeHumanPartner == 1) writeMovement();   
         if (settings.visualizeHumanPartner == 1){
             let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-            // updateStateDirect(`${pathBase}/x`, player.x, 'xloc_'+roundID);
-            // updateStateDirect(`${pathBase}/y`, player.y, 'yloc_'+roundID);
 
             let locationDict = {'x':player.x, 'y':player.y, 
                                 'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
@@ -1521,14 +1516,6 @@ function updateObjects(settings) {
                                       'frame':frameCountGame, 'round':currentRound
             };
             updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
-          
-            updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
-            updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
-
-            pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-            updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
-            updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
-            updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);
         }   
     }
     
@@ -3466,15 +3453,23 @@ $(document).ready( function(){
                 updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention_'+roundID);
+                updateStateDirect(`${pathBase}`, targetLocationDict, 'updateIntention');
                 console.log("player.targetObjID:", player.targetObjID);
 
-                pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-                updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
-                updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
-                updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);   
-                updateStateDirect(`${pathBase}/frame`, frameCountGame, 'frame_'+roundID);
-                // updateStateDirect(`${pathBase}/sentTime`, Date.now(), 'sentTime_'+roundID);
+                // pathBase = `players/${player.fbID}/${frameCountGame}/location`;
+
+                // let locationDict = {'x':player.x, 'y':player.y, 
+                //                     'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
+                //                     'frame':frameCountGame, 'round':currentRound
+                // };
+                // updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
+
+                let movementDict = {'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
+                                    'frame':frameCountGame, 'round':currentRound
+                }
+
+                pathBase = `players/${player.fbID}/${frameCountGame}/velocity`; 
+                updateStateDirect(`${pathBase}`,movementDict,'updatePlayerMovement');
 
 
                 // (Sanity Check) Only in the case that the object speed is beyond the player speed 
