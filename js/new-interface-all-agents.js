@@ -1746,6 +1746,8 @@ function updateObjects(settings) {
                 caughtAnything    = true;    //MS6
                 score             += obj.value;
                 player.score      += obj.value;
+                
+                caughtTargets.push(obj);
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus`;
                 let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound}
@@ -3826,7 +3828,7 @@ async function loadAIComparison() {
             await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
 
             let pathBase = `players/${player.fbID}/selectedAI/`;
-            updateStateDirect(pathBase, TOPIC_AI_COMPARISON_DICT.selectedAI, 'status')
+            updateStateDirect(pathBase, TOPIC_AI_COMPARISON_DICT.selectedAI, 'choice')
 
             $("#ai-comparison-container").attr("hidden", true);
             $("#ai-open-ended-feedback-container").attr("hidden", false);
@@ -3877,7 +3879,7 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
             await writeRealtimeDatabase(db1, path, feedbackData);
 
             let pathBase = `players/${player.fbID}/OpenEnded/`;
-            updateStateDirect(pathBase,feedbackData, 'assessmentOpenEnded')
+            updateStateDirect(pathBase,feedbackData, 'feedback')
 
             $("#ai-open-ended-feedback-container").attr("hidden", true);
             $("#task-header").attr("hidden", true);
