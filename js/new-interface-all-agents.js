@@ -3487,7 +3487,7 @@ $(document).ready( function(){
                 player.targetObjID = -1;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention');
+                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'updateIntention');
                 console.log("player.targetObjID:", player.targetObjID);
 
                 let eventType       = 'clickCenter';
