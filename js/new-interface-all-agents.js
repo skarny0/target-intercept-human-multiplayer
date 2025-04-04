@@ -1564,8 +1564,13 @@ function updateObjects(settings) {
 
         if (settings.visualizeHumanPartner){
             let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-            updateStateDirect(`${pathBase}/x`, player.x, 'location_'+roundID);
-            updateStateDirect(`${pathBase}/y`, player.y, 'location_'+roundID);
+            // updateStateDirect(`${pathBase}/x`, player.x, 'location_'+roundID);
+            // updateStateDirect(`${pathBase}/y`, player.y, 'location_'+roundID);
+            let locationDict = {'x':player.x, 'y':player.y, 
+                'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
+                'frame':frameCountGame, 'round':currentRound
+            };
+            updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
         }
     }
 
@@ -1743,8 +1748,8 @@ function updateObjects(settings) {
                 player.score      += obj.value;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus`;
-                updateStateDirect(`${pathBase}/ID`, obj.ID, 'interceptID_'+roundID);
-                updateStateDirect(`${pathBase}/intercepted`, obj.intercepted, 'interceptionBool_'+roundID);
+                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound}
+                updateStateDirect(pathBase, interceptDict, 'interception')
 
                 if (obj.ID == player.targetObjID){
                     player.moving = false; // stop player after catching intended target
@@ -2128,29 +2133,7 @@ function createComposite(settings) {
  
     return newObj;
 }
-
-function writeMovement(){
-    let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-    updateStateDirect(`${pathBase}/x`, player.x, 'xloc'+roundID);
-    updateStateDirect(`${pathBase}/y`, player.y, 'yloc'+roundID);
-
-    // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
-    // if (frameNumbers.length > 0) {
-    //     const mostRecentFrame = Math.max(...frameNumbers);
-    //     const position = otherPlayersLocations[mostRecentFrame];
-    //     player2.x = position.x;
-    //     player2.y = position.y;
-    // }
-
-    pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-    updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
-    updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
-
-    pathBase = `players/${player.fbID}/${frameCountGame}/velocity`
-    updateStateDirect(`${pathBase}/dx`, player.dx, 'velocity_'+roundID);
-    updateStateDirect(`${pathBase}/dy`, player.dy, 'velocity_'+roundID);
-    updateStateDirect(`${pathBase}/moving`, player.moving, 'moving_'+roundID);
-}
+ 
 
 function setVelocityTowardsObservableArea(obj) {
     // Calculate angle towards the center
@@ -3442,10 +3425,6 @@ $(document).ready( function(){
                 console.log("player's new target location:", player.targetX, player.targetY);
 
                 // ********* Update location to firebase for remote partner ********* //
-                // let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-                // let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-                // updateStateDirect(`${pathBase}/x`, player.targetX, 'targetLocation_'+roundID);
-                // updateStateDirect(`${pathBase}/y`, player.targetY, 'targetLocation_'+roundID);
                 let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
                 let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
                                         'frame':frameCountGame, 'round':currentRound
@@ -3453,23 +3432,15 @@ $(document).ready( function(){
                 updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(`${pathBase}`, targetLocationDict, 'updateIntention');
-                console.log("player.targetObjID:", player.targetObjID);
-
-                // pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-
-                // let locationDict = {'x':player.x, 'y':player.y, 
-                //                     'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-                //                     'frame':frameCountGame, 'round':currentRound
-                // };
-                // updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
+                updateStateDirect(pathBase, targetLocationDict, 'updateIntention');
+                //if (DEBUG) console.log("player.targetObjID:", player.targetObjID);
 
                 let movementDict = {'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
                                     'frame':frameCountGame, 'round':currentRound
                 }
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/velocity`; 
-                updateStateDirect(`${pathBase}`,movementDict,'updatePlayerMovement');
+                updateStateDirect(pathBase,movementDict,'updatePlayerMovement');
 
 
                 // (Sanity Check) Only in the case that the object speed is beyond the player speed 
@@ -3516,7 +3487,7 @@ $(document).ready( function(){
                 player.targetObjID = -1;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention_'+roundID);
+                updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'playerIntention');
                 console.log("player.targetObjID:", player.targetObjID);
 
                 let eventType       = 'clickCenter';
@@ -3853,6 +3824,10 @@ async function loadAIComparison() {
             // }
             let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIchoice';
             await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
+
+            let pathBase = `players/${player.fbID}/selectedAI/`;
+            updateStateDirect(pathBase, TOPIC_AI_COMPARISON_DICT.selectedAI, 'status')
+
             $("#ai-comparison-container").attr("hidden", true);
             $("#ai-open-ended-feedback-container").attr("hidden", false);
             await loadAIopenEndedFeedback(numSurveyCompleted);
@@ -3900,6 +3875,9 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
             // // Example of writing the feedback to the database
             let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded';
             await writeRealtimeDatabase(db1, path, feedbackData);
+
+            let pathBase = `players/${player.fbID}/OpenEnded/`;
+            updateStateDirect(pathBase,feedbackData, 'assessmentOpenEnded')
 
             $("#ai-open-ended-feedback-container").attr("hidden", true);
             $("#task-header").attr("hidden", true);
@@ -4134,6 +4112,9 @@ async function loadFullSurvey() {
 
         // Save TOPIC_FULL_DICT to your database
         await writeRealtimeDatabase(db1, path, TOPIC_FULL_DICT);
+
+        let pathBase = `players/${player.fbID}/likertAssessment/`;
+        updateStateDirect(pathBase,TOPIC_FULL_DICT, 'likert')
 
         // Proceed to the next step
         await loadAIComparison();

@@ -71,9 +71,9 @@ var COLLAB = getCollabTypeParams(); // 0=ignorant; 1=omit; 2=divide; 3=delay
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "uci-hri-experiment-collab-apr03-debug";
+   studyId    = "multiplayer-test-0403-debug";
 } else {
-    studyId   = "uci-hri-experiment-collab-apr03";
+    studyId   = "multiplayer-test-0403";
 }
 
 // WRITE PROLIFIC PARTICIPANT DATA TO DB1
@@ -90,34 +90,30 @@ function writeGameDatabase(){
 
     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
 
-    let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
-    let path13  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/seedCondition';
-    let path24  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingCondition';
-    let path25 = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingOrder';
 
     // console.log("Writing to database");
-    let path1   = studyId + '/participantData/' + firebaseUserId1 + '/spawnData';
-    let path2   = studyId + '/participantData/' + firebaseUserId1 + '/caughtTargets';
-    let path3   = studyId + '/participantData/' + firebaseUserId1 + '/eventStream'; 
-    let path4   = studyId + '/participantData/' + firebaseUserId1 + '/playerClicks';
-    let path5   = studyId + '/participantData/' + firebaseUserId1 + '/playerLocation';
-    let path6   = studyId + '/participantData/' + firebaseUserId1 + '/settings';
-    let path7   = studyId + '/participantData/' + firebaseUserId1 + '/roundTime';
-    let path11  = studyId + '/participantData/' + firebaseUserId1 + '/playerScore';
+    let path1   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/spawnData';
+    let path2   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/caughtTargets';
+    let path3   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/eventStream'; 
+    let path4   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerClicks';
+    let path5   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerLocation';
+    let path6   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/settings';
+    let path7   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/roundTime';
+    let path11  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerScore';
  
-    // let path14  = studyId + '/participantData/' + firebaseUserId1 + '/AIClicks_Adjusted';
-    // let path8   = studyId + '/participantData/' + firebaseUserId1 + '/AIcaughtTargets';
-    // let path9   = studyId + '/participantData/' + firebaseUserId1 + '/AIClicks';
-    // let path10  = studyId + '/participantData/' + firebaseUserId1 + '/aiScore';
-    // let path17  = studyId + '/participantData/' + firebaseUserId1 + '/AIeventStream';
+    // let path14  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks_Adjusted';
+    // let path8   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIcaughtTargets';
+    // let path9   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks';
+    // let path10  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/aiScore';
+    // let path17  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIeventStream';
 
-    let path18  = studyId + '/participantData/' + firebaseUserId1 + '/AIcaughtTargets_offline';
-    let path19  = studyId + '/participantData/' + firebaseUserId1 + '/AIClicks_offline';
-    let path20 = studyId + '/participantData/' + firebaseUserId1 + '/aiScore_offline';
-    // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/AIClicks_Adjusted_offline';
-    // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/AIplayerLocation_offline';
-    // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/AIplayerLocation';
-    let path23  = studyId + '/participantData/' + firebaseUserId1 + '/AIeventStream_offline';
+    let path18  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIcaughtTargets_offline';
+    let path19  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks_offline';
+    let path20 = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/aiScore_offline';
+    // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks_Adjusted_offline';
+    // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIplayerLocation_offline';
+    // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIplayerLocation';
+    let path23  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIeventStream_offline';
 
 
     writeRealtimeDatabase(db1, path1, spawnData);
@@ -131,8 +127,6 @@ function writeGameDatabase(){
     // writeRealtimeDatabase(db1, path9, aiClicks);
     // writeRealtimeDatabase(db1, path10, aiScore);
     writeRealtimeDatabase(db1, path11, score);
-    writeRealtimeDatabase(db1, path12, currentCondition);
-    writeRealtimeDatabase(db1, path13, curSeeds);
     // writeRealtimeDatabase(db1, path14, aiClicks_adjusted);
     // writeRealtimeDatabase(db1, path15, drtResponses);
     // writeRealtimeDatabase(db1, path16, drtFalseAlarm);
@@ -143,8 +137,7 @@ function writeGameDatabase(){
     // writeRealtimeDatabase(db1, path21, AIplayerLocation_offline);
     // writeRealtimeDatabase(db1, path22, AIplayerLocation);
     writeRealtimeDatabase(db1, path23, AIeventStream_offline);
-    // writeRealtimeDatabase(db1, path24, currentTeamingCondition);
-    writeRealtimeDatabase(db1, path25, agentOrder);
+
 }
 
 //************************************************ ENVIRONMENT INITIALIZATION ********************************************//
