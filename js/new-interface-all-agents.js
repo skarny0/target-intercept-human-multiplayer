@@ -114,9 +114,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-0404-debug";
+   studyId    = "multiplayer-test-0408-debug";
 } else {
-    studyId   = "multiplayer-test-0404";
+    studyId   = "multiplayer-test-0408";
 }
 
 
@@ -2598,8 +2598,8 @@ function drawScore() {
     scoreCtx.fillText('Team Score: ' + totalScore, 10, 20); // Adjust the positioning as needed
     // add a new line space between this right and the next
     scoreCtx.font = '14px Roboto';
-    scoreCtx.fillText('Player: ' + score, 10, 40); // Adjust the positioning as needed
-    scoreCtx.fillText('Bot: ' + AIplayer.score, 10, 60); // Adjust the positioning as needed
+    scoreCtx.fillText('You: ' + score, 10, 40); // Adjust the positioning as needed
+    scoreCtx.fillText('Partner: ' + AIplayer.score, 10, 60); // Adjust the positioning as needed
 }
 
 // drawing outer mask
@@ -3565,19 +3565,19 @@ function startCountdown(secondsLeft) {
 
         if (currentTeamingCondition.identity == 0){
             overlayCountdown.innerHTML = `
-                <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
-                    <p>Your game will begin in:</p>
-                    <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
-                        ${secondsLeft} seconds
+                    <div class="countdown-text" style="font-size: 1.5em; color: #34495e;">
+                        <p>Your game will begin in:</p>
+                        <div style="font-size: 2.5em; font-weight: bold; color: #e74c3c; margin: 20px 0;">
+                            ${secondsLeft} seconds
+                        </div>
                     </div>
-                </div>
-                <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
-                    <p style="font-size: 2.5em; font-weight: bold; color: #e74c3c; text-transform: uppercase; text-align: center; margin: 30px 0;">⚠️ Important! ⚠️</p>
-                    <p>There will be one round with a real human and one with a real robot.</p>
-                    <p>The identity of each player will be apparent.</p>
-                    <p>Your human partner is an actual human.</p>
-                    <p>The robot is a real robot.</p>
-                </div>
+                    <div style="font-size: 2em; color: #34495e; margin-bottom: 2em;">
+                        <p style="font-size: 2.5em; font-weight: bold; color: #e74c3c; text-transform: uppercase; text-align: center; margin: 30px 0;">⚠️ Important! ⚠️</p>
+                        <p>There will be one round with a real human and one with a real robot.</p>
+                        <p>The identity of each player will be apparent.</p>
+                        <p>Your human partner is an actual human.</p>
+                        <p>The robot is a real robot.</p>
+                    </div>
             `;
         } else {
             overlayCountdown.innerHTML = `
