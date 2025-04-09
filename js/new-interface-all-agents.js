@@ -60,11 +60,11 @@ const firebaseConfig_Conditions= {
     appId: "1:962742682387:web:3ccb105c11dddea6bb90e6"
 };
 
-const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase(firebaseConfig_Conditions );
+// const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase(firebaseConfig_Conditions );
 
 // Get the reference to the two databases using the configuration files
 // const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase( firebaseConfig );
-// const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_db2 );
+const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_Conditions );
 
 // console.log("Firebase UserId=" + firebaseUserId);
 
@@ -114,9 +114,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-0408-debug";
+   studyId    = "multiplayer-main-0408-debug";
 } else {
-    studyId   = "multiplayer-test-0408";
+    studyId   = "multiplayer-main-0408";
 }
 
 
@@ -256,8 +256,8 @@ async function startSession() {
     playerId = player.fbID;
     if (DEBUG) console.log("Current Player ID:", playerId);
 
-    let pathID  = studyId + '/participantData/' + firebaseUserId1 + '/mplibKey';
-    writeRealtimeDatabase(db1, pathID, playerId);
+    // let pathID  = studyId + '/participantData/' + firebaseUserId1 + '/mplibKey';
+    // writeRealtimeDatabase(db1, pathID, playerId);
 
     // log all players in session
     let allPlayers = getCurrentPlayerIds();
@@ -336,10 +336,6 @@ function updateOngoingSession() {
  * @param {string} childEvent - The type of event that triggered the change (e.g., 'child_added', 'child_changed').
  */
 function receiveStateChange(path, childKey, childValue, childEvent) {
-    // console.trace("Trace at frame: " + frameCountGame);
-    // console.trace("Full trace");
-// Or to get a manipulable version
-
     if (noAssignment) parseConditions(childValue)
 
     if (currentRound == 2 && childKey == remoteId) parseStatus(childValue)
@@ -364,7 +360,7 @@ function removePlayerState() {
 
 // *********************************************** Parse Session Changes *************************************************//
 // This is the read operation for the game setting for both players when they enter a session
-// In general listener, ensure that thsi 
+// In general listener, ensure that this 
 async function parseConditions(childValue){
     // we found a matching partner!
     $("#waitingRoomScroller").attr("hidden", true);
@@ -677,7 +673,7 @@ function writeGameDatabase(){
     
     // Player2 statistics - add otherPlayersObjects for partner object updates
     if (settings.visualizeHumanPartner === 1) {
-        updateStateDirect(`${summaryStatsBase}/player2`, player2, 'player2Object');
+        // updateStateDirect(`${summaryStatsBase}/player2`, player2, 'player2Object');
         updateStateDirect(`${summaryStatsBase}/otherPlayersObjects`, otherPlayersObjects, 'player2Interceptions');
     }
     
@@ -696,61 +692,61 @@ function writeGameDatabase(){
     // Regular Firebase database writing
     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
 
-    let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
-    let path13  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/seedCondition';
-    let path24  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingCondition';
-    let path25 = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingOrder';
+    // let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
+    // let path13  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/seedCondition';
+    // let path24  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingCondition';
+    // let path25 = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/teamingOrder';
 
-    // console.log("Writing to database");
-    let path1   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/spawnData';
-    let path2   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/caughtTargets';
-    let path3   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/eventStream'; 
-    let path4   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerClicks';
-    let path5   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerLocation';
-    let path6   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/settings';
-    let path7   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/roundTime';
-    let path11  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/playerScore';
+    // // console.log("Writing to database");
+    // let path1   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/spawnData';
+    // let path2   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/caughtTargets';
+    // let path3   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/eventStream'; 
+    // let path4   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/playerClicks';
+    // let path5   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/playerLocation';
+    // let path6   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/settings';
+    // let path7   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/roundTime';
+    // let path11  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/playerScore';
  
-    // let path14  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_Adjusted';
-    let path8   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIcaughtTargets';
-    let path9   = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks';
-    let path10  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/aiScore';
-    let path17  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIeventStream';
+    // // let path14  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIClicks_Adjusted';
+    // let path8   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIcaughtTargets';
+    // let path9   = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIClicks';
+    // let path10  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/aiScore';
+    // let path17  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIeventStream';
 
-    let path18  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIcaughtTargets_offline';
-    let path19  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_offline';
-    let path20 = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/aiScore_offline';
-    // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIClicks_Adjusted_offline';
-    // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIplayerLocation_offline';
-    // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIplayerLocation';
-    let path23  = studyId + '/participantData/' + firebaseUserId1 + '/block' + currentBlock + '/round' + currentRound + '/AIeventStream_offline';
+    // let path18  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIcaughtTargets_offline';
+    // let path19  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIClicks_offline';
+    // let path20 = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/aiScore_offline';
+    // // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIClicks_Adjusted_offline';
+    // // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIplayerLocation_offline';
+    // // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIplayerLocation';
+    // let path23  = studyId + '/participantData/' + firebaseUserId1 + '/summaryStats' + '/round' + currentRound + '/AIeventStream_offline';
 
 
-    writeRealtimeDatabase(db1, path1, spawnData);
-    writeRealtimeDatabase(db1, path2, caughtTargets);
-    writeRealtimeDatabase(db1, path3, eventStream); 
-    writeRealtimeDatabase(db1, path4, playerClicks);
-    writeRealtimeDatabase(db1, path5, playerLocation);
-    // writeRealtimeDatabase(db1, path6, roundSettings);
-    writeRealtimeDatabase(db1, path7, roundTime);
-    writeRealtimeDatabase(db1, path8, AIcaughtTargets);
-    writeRealtimeDatabase(db1, path9, aiClicks);
-    writeRealtimeDatabase(db1, path10, aiScore);
-    writeRealtimeDatabase(db1, path11, score);
-    writeRealtimeDatabase(db1, path12, currentCondition);
-    writeRealtimeDatabase(db1, path13, curSeeds);
-    // writeRealtimeDatabase(db1, path14, aiClicks_adjusted);
-    // writeRealtimeDatabase(db1, path15, drtResponses);
-    // writeRealtimeDatabase(db1, path16, drtFalseAlarm);
-    writeRealtimeDatabase(db1, path17, AIeventStream);
-    writeRealtimeDatabase(db1, path18, AIcaughtTargets_offline);
-    writeRealtimeDatabase(db1, path19, aiClicks_offline);
-    writeRealtimeDatabase(db1, path20, aiScore_offline);
-    // writeRealtimeDatabase(db1, path21, AIplayerLocation_offline);
-    // writeRealtimeDatabase(db1, path22, AIplayerLocation);
-    writeRealtimeDatabase(db1, path23, AIeventStream_offline);
-    writeRealtimeDatabase(db1, path24, currentTeamingCondition);
-    writeRealtimeDatabase(db1, path25, agentOrder);
+    // writeRealtimeDatabase(db1, path1, spawnData);
+    // writeRealtimeDatabase(db1, path2, caughtTargets);
+    // writeRealtimeDatabase(db1, path3, eventStream); 
+    // writeRealtimeDatabase(db1, path4, playerClicks);
+    // writeRealtimeDatabase(db1, path5, playerLocation);
+    // // writeRealtimeDatabase(db1, path6, roundSettings);
+    // writeRealtimeDatabase(db1, path7, roundTime);
+    // writeRealtimeDatabase(db1, path8, AIcaughtTargets);
+    // writeRealtimeDatabase(db1, path9, aiClicks);
+    // writeRealtimeDatabase(db1, path10, aiScore);
+    // writeRealtimeDatabase(db1, path11, score);
+    // writeRealtimeDatabase(db1, path12, currentCondition);
+    // writeRealtimeDatabase(db1, path13, curSeeds);
+    // // writeRealtimeDatabase(db1, path14, aiClicks_adjusted);
+    // // writeRealtimeDatabase(db1, path15, drtResponses);
+    // // writeRealtimeDatabase(db1, path16, drtFalseAlarm);
+    // writeRealtimeDatabase(db1, path17, AIeventStream);
+    // writeRealtimeDatabase(db1, path18, AIcaughtTargets_offline);
+    // writeRealtimeDatabase(db1, path19, aiClicks_offline);
+    // writeRealtimeDatabase(db1, path20, aiScore_offline);
+    // // writeRealtimeDatabase(db1, path21, AIplayerLocation_offline);
+    // // writeRealtimeDatabase(db1, path22, AIplayerLocation);
+    // writeRealtimeDatabase(db1, path23, AIeventStream_offline);
+    // writeRealtimeDatabase(db1, path24, currentTeamingCondition);
+    // writeRealtimeDatabase(db1, path25, agentOrder);
 }
 
 //************************************************ ENVIRONMENT INITIALIZATION ********************************************//
@@ -1313,6 +1309,7 @@ async function endGame() {
     if (currentRound <= maxRounds) {//&& numSurveyCompleted < 3) {
         currentRound ++;
         await runGameSequence("You've Completed a Round and earned " + totalScore + " points. Click OK to continue.");
+        writeGameDatabase();
 
         if (currentRound < 3){
             // if (currentRound > 1) await runGameSequence("Click OK to continue to the next round of play.");
@@ -1327,7 +1324,7 @@ async function endGame() {
             if (currentTeamingCondition.order == 1) handleCompleteness();
 
             startGame(currentRound, currentCondition, currentBlock, curSeeds); // Start the next round
-            writeGameDatabase();
+            
         }
 
     }   
@@ -3824,8 +3821,8 @@ async function loadAIComparison() {
             //     $("#ai-open-ended-feedback-container").attr("hidden", false);
             //     await loadAIopenEndedFeedback(numSurveyCompleted);
             // }
-            let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIchoice';
-            await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
+            // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIchoice';
+            // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
 
             let pathBase = `players/${player.fbID}/selectedAI/`;
             updateStateDirect(pathBase, TOPIC_AI_COMPARISON_DICT.selectedAI, 'choice')
@@ -3875,8 +3872,8 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
             };
 
             // // Example of writing the feedback to the database
-            let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded';
-            await writeRealtimeDatabase(db1, path, feedbackData);
+            // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded';
+            // await writeRealtimeDatabase(db1, path, feedbackData);
 
             let pathBase = `players/${player.fbID}/OpenEnded/`;
             updateStateDirect(pathBase,feedbackData, 'feedback')
@@ -4105,15 +4102,16 @@ async function loadFullSurvey() {
     async function completeExperiment() {
         numSurveyCompleted++;
         
-        let path;
-        if (numSurveyCompleted == 1) {
-        path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full1';
-        } else if (numSurveyCompleted == 2) {
-        path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full2';
-        }
+        // let path;
+        // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/fullSurvey';
+        // // if (numSurveyCompleted == 1) {
+        // // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full1';
+        // // } else if (numSurveyCompleted == 2) {
+        // // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full2';
+        // // }
 
-        // Save TOPIC_FULL_DICT to your database
-        await writeRealtimeDatabase(db1, path, TOPIC_FULL_DICT);
+        // // Save TOPIC_FULL_DICT to your database
+        // await writeRealtimeDatabase(db1, path, TOPIC_FULL_DICT);
 
         let pathBase = `players/${player.fbID}/likertAssessment/`;
         updateStateDirect(pathBase,TOPIC_FULL_DICT, 'likert')
@@ -4152,7 +4150,7 @@ async function loadCompletePage(){
     ******************************************************************************/
     // console.log("Database and firebaseuid: ", db1, firebaseUserId1); 
     // Database Path
-    var COMPLETE_DB_PATH        = EXPERIMENT_DATABASE_NAME + '/participantData/' + firebaseUserId1 + '/userFeedback';
+    // var COMPLETE_DB_PATH        = EXPERIMENT_DATABASE_NAME + '/participantData/' + firebaseUserId1 + '/userFeedback';
 
     $(document).ready(function (){
         /******************************************************************************
@@ -4227,8 +4225,11 @@ async function loadCompletePage(){
 
             let feedbacktext = $('#user-feedback-text').val();
             //let path = studyId + '/participantData/' + firebaseUserId1 + 'paricipantInfo/' + 'feedback';
-            let currentPath = studyId + '/participantData/' + firebaseUserId1 + '/participantInfo/' + 'feedback'
-            writeRealtimeDatabase(db1, currentPath, feedbacktext);
+            // let currentPath = studyId + '/participantData/' + firebaseUserId1 + '/participantInfo/' + 'feedback'
+            // writeRealtimeDatabase(db1, currentPath, feedbacktext);
+
+            let pathBase = `players/${player.fbID}/finalFeedback/`;
+            updateStateDirect(pathBase,feedbacktext, 'completePageFeedback')
     
             replaceClass('#user-feedback-button', "btn-secondary", "btn-primary");
         };
