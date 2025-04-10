@@ -955,7 +955,7 @@ let roundTime           = 0;
 
 // Data collection variables
 let objects         = [];
-let spawnData       = [];
+let spawnData       = {};
 let caughtTargets   = [];
 let missedTargets   = [];
 let playerClicks    = [];
@@ -1280,7 +1280,7 @@ async function startGame(round, condition, block, seeds) {
     setLocations();
 
     settings.AICollab   = 1;
-    settings.maxTargets = 15;
+    settings.maxTargets = 5;
    
     // Change to the next seed
     if (block == 0) {
@@ -1393,7 +1393,7 @@ async function resetGame(){
     // then reassign the variables
     eventStream             = [];//Array.from({ length: eventStreamSize }, () => ({}));// preallocate the array
     objects                 = []; // Reset the objects array
-    spawnData               = [];
+    spawnData               = {};
     caughtTargets           = [];
     playerClicks            = [];
     playerLocation          = [];
@@ -2004,7 +2004,7 @@ function spawnObject(settings){
 
         // push to objects array in order to render and update
         objects.push(newObject);
-        spawnData.push(newObject);
+        spawnData[frameCountGame] = newObject;
         // place event object here
 
         // ************************* Event Object for Spawning ******************** //   
