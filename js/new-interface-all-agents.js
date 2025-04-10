@@ -1687,7 +1687,6 @@ function updateObjects(settings) {
                 obj.active = false; // Set the object to inactive
                 toRemove.push( index );
 
-
                 // use otherplayersobjects to get the most recent object caught by the remote partner
                 const frameNumbers = Object.keys(otherPlayersObjects).map(Number);
                 const mostRecentObject = frameNumbers.length > 0 ? otherPlayersObjects[Math.max(...frameNumbers)] : null;
@@ -1736,7 +1735,7 @@ function updateObjects(settings) {
                 caughtTargets.push(obj);
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus`;
-                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound}
+                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound, 'value':obj.value}
                 updateStateDirect(pathBase, interceptDict, 'interception')
 
                 if (obj.ID == player.targetObjID){
@@ -1779,7 +1778,10 @@ function updateObjects(settings) {
             if (!obj.intercepted && checkCollision(AIplayer, obj)) { // MS5: added a condition
                 // Collision detected
                 obj.intercepted   = true; // Added this flage to make sure the object despawns after being caught  
-                // obj.AIintercepted = true; // MS2: added this flag             
+                
+                // obj.AIintercepted = true; // MS2: added this flag
+
+                // update state direct for ai interceptions!
                 //console.log("AI Collision detected!");
                 let caughtObj     = {frame: frameCountGame, target: obj}   
                 AIcaughtTargets.push(caughtObj);
