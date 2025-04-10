@@ -632,8 +632,8 @@ if (noAssignment){
 
     } else {
         conditionsArray = await initExperimentSettings();
-        blockOrderCondition = conditionsArray[0];
-        teamingBlockCondition = conditionsArray[1];
+        // blockOrderCondition = conditionsArray[0];
+        // teamingBlockCondition = conditionsArray[1];
     
         // await initExperimentSettings();
         // console.log('assignedCondition:', currentCondition); // Add this line
