@@ -112,7 +112,11 @@
                     // $('#comprehension-quiz-main-content').load("html/instructions-gameplay-pg3.html");
                     // $('#comprehension-quiz-main-content').load("html/competence-test.html"); 
                 } else{
-                    $('#consent-main-content').load("html/consent.html");
+                    // $('#consent-main-content').load("html/consent.html");
+                    $("#task-main-content").attr("hidden", false);
+ 
+                    // // // // Load Main Experiment
+                    $('#task-main-content').load('html/game-main-exp.html'); 
                 }
             });
         </script>

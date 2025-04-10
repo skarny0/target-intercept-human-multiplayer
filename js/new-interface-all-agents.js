@@ -611,7 +611,7 @@ function parseIntentions(childValue) {
         player2.toCenter = false;
     }
 
-    console.log("player2.targetObjID:", player2.targetObjID);
+    if (DEBUG) console.log("player2.targetObjID:", player2.targetObjID);
 }
 
 const otherPlayersObjects = {};
@@ -698,6 +698,8 @@ function writeGameDatabase(){
     
     // Regular Firebase database writing
     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
+
+    updateStateDirect(`${summaryStatsBase}/spawn`, spawnData, 'spawnData');
 
     // let path12  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/blockCondition';
     // let path13  = studyId + '/participantData/' + firebaseUserId1 + '/condition' + '/seedCondition';
@@ -1697,7 +1699,7 @@ function updateObjects(settings) {
                 // use otherplayersobjects to get the most recent object caught by the remote partner
                 const frameNumbers = Object.keys(otherPlayersObjects).map(Number);
                 const mostRecentObject = frameNumbers.length > 0 ? otherPlayersObjects[Math.max(...frameNumbers)] : null;
-                console.log("mostRecentObject:", mostRecentObject);
+                if (DEBUG) console.log("mostRecentObject:", mostRecentObject);
 
                 // create an event object here
                 let gameState = extractGameState(objects);
@@ -3394,7 +3396,7 @@ $(document).ready( function(){
                 player.targetObjID = objects[i].ID;
                 player.timeToIntercept = travelTime;
 
-                console.log("player's new target location:", player.targetX, player.targetY);
+                if (DEBUG) console.log("player's new target location:", player.targetX, player.targetY);
 
                 // ********* Update location to firebase for remote partner ********* //
                 let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
@@ -3460,7 +3462,7 @@ $(document).ready( function(){
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
                 updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'updateIntention');
-                console.log("player.targetObjID:", player.targetObjID);
+                if (DEBUG) console.log("player.targetObjID:", player.targetObjID);
 
                 let eventType       = 'clickCenter';
                 // let objectData      = 0;
@@ -3767,9 +3769,7 @@ async function loadAIComparison() {
             // Enable the submit button
             $('#survey-complete-button-comparison').prop('disabled', false);
 
-            if (DEBUG) {
-                console.log("AI Button Selected\n:", "Value :", TOPIC_AI_COMPARISON_DICT["selectedAI"]);
-            }
+            if (DEBUG) console.log("AI Button Selected\n:", "Value :", TOPIC_AI_COMPARISON_DICT["selectedAI"]);
         }
 
         async function completeExperiment() {
@@ -3934,7 +3934,7 @@ function renderSurveyQuestions(questionsToRender) {
     tbody.empty(); // Clear any existing content
 
     // Debug log to verify we're getting the questions
-    console.log('Rendering questions in order:', questionsToRender.map(q => q.id));
+   if (DEBUG) console.log('Rendering questions in order:', questionsToRender.map(q => q.id));
 
     questionsToRender.forEach((question) => {
         const row = `
@@ -3969,7 +3969,7 @@ function renderSurveyQuestions(questionsToRender) {
     });
 
     // Debug log to verify the HTML content after rendering
-    console.log('Table content after rendering:', tbody.html());
+    if (DEBUG) console.log('Table content after rendering:', tbody.html());
 }
 
 async function loadFullSurvey() {
@@ -3984,7 +3984,7 @@ async function loadFullSurvey() {
     const shuffledQuestions = shuffleArray(questions);
     
     // Debug log to verify shuffling
-    console.log('Questions shuffled:', shuffledQuestions.map(q => q.id));
+    if (DEBUG) console.log('Questions shuffled:', shuffledQuestions.map(q => q.id));
 
     // Render the shuffled questions
     renderSurveyQuestions(shuffledQuestions);
