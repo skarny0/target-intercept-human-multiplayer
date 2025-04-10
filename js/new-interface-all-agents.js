@@ -1247,6 +1247,8 @@ function setLocations(){
         // Place right for the first player
         player.x = canvas.width/2 + 50;
         player.y = canvas.height/2;
+        player.targetX = player.x;
+        player.targetY =  player.y;
 
         // assume player2 is now on the left
         AIplayer.x = canvas.width/2 - 50;
@@ -1404,19 +1406,6 @@ async function resetGame(){
     // aiClicks_adjusted_offline       = [];
     AIcaughtTargets_offline         = [];
     // AIplayerLocation_offline        = [];
-
-    setLocations();
-
-    // player.x        = canvas.width/2;
-    // player.y        = canvas.height/2;
-    // player.targetX  = canvas.width/2;
-    // player.targetY  = canvas.height/2;
-
-    // player2.x        = canvas.width/2;
-    // player2.y        = canvas.height/2;
-    // player2.targetX  = canvas.width/2;
-    // player2.targetY  = canvas.height/2;
-
 
     AIplayer.x, AIplayer.y = canvas.width/2  + 50; // MS5: Reset the player position
     AIplayer.targetX = canvas.width/2;
