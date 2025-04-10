@@ -676,7 +676,7 @@ function writeGameDatabase(){
     updateStateDirect(`${summaryStatsBase}/playerScore`, player2.score, 'player2Score');
     updateStateDirect(`${summaryStatsBase}/totalScore`, totalScore, 'totalScore');
     updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
-    updateStateDirect(`${summaryStatsBase}/round`, currentRound, 'currentRound');
+    updateStateDirect(`${summaryStatsBase}/round`, currentRound-1, 'currentRound');
     
     // Player2 statistics - add otherPlayersObjects for partner object updates
     if (settings.visualizeHumanPartner === 1) {
@@ -3797,7 +3797,7 @@ async function loadAIComparison() {
             // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIchoice';
             // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
 
-            let pathBase = `players/${player.fbID}/selectedAI/`;
+            let pathBase = `players/${player.fbID}/survey/selectedAI/`;
             updateStateDirect(pathBase, TOPIC_AI_COMPARISON_DICT.selectedAI, 'choice')
 
             $("#ai-comparison-container").attr("hidden", true);
@@ -3848,7 +3848,7 @@ async function loadAIopenEndedFeedback(numSurveyCompleted) {
             // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/OpenEnded';
             // await writeRealtimeDatabase(db1, path, feedbackData);
 
-            let pathBase = `players/${player.fbID}/OpenEnded/`;
+            let pathBase = `players/${player.fbID}/survey/OpenEnded/`;
             updateStateDirect(pathBase,feedbackData, 'feedback')
 
             $("#ai-open-ended-feedback-container").attr("hidden", true);
@@ -4086,7 +4086,7 @@ async function loadFullSurvey() {
         // // Save TOPIC_FULL_DICT to your database
         // await writeRealtimeDatabase(db1, path, TOPIC_FULL_DICT);
 
-        let pathBase = `players/${player.fbID}/likertAssessment/`;
+        let pathBase = `players/${player.fbID}/survey/likertAssessment/`;
         updateStateDirect(pathBase,TOPIC_FULL_DICT, 'likert')
 
         // Proceed to the next step
@@ -4201,9 +4201,16 @@ async function loadCompletePage(){
             // let currentPath = studyId + '/participantData/' + firebaseUserId1 + '/participantInfo/' + 'feedback'
             // writeRealtimeDatabase(db1, currentPath, feedbacktext);
 
-            let pathBase = `players/${player.fbID}/finalFeedback/`;
-            updateStateDirect(pathBase,feedbacktext, 'completePageFeedback')
-    
+            let pathBase = `players/${player.fbID}/survey/finalFeedback/`;
+
+            updateStateDirect(pathBase, feedbacktext, 'completePageFeedback')
+
+            // Disable the feedback button once submission is complete
+            $('#user-feedback-button').prop('disabled', true);
+
+            // Clear the feedback textbox
+            $('#user-feedback-text').val('');
+
             replaceClass('#user-feedback-button', "btn-secondary", "btn-primary");
         };
         //  Copy Unique Code to Clipboard
