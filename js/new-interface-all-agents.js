@@ -648,20 +648,13 @@ function parseObjectChanges(childValue) {
         if (!otherPlayersObjects[highestFrame]) {
             // Mark it so we don't process again
             otherPlayersObjects[highestFrame] = mostRecentObject;
-    
-            // In your code, "objects" likely is the array from updateObjects(). 
+
             // Loop through and find the matching object ID:
             objects.forEach((obj) => {
                 if (obj.active && obj.ID === mostRecentObject.ID && !obj.intercepted) {
                     // Only intercept it once
                     obj.intercepted = true;
-    
-                    // Award points to player2 exactly once, 
-                    // so it parallels "player.score += obj.value" in updateObjects()
                     player2.score += obj.value; 
-    
-                    // If you want to mark it in your event stream or logs, do that here as well
-                    // e.g., eventStream.push(...)
                 }
             });
         }
