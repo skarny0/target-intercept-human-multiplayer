@@ -51,20 +51,20 @@ import {
   } from "../src/mplib.js";
 // Define the configuration file for first database
 
-const firebaseConfig_Conditions= {
-    apiKey: "AIzaSyA8L9tuRB3TMpwisVTVbxXVwAMM03MGFuM",
-    authDomain: "multiplayer-competence-check.firebaseapp.com",
-    projectId: "multiplayer-competence-check",
-    storageBucket: "multiplayer-competence-check.firebasestorage.app",
-    messagingSenderId: "962742682387",
-    appId: "1:962742682387:web:3ccb105c11dddea6bb90e6"
-};
+// const firebaseConfig_Conditions= {
+//     apiKey: "AIzaSyA8L9tuRB3TMpwisVTVbxXVwAMM03MGFuM",
+//     authDomain: "multiplayer-competence-check.firebaseapp.com",
+//     projectId: "multiplayer-competence-check",
+//     storageBucket: "multiplayer-competence-check.firebasestorage.app",
+//     messagingSenderId: "962742682387",
+//     appId: "1:962742682387:web:3ccb105c11dddea6bb90e6"
+// };
 
-// const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase(firebaseConfig_Conditions );
+// // const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase(firebaseConfig_Conditions );
 
-// Get the reference to the two databases using the configuration files
-// const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase( firebaseConfig );
-const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_Conditions );
+// // Get the reference to the two databases using the configuration files
+// // const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase( firebaseConfig );
+// const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_Conditions );
 
 // console.log("Firebase UserId=" + firebaseUserId);
 
@@ -628,6 +628,7 @@ function parseObjectChanges(childValue) {
 
         if (frameData.objectStatus &&
             typeof frameData.objectStatus.ID === 'number' && 
+            typeof frameData.objectStatus.value === 'number' && 
             typeof frameData.objectStatus.intercepted === 'boolean'
         ) {
             // If this frame is newer than our current highest frame with valid object info
@@ -635,7 +636,8 @@ function parseObjectChanges(childValue) {
                 highestFrame = frameNum;
                 mostRecentObject = {
                     ID: frameData.objectStatus.ID,
-                    intercepted: frameData.objectStatus.intercepted
+                    intercepted: frameData.objectStatus.intercepted,
+                    value: frameData.objectStatus.value
                 };
             }
         }
@@ -643,15 +645,36 @@ function parseObjectChanges(childValue) {
 
     // Only do something if we actually found a mostRecentObject
     if (mostRecentObject) {
-        otherPlayersObjects[highestFrame] = mostRecentObject;
-        // console.log("Most recently collected object:", mostRecentObject);
+        // otherPlayersObjects[highestFrame] = mostRecentObject;
+        // // console.log("Most recently collected object:", mostRecentObject);
 
-        // Mark the object as intercepted
-        objects.forEach((obj) => {
-            if (obj.active && obj.ID === mostRecentObject.ID) {
-                obj.intercepted = true;
-            }
-        });
+        // // Mark the object as intercepted
+        // objects.forEach((obj) => {
+        //     if (obj.active && obj.ID === mostRecentObject.ID) {
+        //         obj.intercepted = true;
+        //         // player2.score += obj.value;
+        //     }
+        // });
+        if (!otherPlayersObjects[highestFrame]) {
+            // Mark it so we don't process again
+            otherPlayersObjects[highestFrame] = mostRecentObject;
+    
+            // In your code, "objects" likely is the array from updateObjects(). 
+            // Loop through and find the matching object ID:
+            objects.forEach((obj) => {
+                if (obj.active && obj.ID === mostRecentObject.ID && !obj.intercepted) {
+                    // Only intercept it once
+                    obj.intercepted = true;
+    
+                    // Award points to player2 exactly once, 
+                    // so it parallels "player.score += obj.value" in updateObjects()
+                    // player2.score += obj.value;  
+    
+                    // If you want to mark it in your event stream or logs, do that here as well
+                    // e.g., eventStream.push(...)
+                }
+            });
+        }
     }
 }
 
@@ -667,6 +690,7 @@ function writeGameDatabase(){
     
     // Player statistics
     updateStateDirect(`${summaryStatsBase}/playerScore`, player.score, 'playerScore');
+    updateStateDirect(`${summaryStatsBase}/playerScore`, player2.score, 'player2Score');
     updateStateDirect(`${summaryStatsBase}/totalScore`, totalScore, 'totalScore');
     updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
     updateStateDirect(`${summaryStatsBase}/round`, currentRound, 'currentRound');
@@ -1778,6 +1802,9 @@ function updateObjects(settings) {
             if (!obj.intercepted && checkCollision(AIplayer, obj)) { // MS5: added a condition
                 // Collision detected
                 obj.intercepted   = true; // Added this flage to make sure the object despawns after being caught  
+                let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus_AI`;
+                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound, 'value':obj.value}
+                updateStateDirect(pathBase, interceptDict, 'interception_AI')
                 
                 // obj.AIintercepted = true; // MS2: added this flag
 
@@ -1884,10 +1911,6 @@ function updateObjects(settings) {
 
     let isBottomFeeder = false;
     if (settings.AICollab == 4) isBottomFeeder = true;
-    
-    // SK1 Online AI player
-    // [ firstStepCollab, bestSolCollab, allSolCollab ] = runAIPlanner(objectsRemoved, AIplayer , observableRadius , center, 'collab', 
-    //     settings.AIStabilityThreshold, prevBestSolCollab, allSolCollab, frameCountGame, settings.alpha, isBottomFeeder);
 
     if (settings.visualizeAIPlayer==1){ // bound the collab AI player to conditions where it is visible
         [ firstStepCollab, bestSolCollab ] = runAIPlanner(objectsRemoved, AIplayer , observableRadius , center, 'collab', 
@@ -1910,6 +1933,8 @@ function updateObjects(settings) {
                 if (obj.ID == AIplayer.ID){
                     obj.AImarked = true;
                     obj.AIclicked = true
+
+                    // SK: update state direct the new ai intention
 
                     // pause before a new object is clicked
                     if (settings.AICollab == 3) planDelay = true;
@@ -1964,41 +1989,6 @@ function updateObjects(settings) {
         aiClicks_offline.push(aiIntention_offline);
         numAIChanges++;
     }
-
-     // ************************************* Run the Human Assistive AI Planner ***********************************//
-    // Run the planner conditional on the human player
-    // MS8
-    // [ firstStep, bestSol, allSol ] = runAIPlanner( objects, player , observableRadius , center, 'human', settings.AIStabilityThreshold, bestSol, allSol, frameCountGame, settings.alpha );
-    [ firstStep, bestSol ] = runAIPlanner( objects, player , observableRadius , center, 'human', frameCountGame, settings.alpha, false );
-    
-    // if (settings.AIMode>0) {    
-    //     // MS6
-    //     // Calculate the value of the human's current target
-    //     player.shownAdvice = true;
-
-    //     if (settings.AIMode >= 2) {
-    //         //if ((frameCountGame > 100) & (player.moving)) {
-    //         //    console.log( 'test case');
-    //         //}
-    //         // MS7
-    //         let [ valueHumanPlan , valuesSuggestions ] = calcValueHumanPlan( bestSol , allSol, player , settings.AIadviceAngleThreshold, ctx, objects  ); 
-    //         player.shownAdvice = false;
-
-    //         const deltaX = player.x - center.x;
-    //         const deltaY = player.y - center.y;
-    //         const distanceToCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    //         if ((numFramesAfterCaughtTarget > settings.AIframeDelay) && (distanceToCenter > 50)) {
-    //             if (!player.moving) {
-    //                 player.shownAdvice = true;
-    //             } else if (player.moving && (valueHumanPlan <= settings.AIadviceThresholdHigh)) {
-    //                 player.shownAdvice = true;
-    //             }
-    //         }
-    //         //console.log( 'Numframesplayernotmoving=' + numFramesPlayernotMoving + ' NumFramesAfterCaughtTarget=' + numFramesAfterCaughtTarget + ' ValuePlan=' + valueHumanPlan);
-    //     }
-         
-    // }
 }
 
 function spawnObject(settings){
@@ -2578,16 +2568,41 @@ function drawDebugBounds(obj) {
     ctx.strokeRect(obj.x, obj.y, obj.size, obj.size); // Draw the boundary of the object
 }
 
+let partnerScore = 0;
+let oldCount = 0;
+
+function updatePartnerScore() {
+  const newCount = Object.keys(otherPlayersObjects).length;
+  if (newCount !== oldCount) {
+    oldCount = newCount;
+    let sum = 0;
+    for (const frameKey in otherPlayersObjects) {
+      if (otherPlayersObjects.hasOwnProperty(frameKey)) {
+        sum += otherPlayersObjects[frameKey].value || 0;
+      }
+    }
+    player2.score = sum;
+  }
+}
+
 function drawScore() {
+    updatePartnerScore();
     scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height); // Clear the score canvas
     scoreCtx.font = '18px Roboto';
     scoreCtx.fillStyle = 'black'; // Choose a color that will show on your canvas
-    totalScore = player.score + AIplayer.score;``
+    if (settings.visualizeAIPlayer == 1) {
+        totalScore = player.score + AIplayer.score;
+        partnerScore = AIplayer.score
+    } else if (settings.visualizeHumanPartner == 1){ 
+        totalScore = player.score + player2.score;
+        partnerScore =  player2.score;
+    }
     scoreCtx.fillText('Team Score: ' + totalScore, 10, 20); // Adjust the positioning as needed
     // add a new line space between this right and the next
     scoreCtx.font = '14px Roboto';
+
     scoreCtx.fillText('You: ' + score, 10, 40); // Adjust the positioning as needed
-    scoreCtx.fillText('Partner: ' + AIplayer.score, 10, 60); // Adjust the positioning as needed
+    scoreCtx.fillText('Partner: ' + partnerScore, 10, 60); // Adjust the positioning as needed
 }
 
 // drawing outer mask
