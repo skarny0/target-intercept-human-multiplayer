@@ -645,16 +645,6 @@ function parseObjectChanges(childValue) {
 
     // Only do something if we actually found a mostRecentObject
     if (mostRecentObject) {
-        // otherPlayersObjects[highestFrame] = mostRecentObject;
-        // // console.log("Most recently collected object:", mostRecentObject);
-
-        // // Mark the object as intercepted
-        // objects.forEach((obj) => {
-        //     if (obj.active && obj.ID === mostRecentObject.ID) {
-        //         obj.intercepted = true;
-        //         // player2.score += obj.value;
-        //     }
-        // });
         if (!otherPlayersObjects[highestFrame]) {
             // Mark it so we don't process again
             otherPlayersObjects[highestFrame] = mostRecentObject;
@@ -668,7 +658,7 @@ function parseObjectChanges(childValue) {
     
                     // Award points to player2 exactly once, 
                     // so it parallels "player.score += obj.value" in updateObjects()
-                    // player2.score += obj.value;  
+                    player2.score += obj.value; 
     
                     // If you want to mark it in your event stream or logs, do that here as well
                     // e.g., eventStream.push(...)
@@ -2569,24 +2559,8 @@ function drawDebugBounds(obj) {
 }
 
 let partnerScore = 0;
-let oldCount = 0;
-
-function updatePartnerScore() {
-  const newCount = Object.keys(otherPlayersObjects).length;
-  if (newCount !== oldCount) {
-    oldCount = newCount;
-    let sum = 0;
-    for (const frameKey in otherPlayersObjects) {
-      if (otherPlayersObjects.hasOwnProperty(frameKey)) {
-        sum += otherPlayersObjects[frameKey].value || 0;
-      }
-    }
-    player2.score = sum;
-  }
-}
-
 function drawScore() {
-    updatePartnerScore();
+    // updatePartnerScore();
     scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height); // Clear the score canvas
     scoreCtx.font = '18px Roboto';
     scoreCtx.fillStyle = 'black'; // Choose a color that will show on your canvas
