@@ -1162,7 +1162,7 @@ async function initExperimentSettings() {
     let teamingDraw = null;
 
     if (!DEBUG){
-        teamingDraw = 0; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
+        teamingDraw = 1; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
         // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
         // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
         assignedTeamingCondition = newDifficultySettings[teamingDraw]
@@ -1173,7 +1173,7 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        teamingDraw = 0; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
+        teamingDraw = 1; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
         // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
         // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
         assignedTeamingCondition = newDifficultySettings[teamingDraw]
@@ -2481,10 +2481,10 @@ function drawTargetMarker(centerX, centerY, radius1, radius2, triangleBase = 5, 
     if (type == 'player2') ctx.fillStyle = 'green';
 
     // AI Players have their own marker colors by collab type and the game condition
-    if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 5) ctx.fillStyle = 'green';
-    if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 5) ctx.fillStyle = 'purple';
-    if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 15) ctx.fillStyle = 'blue';
-    if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 15) ctx.fillStyle = 'rgba(176, 97, 23)';// 'rgba(184, 115, 51)';
+    // if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 5) ctx.fillStyle = 'green';
+    // if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 5) ctx.fillStyle = 'purple';
+    if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 5) ctx.fillStyle = 'blue';
+    if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 5) ctx.fillStyle = 'rgba(176, 97, 23)';// 'rgba(184, 115, 51)';
 
     angles.forEach((angle) => {
         const tipX = centerX + radius1 * Math.cos(angle);
@@ -2928,7 +2928,7 @@ function displayAIStatus() {
         // aiAssistRobot.src = "./images/anon-icon-250px.png";
         aiAssistRobot.src = "./images/triangle-black-250px.png"
         aiAssistRobot.style.backgroundColor = AIplayer.color;
-        aiAssistRobotCaption.textContent = "Hi there, I'm your partner and will be controlling the green square! I may be a robot or a human.";
+        aiAssistRobotCaption.textContent = "Hi there, I'm your partner and will be controlling the blue square! I may be a robot or a human.";
         aiAssistRobotCaption.style.opacity = "1";
         aiAssistRobotCaption.style.backgroundColor = AIplayer.color;; // Semi-transparent green
         aiAssistRobotCaption.style.fontWeight = "bold";
