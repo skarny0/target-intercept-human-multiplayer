@@ -1408,7 +1408,8 @@ async function resetGame(){
     AIeventStream           = [];
     aiScore                 = 0;
     player.score            = 0;
-    AIplayer.score          = 0
+    player2.score           = 0;
+    AIplayer.score          = 0;
     totalScore              = 0;
     aiClicks                = [];
     aiClicks_offline        = [];
