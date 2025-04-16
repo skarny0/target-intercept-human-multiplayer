@@ -669,7 +669,7 @@ function parseScreenFocus(childValue){
 
 function writeGameDatabase(){
     let pathBase = `players/${player.fbID}/roundComplete`;
-    updateStateDirect(`${pathBase}/playerScore`, currentRound, 'roundComplete');
+    updateStateDirect(`${pathBase}`, currentRound, 'roundComplete');
 
     // First, write summary statistics to the MPLib database
     let summaryStatsBase = `players/${player.fbID}/summaryStats`;
