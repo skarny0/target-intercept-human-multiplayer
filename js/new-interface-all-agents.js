@@ -114,9 +114,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0408-debug";
+   studyId    = "multiplayer-main-0416-debug";
 } else {
-    studyId   = "multiplayer-main-0408";
+    studyId   = "multiplayer-main-0416";
 }
 
 
@@ -668,12 +668,14 @@ function parseScreenFocus(childValue){
 // *********************************************** Write to Database *****************************************************//
 
 function writeGameDatabase(){
+    let pathBase = `players/${player.fbID}/roundComplete`;
+    updateStateDirect(`${pathBase}/playerScore`, currentRound, 'roundComplete');
+
     // First, write summary statistics to the MPLib database
     let summaryStatsBase = `players/${player.fbID}/summaryStats`;
     
     // Player statistics
     updateStateDirect(`${summaryStatsBase}/playerScore`, player.score, 'playerScore');
-    updateStateDirect(`${summaryStatsBase}/playerScore`, player2.score, 'player2Score');
     updateStateDirect(`${summaryStatsBase}/totalScore`, totalScore, 'totalScore');
     updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
     updateStateDirect(`${summaryStatsBase}/round`, currentRound-1, 'currentRound');
@@ -682,6 +684,8 @@ function writeGameDatabase(){
     if (settings.visualizeHumanPartner === 1) {
         // updateStateDirect(`${summaryStatsBase}/player2`, player2, 'player2Object');
         updateStateDirect(`${summaryStatsBase}/otherPlayersObjects`, otherPlayersObjects, 'player2Interceptions');
+        updateStateDirect(`${summaryStatsBase}/playerScore`, player2.score, 'player2Score');
+        
     }
     
     // AI statistics if applicable
@@ -1320,6 +1324,8 @@ async function endGame() {
     if (currentRound <= maxRounds) {//&& numSurveyCompleted < 3) {
         currentRound ++;
         await runGameSequence("You've Completed a Round and earned " + totalScore + " points. Click OK to continue.");
+
+        // TODO: make sure that the round marker is now writtend
         writeGameDatabase();
 
         if (currentRound < 3){
