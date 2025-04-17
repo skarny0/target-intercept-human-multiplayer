@@ -39,8 +39,8 @@ const firebaseConfig_db1 = {
 // Get the reference to the two databases using the configuration files
 const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase( firebaseConfig_db1 );
 
-window.db1 = db1;
-window.fbUID = firebaseUserId1;
+// window.db1 = db1;
+// window.fbUID = firebaseUserId1;
 // const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_db2 );
 
 // console.log("Firebase UserId=" + firebaseUserId);
@@ -79,7 +79,7 @@ if (DEBUG){
 } else {
     studyId   = "multiplayer-test-0416";
 }
-window.studyId = studyId
+// window.studyId = studyId
 
 // WRITE PROLIFIC PARTICIPANT DATA TO DB1
 let pathnow = studyId + '/participantData/' + firebaseUserId1 + '/participantInfo';

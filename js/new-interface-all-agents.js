@@ -68,9 +68,9 @@ import {
 
 // console.log("Firebase UserId=" + firebaseUserId);
 
-const db1 = window.db1;
-const firebaseUserId1 = window.fbUID;
-const fbStudyId = window.studyId;
+// const db1 = window.db1;
+// const firebaseUserId1 = window.fbUID;
+// const fbStudyId = window.studyId;
 
 // console.log("recordEventData: about to push to path", somePath);
 // console.log("db1 is:", db1);
@@ -1186,9 +1186,9 @@ async function initExperimentSettings() {
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
         teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
-        console.log("Calling blockRandomization with:", {
-            db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
-        });
+        // console.log("Calling blockRandomization with:", {
+        //     db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
+        // });
         // teamingDraw = await blockRandomization(db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
 
         console.log("teaming condition " + teamingDraw);
