@@ -68,6 +68,14 @@ import {
 
 // console.log("Firebase UserId=" + firebaseUserId);
 
+const db1 = window.db1;
+const firebaseUserId1 = window.fbUID;
+const fbStudyId = window.studyId;
+
+// console.log("recordEventData: about to push to path", somePath);
+// console.log("db1 is:", db1);
+// console.log("firebaseuid",firebaseUserId1);
+
 function getDebugParams(){
     const urlParams = new URLSearchParams(window.location.search);
     let debugBoolean = Boolean(urlParams.get('debug'));
@@ -1160,7 +1168,7 @@ async function initExperimentSettings() {
     updateStateDirect(pathBase, assignedCondition, 'conditions');
      // currentCondition = assignedCondition[0]+1;
 
-    const teamingBlockCondition = 'teamingCondition'; // a string we use to represent the condition name
+    const teamingCondition = 'teamingCondition'; // a string we use to represent the condition name
     const numTeamingConditions = 4; // number of conditions
     let assignedTeamingCondition;
     let teamingDraw = null;
@@ -1169,7 +1177,7 @@ async function initExperimentSettings() {
         teamingDraw = 1; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
         // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
         // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
-        assignedTeamingCondition = newDifficultySettings[teamingDraw]
+        assignedTeamingCondition = newDifficultySettings[teamingDraw];
         // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
     } else {
         // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
@@ -1177,10 +1185,15 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        teamingDraw = 1; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
-        // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
-        // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
-        assignedTeamingCondition = newDifficultySettings[teamingDraw]
+        teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
+        console.log("Calling blockRandomization with:", {
+            db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
+        });
+        // teamingDraw = await blockRandomization(db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
+
+        console.log("teaming condition " + teamingDraw);
+
+        assignedTeamingCondition = newDifficultySettings[teamingDraw];
     }
     pathBase = `players/${player.fbID}/condition/team`;
     updateStateDirect(pathBase, assignedTeamingCondition, 'conditions');
@@ -1220,7 +1233,7 @@ async function initializeGame() {
     
     console.log("Initializing game...");
     gameInitialized = true;
-    console.log('teaming settings', currentTeamingCondition);
+    // console.log('teaming settings', currentTeamingCondition);
 
     // Initialize your game parameters
 
@@ -3789,8 +3802,8 @@ async function loadAIComparison() {
             let SURVEY_END_TIME = new Date();
 
             // if (numSurveyCompleted == 1) {
-            //     let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1';
-            //     await writeRealtimeDatabase(db1, path, feedbackData);
+                // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1';
+                // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
             //     $("#ai-comparison-container").attr("hidden", true);
             //     $("#ai-open-ended-feedback-container").attr("hidden", false);
             //     loadAIopenEndedFeedback(numSurveyCompleted);

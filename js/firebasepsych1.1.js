@@ -188,6 +188,7 @@ export async function blockRandomization( db, studyId , condition , numCondition
     const probWillFinish = 0.8;
 
     const condPath =  studyId+'/studyInfo/conditionCounts/'+condition;
+    // console.log("blockRandomization path:", condPath);
 
     // Get server time. We cannot directly access this from firebase so we first write to database and then retrieve it
     const timePath = studyId + '/studyInfo/serverTime/';

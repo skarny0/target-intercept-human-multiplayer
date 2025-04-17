@@ -34,10 +34,13 @@ const firebaseConfig_db1 = {
     storageBucket: "multiplayer-competence.firebasestorage.app",
     messagingSenderId: "789905714850",
     appId: "1:789905714850:web:6dbab846d37fe1701d71fb"
-  };
+};
 
 // Get the reference to the two databases using the configuration files
 const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase( firebaseConfig_db1 );
+
+window.db1 = db1;
+window.fbUID = firebaseUserId1;
 // const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_db2 );
 
 // console.log("Firebase UserId=" + firebaseUserId);
@@ -76,6 +79,7 @@ if (DEBUG){
 } else {
     studyId   = "multiplayer-test-0408";
 }
+window.studyId = studyId
 
 // WRITE PROLIFIC PARTICIPANT DATA TO DB1
 let pathnow = studyId + '/participantData/' + firebaseUserId1 + '/participantInfo';
@@ -425,7 +429,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = 10 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 3 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
