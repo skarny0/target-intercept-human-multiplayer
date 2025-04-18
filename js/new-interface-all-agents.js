@@ -28,6 +28,11 @@ import { writeRealtimeDatabase,writeURLParameters,readRealtimeDatabase,
     initializeRealtimeDatabase,initializeSecondRealtimeDatabase 
 } from "./firebasepsych1.1.js";
 
+import {
+    getDatabase, ref, onValue, get, set, update, off,
+    push, onChildAdded, onChildChanged,
+    onChildRemoved, remove, serverTimestamp, onDisconnect, runTransaction
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
 import {
     initializeMPLIB,
@@ -50,31 +55,6 @@ import {
     getWaitRoomInfo
   } from "../src/mplib.js";
 // Define the configuration file for first database
-
-// const firebaseConfig_Conditions= {
-//     apiKey: "AIzaSyA8L9tuRB3TMpwisVTVbxXVwAMM03MGFuM",
-//     authDomain: "multiplayer-competence-check.firebaseapp.com",
-//     projectId: "multiplayer-competence-check",
-//     storageBucket: "multiplayer-competence-check.firebasestorage.app",
-//     messagingSenderId: "962742682387",
-//     appId: "1:962742682387:web:3ccb105c11dddea6bb90e6"
-// };
-
-// // const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase(firebaseConfig_Conditions );
-
-// // Get the reference to the two databases using the configuration files
-// // const [ db1 , firebaseUserId1 ] = await initializeRealtimeDatabase( firebaseConfig );
-// const [ db2 , firebaseUserId2 ] = await initializeSecondRealtimeDatabase( firebaseConfig_Conditions );
-
-// console.log("Firebase UserId=" + firebaseUserId);
-
-// const db1 = window.db1;
-// const firebaseUserId1 = window.fbUID;
-// const fbStudyId = window.studyId;
-
-// console.log("recordEventData: about to push to path", somePath);
-// console.log("db1 is:", db1);
-// console.log("firebaseuid",firebaseUserId1);
 
 function getDebugParams(){
     const urlParams = new URLSearchParams(window.location.search);
@@ -954,7 +934,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
+    maxFrames         = 10 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1495,7 +1475,6 @@ function render() {
     if (settings.visualizeAIPlayer==1) drawAIPlayer();
     // if (settings.visualizeAIPlayerOffline==1) drawAIPlayerOffline();
     displayAIStatus();                                // Display which ai
-    drawAISolution();                                  // Draw AI solution of type specified in settings
     drawObjects();         
     drawLight(drtLightChoice);
     ctx.restore();
@@ -1522,13 +1501,13 @@ function updateObjects(settings) {
 
             let locationDict = {'x':player.x, 'y':player.y, 
                                 'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-                                'frame':frameCountGame, 'round':currentRound
+                                'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
             updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
 
             pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
             let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
-                                      'frame':frameCountGame, 'round':currentRound
+                                      'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
             updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
         }   
@@ -1583,7 +1562,7 @@ function updateObjects(settings) {
             // updateStateDirect(`${pathBase}/y`, player.y, 'location_'+roundID);
             let locationDict = {'x':player.x, 'y':player.y, 
                 'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-                'frame':frameCountGame, 'round':currentRound
+                'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
             updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
         }
@@ -1761,16 +1740,18 @@ function updateObjects(settings) {
                 score             += obj.value;
                 player.score      += obj.value;
                 
+                // stop player after catching intended target
                 caughtTargets.push(obj);
+                if (obj.ID == player.targetObjID) player.moving = false;
 
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus`;
-                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound, 'value':obj.value}
-                updateStateDirect(pathBase, interceptDict, 'interception')
+                let interceptDict = {
+                    'ID': obj.ID, 'intercepted':obj.intercepted, 'value':obj.value,
+                    'frame': frameCountGame, 'round': currentRound, 'timestamp': serverTimestamp()
+                };
+                updateStateDirect(pathBase, interceptDict, 'interception');
 
-                if (obj.ID == player.targetObjID){
-                    player.moving = false; // stop player after catching intended target
-                } 
-
+                 
                 // *************************** Data Writing *********************************//
                 let gameState = extractGameState(objects);
                 let objectData      = {ID: obj.ID, value: obj.value,
@@ -1808,7 +1789,7 @@ function updateObjects(settings) {
                 // Collision detected
                 obj.intercepted   = true; // Added this flage to make sure the object despawns after being caught  
                 let pathBase = `players/${player.fbID}/${frameCountGame}/objectStatus_AI`;
-                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound, 'value':obj.value}
+                let interceptDict = {'ID': obj.ID, 'intercepted':obj.intercepted, 'frame': frameCountGame, 'round': currentRound, 'value':obj.value, 'timestamp': serverTimestamp()}
                 updateStateDirect(pathBase, interceptDict, 'interception_AI')
                 
                 // obj.AIintercepted = true; // MS2: added this flag
@@ -2141,12 +2122,6 @@ function setVelocityTowardsObservableArea(obj) {
 }
 
 function checkCollision(player, obj) {
-    // Calculate the player's bounding box edges from its center
-    let playerLeft = player.x - player.width / 2;
-    let playerRight = player.x + player.width / 2;
-    let playerTop = player.y - player.height / 2;
-    let playerBottom = player.y + player.height / 2;
-
     // Calculate the distance from the center of the player to the center of the object
     let circleDistanceX = Math.abs(obj.x - player.x);
     let circleDistanceY = Math.abs(obj.y - player.y);
@@ -2618,326 +2593,9 @@ function drawMask(ctx) {
     ctx.arc(centerX, centerY, maskRadius, 0, Math.PI * 2, false);
     ctx.fill();
 
-    // Draw a slightly smaller circle inside the cut-out area
-    // ctx.globalCompositeOperation = 'source-over';
-    // ctx.fillStyle = isLightOn ? 'rgb(255,128,237)' : 'rgba(0, 0, 0, 0)'; // This is transparent black
-    // ctx.beginPath();
-    // ctx.arc(centerX, centerY, innerMaskRadius, 0, Math.PI * 2, false);
-    // ctx.fill();
-
-    // // Then cut out a smaller circular area from the inner circle
-    // ctx.globalCompositeOperation = 'destination-out';
-    // ctx.beginPath();
-    // ctx.arc(centerX, centerY, innerMaskRadius - 15, 0, Math.PI * 2, false);
-    // ctx.fill();
-
     ctx.globalCompositeOperation = 'source-over';
     ctx.restore();
 }
-
-// Function to where the player is heading
-function drawArrowDirection() {
-    // Define the radial distance from the player
-    let radialDistance = 60; // Adjust this value as needed
-
-    // Player dimensions (assuming square for simplicity)
-    let playerWidth = 50; // Replace with actual player width
-    let playerHeight = 50; // Replace with actual player height
-
-  
-    // Calculate the arrow's position around the player center
-    let arrowCenterX = player.x + radialDistance * Math.cos(player.angle);
-    let arrowCenterY = player.y + radialDistance * Math.sin(player.angle);
-
-    // Define the size of the arrow
-    let arrowLength = 20;
-    let arrowWidth = 10;
-
-    // Calculate the end point of the arrow
-    let endX = arrowCenterX + arrowLength * Math.cos(player.angle);
-    let endY = arrowCenterY + arrowLength * Math.sin(player.angle);
-
-    // Calculate the points for the base of the arrow
-    let baseX1 = arrowCenterX + arrowWidth * Math.cos(player.angle - Math.PI / 2);
-    let baseY1 = arrowCenterY + arrowWidth * Math.sin(player.angle - Math.PI / 2);
-    let baseX2 = arrowCenterX + arrowWidth * Math.cos(player.angle + Math.PI / 2);
-    let baseY2 = arrowCenterY + arrowWidth * Math.sin(player.angle + Math.PI / 2);
-
-    // Draw the arrow
-    ctx.save();
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.moveTo(baseX1, baseY1);
-    ctx.lineTo(endX, endY);
-    ctx.lineTo(baseX2, baseY2);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-}
-
-function drawTargetLocation() {
-    // draw an x where the player is aiming
-    ctx.save();
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(player.targetX - 10, player.targetY - 10);
-    ctx.lineTo(player.targetX + 10, player.targetY + 10);
-    ctx.moveTo(player.targetX + 10, player.targetY - 10);
-    ctx.lineTo(player.targetX - 10, player.targetY + 10);
-    ctx.stroke();
-    ctx.restore();
-}
-
-function drawAISolution() {
-    if ((settings.AIMode>0) && (bestSol != null) && (player.shownAdvice)) {  // MS7
-        // get the length of the suggested path
-        let pathLength = Math.min( bestSol.interceptLocations.length, settings.AIMaxDisplayLength ); // MS7
-        if (pathLength > 0) {
-            // MS7
-            if (settings.AIDisplayMode==0) {
-                // Show where to move with lines
-                ctx.save();
-                ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)'; // Adjust the last number for transparency 
-                ctx.lineWidth = 5;
-                ctx.beginPath();
-                ctx.moveTo(player.x, player.y );
-                for (let i=0; i<pathLength; i++) {
-                    let transp = (i+1)/3;
-                    ctx.strokeStyle = 'rgba(255, 255, 0, ' + transp + ')'; // Adjust the last number for transparency
-                    let toX = bestSol.interceptLocations[i][0];
-                    let toY = bestSol.interceptLocations[i][1];
-                    ctx.lineTo( toX, toY );
-                }
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            // MS7: updating code with new variable
-             if (settings.AIDisplayMode==1) {
-                // Show a cross on where to click next 
-                ctx.save();
-                ctx.fillStyle = 'yellow'; // Color of the text
-                ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)'; // Adjust the last number for transparency
-                ctx.lineWidth = 5;
-                ctx.beginPath();
-
-                ctx.moveTo(player.x, player.y );
-
-                let i = 0;
-                //for (let i=0; i<pathLength; i++) {
-                    let toX = bestSol.interceptLocations[i][0];
-                    let toY = bestSol.interceptLocations[i][1];
-                    
-                    ctx.lineTo( toX, toY ); 
-                    ctx.moveTo(toX - 10, toY - 10);
-                    ctx.lineTo(toX + 10, toY + 10);
-                    ctx.moveTo(toX + 10, toY - 10);
-                    ctx.lineTo(toX - 10, toY + 10); 
-
-                    // Draw text
-                    // Adjust the text position as needed. Here it's slightly offset from the cross.
-                    //ctx.fillText(i+1, toX + 15, toY + 15); 
-                //}
-                ctx.stroke();
-                ctx.restore();
-            }
- 
-            // MS7
-            // if (settings.AIDisplayMode==1 && settings.AIMode==2) {
-                /*
-            if (settings.AIDisplayMode==1) {
-                // Show a cross on where to click next 
-                ctx.save();
-                ctx.fillStyle = 'yellow'; // Color of the text
-                ctx.lineWidth = 5;
-                ctx.beginPath();
-            
-                ctx.moveTo(player.x, player.y );
-
-                let maxError = 600; // Adjust this value as needed
-            
-                let i = 0;
-                let toX = bestSol.interceptLocations[i][0];
-                let toY = bestSol.interceptLocations[i][1];
-                
-                // Calculate the error
-                let error = Math.sqrt(Math.pow(player.x - toX, 2) + Math.pow(player.y - toY, 2));
-                // Adjust the color based on the error
-                let opacity = Math.min(1, error / maxError);
-                ctx.strokeStyle = `rgba(255, 255, 0, ${opacity})`;
-            
-                ctx.lineTo( toX, toY ); 
-                ctx.moveTo(toX - 10, toY - 10);
-                ctx.lineTo(toX + 10, toY + 10);
-                ctx.moveTo(toX + 10, toY - 10);
-                ctx.lineTo(toX - 10, toY + 10); 
-            
-                ctx.stroke();
-                ctx.restore();
-            }
-            */
-
-            if (settings.AIDisplayMode==2) {
-                // Highlight the target interception sequence 
-                ctx.save();
-                ctx.fillStyle = 'black'; // Color of the text
-                ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)'; // Adjust the last number for transparency
-                ctx.lineWidth = 5;
-                ctx.beginPath();
-
-                let i = 0;
-                for (let i=0; i<pathLength; i++) {
-                    let indexNow = bestSol.originalIndex[i];
-                    if (indexNow != -1) {
-                        let toX = objects[indexNow].x;
-                        let toY = objects[indexNow].y;                      
-                        // Draw text
-                        //ctx.fillText(i+1, toX + 25, toY + 25); 
-
-                        // Draw an arrow to the first one
-                        if (i==0) {
-                            drawFilledArrow(ctx, toX - 25 , toY, 10); 
-                        }
-                    }
-                    
-                }
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-    }
-
-    // MS7
-    // Some visualization debugging tools
-    let showIDs = false;
-    if (showIDs) {
-        let numObjects = objects.length;
-        for (let i=0; i<numObjects; i++) {
-            // only draw the objects that are not intercepted
-            if (objects[i].intercepted == false) {
-                let index = objects[i].ID;
-                let targetX = objects[i].x;
-                let targetY = objects[i].y;
-                ctx.fillStyle = 'black'; // Color of the text
-                ctx.fillText(index , targetX + 15, targetY + 15);
-            }          
-        }
-    }
-}
-
-// MS6: test function
-function drawFullAISolutionDEBUG() {
-    if ((settings.AIMode>0) && (sol != null)) {
-        // Draw all indices
-        let numObjects = objects.length;
-        for (let i=0; i<numObjects; i++) {
-            let index = i;
-            let targetX = objects[index].x;
-            let targetY = objects[index].y;
-            ctx.fillStyle = 'black'; // Color of the text
-            ctx.fillText(index , targetX - 25, targetY + 15);
-        }
-
-        let numSuggestions = sol.valueGoingTowardsObject.length;
-        for (let i=0; i<numSuggestions; i++) {
-            // Show value and index for each target
-            let index = sol.originalIndexSuggestions[i];
-            let value = sol.valueGoingTowardsObject[i];
-
-            let targetX = center.x;
-            let targetY = center.y;
-            let valueTarget = 0;
-            if (index != -1) { // Not going towards origin
-                // if (objects[index] == null) {
-                //     // console.log( 'test');
-                // }
-                targetX = objects[index].x;
-                targetY = objects[index].y;
-                valueTarget = objects[index].fill / objects[index].size;
-            }
-            ctx.fillStyle = 'black'; // Color of the text
-            ctx.fillText(index , targetX + 25, targetY + 15); 
-  
-            ctx.fillStyle = 'green'; // Color of the text
-            let str = value.toFixed(2) + ' (' + valueTarget.toFixed(2) + ')';
-            ctx.fillText(str , targetX + 25, targetY - 15); 
-
-            //if (objects.length != numSuggestions) {
-            //    console.log( 'test');
-            //}
-
-
-            if (sol.interceptLocationTowardsObject[i] != null) {
-               let toX = sol.interceptLocationTowardsObject[i][0];
-               let toY = sol.interceptLocationTowardsObject[i][1];
-               
-               // Draw interception path for player
-               ctx.save();
-               ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)'; // Adjust the last number for transparency 
-               ctx.lineWidth = 5;
-               // Set the dash pattern: [dashLength, gapLength]
-               ctx.setLineDash([10, 15]); // Example: 10 pixels dash, 15 pixels gap
-               ctx.beginPath();
-               ctx.moveTo(player.x, player.y );
-               ctx.lineTo( toX, toY );
-
-               let str = value.toFixed( 2 );
-               ctx.fillText(str , toX + 15, toY - 15); 
-
-               // Draw trajectory from target to this interception point
-               //let index = sol.originalIndex[i];
-               //if (index != -1) {
-                  //if (objects[index] == null) {
-                  //    console.log( 'test');
-                  //} else {                
-                    ctx.lineTo( targetX, targetY );           
-                  //}
-                  
-               //}
-
-
-               ctx.stroke();
-               ctx.restore();
-            }
-            
-        }
-    }
-} 
-
-// MS4: draw arrow
-function drawFilledArrow(ctx, toX, toY, arrowWidth) {
-    const arrowLength = arrowWidth * 4; // Adjust the length of the arrow as needed
-    const headLength = arrowWidth * 0.6; // Length of the head of the arrow
-    const headWidth = arrowWidth * 1.4; // Width of the head of the arrow
-
-    // Starting points for the arrow (adjust as necessary)
-    const fromX = toX - arrowLength;
-    const fromY = toY;
-
-    // Set the fill color
-    //ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
-    //ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)'; // Adjust the last number for transparency
-    ctx.fillStyle = 'yellow';
-    //ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)'; // Adjust the last number for transparency
-
-
-    // Begin a new path for the arrow
-    ctx.beginPath();
-
-    // Draw the arrow body as a rectangle
-    ctx.rect(fromX, fromY - arrowWidth / 2, arrowLength - headLength, arrowWidth);
-
-    // Draw the arrow head as a triangle
-    ctx.moveTo(toX - headLength, toY - headWidth / 2);
-    ctx.lineTo(toX, toY);
-    ctx.lineTo(toX - headLength, toY + headWidth / 2);
-
-    // Close the path and fill the arrow with the set color
-    ctx.closePath();
-    ctx.fill();
-}
-
 // Messaging board status + AI image type
 
 function displayAIStatus() {
@@ -3421,7 +3079,7 @@ $(document).ready( function(){
                 // ********* Update location to firebase for remote partner ********* //
                 let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
                 let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
-                                        'frame':frameCountGame, 'round':currentRound
+                                        'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
                 };
                 updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
 
@@ -3430,7 +3088,7 @@ $(document).ready( function(){
                 //if (DEBUG) console.log("player.targetObjID:", player.targetObjID);
 
                 let movementDict = {'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-                                    'frame':frameCountGame, 'round':currentRound
+                                    'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
                 }
 
                 pathBase = `players/${player.fbID}/${frameCountGame}/velocity`; 
@@ -3480,6 +3138,8 @@ $(document).ready( function(){
                 player.toCenter = true;
                 player.targetObjID = -1;
 
+                // SK NOTE: this one was troublesome when pushing player.targetObjID in object form for some reason
+                // Goal: add the 'timestamp': serverTimestamp() to this call
                 let pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
                 updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'updateIntention');
                 if (DEBUG) console.log("player.targetObjID:", player.targetObjID);
@@ -3622,133 +3282,6 @@ function isClickOnCenter(clickX,clickY){
 }
 
 //***************************************************** AI COMPARISON ***************************************************//
-
-// async function loadAIComparison() {
-//     var DEBUG_SURVEY = DEBUG;
-
-//     // Survey Information
-//     var TOPIC_AI_COMPARISON_DICT = {
-//         "selectedAI": null,
-//     };
-
-//     // Clear previous inputs
-//     // Clear previous inputs and classes
-//     $('#ai-1-button').removeClass('robot-button-selected robot-button-iron robot-button-copper robot-button-green robot-button-purple robot-button-brown robot-button-blue');
-//     $('#ai-2-button').removeClass('robot-button-selected robot-button-iron robot-button-copper robot-button-green robot-button-purple robot-button-brown robot-button-blue');
-//     $('#survey-complete-button-comparison').prop('disabled', true);
-//     // $('#ai-1-button').removeClass('robot-button-selected');
-//     // $('#ai-2-button').removeClass('robot-button-selected');
-//     // $('#survey-complete-button-comparison').prop('disabled', true);
-
-//      // max targets is 5 first, then 15
-//      if (visitedBlocks == 1 && currentCondition <= 4) { // takse us to the correct survey ... 
-//         $('#ai-1-button').addClass('robot-button-green');
-//         $('#ai-2-button').addClass('robot-button-purple');
-//         $('#ai-1-button').next('figcaption').text('Green-Bot');
-//         $('#ai-2-button').next('figcaption').text('Purple-Bot');
-//     } else if (visitedBlocks == 2 && currentCondition <= 4 ) {
-//         // $('#ai-1-button').addClass('robot-button-iron');
-//         $('#ai-1-button').addClass('robot-button-blue');
-//         $('#ai-2-button').addClass('robot-button-copper');
-//         $('#ai-1-button').next('figcaption').text('Blue-Bot');
-//         $('#ai-2-button').next('figcaption').text('Copper-Bot');
-//     }
-
-//     // max targets is 15 first, then 5
-//     if (visitedBlocks == 1 && currentCondition > 4) { // takes us to the correct survey
-//         // $('#ai-1-button').addClass('robot-button-iron');
-//         $('#ai-1-button').addClass('robot-button-blue');
-//         $('#ai-2-button').addClass('robot-button-copper');
-//         $('#ai-1-button').next('figcaption').text('Blue-Bot');
-//         $('#ai-2-button').next('figcaption').text('Copper-Bot');
-//     } else if (visitedBlocks == 2 && currentCondition > 4) {
-//         $('#ai-1-button').addClass('robot-button-green');
-//         $('#ai-2-button').addClass('robot-button-purple');
-//         $('#ai-1-button').next('figcaption').text('Green-Bot');
-//         $('#ai-2-button').next('figcaption').text('Purple-Bot');
-//     }
-
-
-//     $(document).ready(function () {
-       
-
-//         function handleAISelection() {
-//             /*
-//                 Image Button Selection Controller.
-
-//                 Only one AI option can be selected.
-//                 Enable the submit button once an AI is selected.
-//             */
-//             // Retrieve the current AI that was selected
-//             let selectedAI = $(this).attr("id");
-
-//             if (selectedAI === 'ai-1-button') {
-//                 $('#ai-1-button').addClass('robot-button-selected');
-//                 $('#ai-2-button').removeClass('robot-button-selected');
-//                 TOPIC_AI_COMPARISON_DICT["selectedAI"] = agent1Name;
-//             } else {
-//                 $('#ai-2-button').addClass('robot-button-selected');
-//                 $('#ai-1-button').removeClass('robot-button-selected');
-//                 TOPIC_AI_COMPARISON_DICT["selectedAI"] = agent2Name;
-//             }
-
-//             // Enable the submit button
-//             $('#survey-complete-button-comparison').prop('disabled', false);
-
-//             if (DEBUG) {
-//                 console.log("AI Button Selected\n:", "Value :", TOPIC_AI_COMPARISON_DICT["selectedAI"]);
-//             }
-//         }
-
-//         async function completeExperiment() {
-//             /*
-//                 When submit button is clicked, the experiment is done.
-
-//                 This will submit the final selection and then load the
-//                 "Experiment Complete" page.
-//             */
-//             let SURVEY_END_TIME = new Date();
-
-//             // Write to database based on the number of surveys completed
-//             // numSurveyCompleted++;
-//             // AIComparisonComplete = True
-            
-//             if (numSurveyCompleted == 1) {
-//                 let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1' ;
-//                 // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT);
-//                 $("#ai-comparison-container").attr("hidden", true);
-//                 // $("#full-game-container").attr("hidden", false);
-//                 $("#ai-open-ended-feedback-container").attr("hidden", false);
-//                 loadAIopenEndedFeedback(numSurveyCompleted);
-                
-//             } else if (numSurveyCompleted == 2) {
-//                 let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2' ;
-//                 // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT);
-//                 $("#ai-comparison-container").attr("hidden", true);
-//                 // $("#full-game-container").attr("hidden", false);
-//                 $("#ai-open-ended-feedback-container").attr("hidden", false);
-//                 await loadAIopenEndedFeedback(numSurveyCompleted);
-//                 // push them to the final page of the experiment which redirects participants
-//                 // await runGameSequence("Congratulations on Finishing the Main Experiment! Click OK to Continue to the Feedback Survey.");
-//                 // finalizeBlockRandomization(db1, studyId, currentCondition);
-//                 // // finalizeBlockRandomization(db1, studyId, curSeeds);
-//                 // $("#ai-comparison-container").attr("hidden", true);
-//                 // $("#task-header").attr("hidden", true);
-//                 // $("#exp-complete-header").attr("hidden", false);
-//                 // $("#complete-page-content-container").attr("hidden", false);
-//                 // await loadCompletePage();
-//                 // $('#task-complete').load('html/complete.html');
-//             } 
-//         }
-
-//         // Handle AI selection for both buttons
-//         $('#ai-1-button').click(handleAISelection);
-//         $('#ai-2-button').click(handleAISelection);
-
-//         // Handle submitting survey
-//         $('#survey-complete-button-comparison').off().click(completeExperiment);
-//     });
-// }
 async function loadAIComparison() {
     var DEBUG_SURVEY = DEBUG;
 
@@ -3800,23 +3333,6 @@ async function loadAIComparison() {
                 "Experiment Complete" page.
             */
             let SURVEY_END_TIME = new Date();
-
-            // if (numSurveyCompleted == 1) {
-                // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison1';
-                // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
-            //     $("#ai-comparison-container").attr("hidden", true);
-            //     $("#ai-open-ended-feedback-container").attr("hidden", false);
-            //     loadAIopenEndedFeedback(numSurveyCompleted);
-            // } else if (numSurveyCompleted == 2) {
-            //     let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIcomparison2';
-            //     writeRealtimeDatabase(path)
-            //     $("#ai-comparison-container").attr("hidden", true);
-            //     $("#ai-open-ended-feedback-container").attr("hidden", false);
-            //     await loadAIopenEndedFeedback(numSurveyCompleted);
-            // }
-            // let path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/AIchoice';
-            // await writeRealtimeDatabase(db1, path, TOPIC_AI_COMPARISON_DICT.selectedAI);
-
             let pathBase = `players/${player.fbID}/survey/selectedAI/`;
             updateStateDirect(pathBase, TOPIC_AI_COMPARISON_DICT.selectedAI, 'choice')
 
@@ -4094,17 +3610,6 @@ async function loadFullSurvey() {
 
     async function completeExperiment() {
         numSurveyCompleted++;
-        
-        // let path;
-        // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/fullSurvey';
-        // // if (numSurveyCompleted == 1) {
-        // // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full1';
-        // // } else if (numSurveyCompleted == 2) {
-        // // path = studyId + '/participantData/' + firebaseUserId1 + '/selfAssessment/full2';
-        // // }
-
-        // // Save TOPIC_FULL_DICT to your database
-        // await writeRealtimeDatabase(db1, path, TOPIC_FULL_DICT);
 
         let pathBase = `players/${player.fbID}/survey/likertAssessment/`;
         updateStateDirect(pathBase,TOPIC_FULL_DICT, 'likert')
@@ -4125,14 +3630,6 @@ async function loadFullSurvey() {
 }
 //*************************************************** COMPLETE -- REDIRECT ************************************************//
 async function loadCompletePage(){
-    // try {
-    //     let response = await fetch('path/to/complete/page.html');
-    //     let text = await response.text();
-    //     document.getElementById('complete-page-content-container').innerHTML = text;
-    // } catch (error) {
-    //     console.error('Error:', error);
-    // }
-
     var DEBUG_COMPLETE     = false;
 
 
@@ -4217,9 +3714,6 @@ async function loadCompletePage(){
             */
 
             let feedbacktext = $('#user-feedback-text').val();
-            //let path = studyId + '/participantData/' + firebaseUserId1 + 'paricipantInfo/' + 'feedback';
-            // let currentPath = studyId + '/participantData/' + firebaseUserId1 + '/participantInfo/' + 'feedback'
-            // writeRealtimeDatabase(db1, currentPath, feedbacktext);
 
             let pathBase = `players/${player.fbID}/survey/finalFeedback/`;
 
