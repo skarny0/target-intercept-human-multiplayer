@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0416-debug";
+   studyId    = "multiplayer-main-0422-newSpawning-debug";
 } else {
-    studyId   = "multiplayer-main-0416";
+    studyId   = "multiplayer-main-0422";
 }
 
 
@@ -141,7 +141,8 @@ let funList = {
 
 // List the node names where we place listeners for any changes to the children of these nodes; set to '' if listening to changes for children of the root
 // let listenerPaths = [ 'coins' , 'players' ];
-let listenerPaths = [ 'players' ];
+// let listenerPaths = [ 'players' ];
+let listenerPaths = ['spawn', 'players', 'objectStatus', 'clicks'];
 
 // Set the session configuration for MPLIB
 initializeMPLIB( sessionConfig , studyId , funList, listenerPaths, verbosity );
@@ -179,10 +180,6 @@ function updateWaitingRoom() {
     // Get waiting room elements
     const waitingRoomScreen = document.getElementById('waitingRoomPage');
     const welcomeContainer = document.querySelector('.welcome-container');
-    // const countdownContainer = document.getElementById('countdownContainer');
-    // const messageWaitingRoom = document.getElementById('messageWaitingRoom');
-    // const joinBtn = document.getElementById('joinBtn');
-    // const countdownValue = document.getElementById('countdownValue');
     
     // Make sure waiting room is visible
     waitingRoomScreen.style.display = 'block';
@@ -244,9 +241,6 @@ async function startSession() {
     playerId = player.fbID;
     if (DEBUG) console.log("Current Player ID:", playerId);
 
-    // let pathID  = studyId + '/participantData/' + firebaseUserId1 + '/mplibKey';
-    // writeRealtimeDatabase(db1, pathID, playerId);
-
     // log all players in session
     let allPlayers = getCurrentPlayerIds();
     if (DEBUG) console.log("All Players in Session:", allPlayers);
@@ -278,8 +272,6 @@ async function startSession() {
     }
 
     // Initialize game when we have a valid session
-    // NOTE / TODO: Scaffold this init game call with the countdown
-    // NOTE: Only when game initialized does this trigeger the condition assignments for player 2
     console.log('teaming settings', currentTeamingCondition);
     while (!gameInitialized) {
         await initializeGame();
@@ -324,16 +316,69 @@ function updateOngoingSession() {
  * @param {string} childEvent - The type of event that triggered the change (e.g., 'child_added', 'child_changed').
  */
 function receiveStateChange(path, childKey, childValue, childEvent) {
+
+    if (path === "interception") console.log("interception!");
     if (noAssignment) parseConditions(childValue)
 
     if (currentRound == 2 && childKey == remoteId) parseStatus(childValue)
 
+    if (path == 'spawn' && settings.visualizeHumanPartner == 1){
+        //  console.log("spawnObject", childValue);
+        //  TO ADD: only push if the remote player  has received it. 
+        objects.push(childValue);
+    }
+
+    if (path == 'objectStatus'){
+        // console.log("interception", childValue);
+        // console.log("interception", objects[childValue.ID]);
+        objects.forEach((obj) => {
+            if (obj.ID == childValue.ID) obj.intercepted = true;
+        });
+    }
+
+    if (path == 'clicks' && settings.visualizeHumanPartner == 1){
+
+        if (childKey == player.fbID){
+            console.log("click childValue", childValue);
+            player.targetX = childValue.x; //+ center.x;
+            player.targetY = childValue.y; //+ center.y;
+            player.moving = childValue.moving;
+            player.targetObjID = childValue.id;
+            player.timeToIntercept = childValue.travelTime;
+        } else if (childKey == remoteId){
+            console.log("detected remote id movement");
+            player2.targetObjID == childKey.id;
+                    // Mark the object as marked
+            objects.forEach((obj) => {
+                if (obj.active && obj.ID === player2.targetObjID) {
+                    obj.marked2= true;
+                }
+            });
+
+            if (player2.targetObjID === -1){
+                player2.toCenter = true;
+                if (DEBUG) console.log("player2.toCenter:", player2.toCenter);
+            } else{
+                player2.toCenter = false;
+            }
+
+             if (DEBUG) console.log("player2.targetObjID:", player2.targetObjID);
+        }
+      
+
+        // handleClick
+    }
+
     if (childKey === remoteId && settings.visualizeHumanPartner==1) {
+        // console.log("path", childValue.path);
+        // console.log("childvalue ", childValue);
         parseLocationDictionary(childValue);
-        parseIntentions(childValue);
-        parseObjectChanges(childValue);
+        // parseIntentions(childValue);
+        // parseObjectChanges(childValue);
         // parseScreenFocus(childValue)
     }
+
+    // detect new spawn and then push object to the objects list
 }
 /**
  * Removes the current player's state from the database by setting it to null.
@@ -435,7 +480,6 @@ function getMostRecentPlayerData(childValue) {
                 x: frameData.location.x,
                 y: frameData.location.y
             };
-            
         }
 
         // Check target location
@@ -508,7 +552,8 @@ function updatePlayer2Movement() {
 
     const mostRecentFrame = Math.max(...frameNumbers);
     // const position = otherPlayersLocations[mostRecentFrame]; // not using this for now
-    const target = otherPlayersTargets[mostRecentFrame];
+    // const target = otherPlayersTargets[mostRecentFrame];
+    const target = player2.targetObjID
     const velocity = otherPlayersVelocities[mostRecentFrame];
 
     // Update the player's target location
@@ -594,7 +639,7 @@ function parseIntentions(childValue) {
 
     if (player2.targetObjID === -1){
         player2.toCenter = true;
-        console.log("player2.toCenter:", player2.toCenter);
+        if (DEBUG) console.log("player2.toCenter:", player2.toCenter);
     } else{
         player2.toCenter = false;
     }
@@ -660,7 +705,7 @@ function writeGameDatabase(){
     updateStateDirect(`${pathBase}`, currentRound, 'roundComplete');
 
     // First, write summary statistics to the MPLib database
-    let summaryStatsBase = `players/${player.fbID}/summaryStats`;
+    let summaryStatsBase = `summaryStats/round/${currentRound-1}`;
     
     // Player statistics
     updateStateDirect(`${summaryStatsBase}/playerScore`, player.score, 'playerScore');
@@ -878,14 +923,14 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = 10 * fps;// settings.maxSeconds * fps;
+    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
 
 // let halfwayGame = Math.floor(maxFrames/2);
 
-const updateInterval    = 1000 / fps; // How many milliseconds per logic update
+const updateInterval    = 1000 / fps; // How many milliseconds per game update (30 fps)
 let firstRender         = 0;
 let roundTime           = 0;
 
@@ -1049,7 +1094,7 @@ let AIcaughtTargets_offline = [];
 let AIplayerLocation_offline = [];
 
 let numFramesPlayernotMoving = 0; // MS6
-let numFramesAfterCaughtTarget = 0; // MS6
+// let numFramesAfterCaughtTarget = 0; // MS6
 
 const AIplayer_offline = {
     color: 'rgba(128, 128, 128, 0.5)',//'rgba(255, 0, 0, 0.5)', // grey color for the offline player
@@ -1219,6 +1264,10 @@ async function startGame(round, condition, block, seeds) {
 
     setAgent();
     setLocations();
+
+    let pathBase = `players/${player.fbID}/gameStart`;
+    let startObject = {"status": true, "round": currentRound, "isHuman":settings.visualizeHumanPartner}
+    updateStateDirect(pathBase, startObject, "roundStart")
 
     settings.AICollab   = 1;
     settings.maxTargets = 5;
@@ -1457,6 +1506,11 @@ function updateObjects(settings) {
         }   
     }
     
+    /* 
+        To implement dynamic time warping we need to ensure that
+        --  framecounts accross each player are directly in sync (this allows for the spawning of object to never outrun each other)
+        --  we may be able to do this by adjusting the call to updateobjects
+    */
     frameCountGame++;                           // MS: increment scene update count
     deltaFrameCount++;                          // Limit the amount of data pushes
     
@@ -1597,11 +1651,19 @@ function updateObjects(settings) {
 
     // MS: and inserted the following code
     if (frameCountGame % settings.spawnInterval === 0) {
-        spawnObject(settings);    
+        // spawnObject(settings);    
+        // send an update to firebause under the path spawnObject
+        // let pathBase = {objects/ID}
+
+        if (player.arrivalIdx === 1){
+            // broadcast new object details to firebase by calling spawnObject
+            // let pathbase
+            spawnObject(settings);    
+        }
     }
 
     let toRemove = [];
-    let caughtAnything = false; // MS6
+    // let caughtAnything = false; // MS6
     objects.forEach((obj, index) => {
         if (obj.active) {
             // obj.x += obj.vx * obj.speed; // Update x position
@@ -1645,42 +1707,42 @@ function updateObjects(settings) {
                 if (DEBUG) console.log("mostRecentObject:", mostRecentObject);
 
                 // create an event object here
-                let gameState = extractGameState(objects);
+                // let gameState = extractGameState(objects);
 
-                // add an event object for catching the target as a human player
-                // Values for writing to dataframe
-                let objectData      = {ID: obj.ID, value: obj.value,
-                                    x: obj.x, y: obj.y,
-                                    dx: obj.dx, dy: obj.dy,
-                                    vx: obj.vx, vy: obj.vy, speed: obj.speed,
-                                    clicked: obj.clicked, AIclicked: obj.AIclicked, 
-                                    marked: obj.marked, AImarked: obj.AImarked};
+                // // add an event object for catching the target as a human player
+                // // Values for writing to dataframe
+                // let objectData      = {ID: obj.ID, value: obj.value,
+                //                     x: obj.x, y: obj.y,
+                //                     dx: obj.dx, dy: obj.dy,
+                //                     vx: obj.vx, vy: obj.vy, speed: obj.speed,
+                //                     clicked: obj.clicked, AIclicked: obj.AIclicked, 
+                //                     marked: obj.marked, AImarked: obj.AImarked};
 
-                let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
-                                    dx: player.dx, dy: player.dy,
-                                    targetX: player.targetX, targetY: player.targetY,
-                                    angle: player.angle, moving: player.moving,
-                                    score:player.score, AIscore: AIplayer.score};
+                // let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
+                //                     dx: player.dx, dy: player.dy,
+                //                     targetX: player.targetX, targetY: player.targetY,
+                //                     angle: player.angle, moving: player.moving,
+                //                     score:player.score, AIscore: AIplayer.score};
 
-                let interceptData   = {x: player.targetX, y: player.targetY, time: 0, distance: 0, 
-                                        intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
-                // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location: drtLightChoice}; // consider adding more to this
-                let eventType       = 'exit';
+                // let interceptData   = {x: player.targetX, y: player.targetY, time: 0, distance: 0, 
+                //                         intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
+                // // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location: drtLightChoice}; // consider adding more to this
+                // let eventType       = 'exit';
 
-                // collapse the 4 object events (spawning, collision, clicking, exiting) into one 1 dataframe
-                let eventObject     = {time: frameCountGame, eventType: eventType, 
-                                    objectData: objectData, playerData: playerData, 
-                                    interceptData: interceptData, gameState: gameState};
+                // // collapse the 4 object events (spawning, collision, clicking, exiting) into one 1 dataframe
+                // let eventObject     = {time: frameCountGame, eventType: eventType, 
+                //                     objectData: objectData, playerData: playerData, 
+                //                     interceptData: interceptData, gameState: gameState};
 
-                // if (DEBUG) console.log("Exit Event Object", eventObject);
-                eventStream.push(eventObject);
+                // // if (DEBUG) console.log("Exit Event Object", eventObject);
+                // eventStream.push(eventObject);
             }
             
             // ********************************** Human CAUGHT TARGET ************************************//
             if (!obj.intercepted && checkCollision(player, obj)) {
                 // Collision detected
-                obj.intercepted   = true; // MS2: added this flag
-                caughtAnything    = true;    //MS6
+                // obj.intercepted   = true; // MS2: added this flag
+                // caughtAnything    = true;    //MS6
                 score             += obj.value;
                 player.score      += obj.value;
                 
@@ -1695,36 +1757,39 @@ function updateObjects(settings) {
                 };
                 updateStateDirect(pathBase, interceptDict, 'interception');
 
-                 
+                pathBase = `objectStatus/${obj.ID}`;
+                updateStateDirect(pathBase, interceptDict);
+
+                //  updatestatedirect and push an empty object towards the path with the object ID being the leaf node
                 // *************************** Data Writing *********************************//
-                let gameState = extractGameState(objects);
-                let objectData      = {ID: obj.ID, value: obj.value,
-                                    x: obj.x, y: obj.y,
-                                    dx: obj.dx, dy: obj.dy,
-                                    vx: obj.vx, vy: obj.vy, speed: obj.speed,
-                                    clicked: obj.clicked, AIclicked: obj.AIclicked, 
-                                    marked: obj.marked, AImarked: obj.AImarked};
+                // let gameState = extractGameState(objects);
+                // let objectData      = {ID: obj.ID, value: obj.value,
+                //                     x: obj.x, y: obj.y,
+                //                     dx: obj.dx, dy: obj.dy,
+                //                     vx: obj.vx, vy: obj.vy, speed: obj.speed,
+                //                     clicked: obj.clicked, AIclicked: obj.AIclicked, 
+                //                     marked: obj.marked, AImarked: obj.AImarked};
 
-                let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
-                                    dx: player.dx, dy: player.dy,
-                                    targetX: player.targetX, targetY: player.targetY,
-                                    angle: player.angle, moving: player.moving,
-                                    score:player.score, AIscore: AIplayer.score};
+                // let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
+                //                     dx: player.dx, dy: player.dy,
+                //                     targetX: player.targetX, targetY: player.targetY,
+                //                     angle: player.angle, moving: player.moving,
+                //                     score:player.score, AIscore: AIplayer.score};
 
-                let interceptData   = {x: player.targetX, y: player.targetY, time: 0, distance: 0, 
-                                        intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
-                let eventType       = 'catch';
-                let eventObject     = {time: frameCountGame, eventType: eventType, 
-                                    objectData: objectData, playerData: playerData, 
-                                    interceptData: interceptData, gameState: gameState};
+                // let interceptData   = {x: player.targetX, y: player.targetY, time: 0, distance: 0, 
+                //                         intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
+                // let eventType       = 'catch';
+                // let eventObject     = {time: frameCountGame, eventType: eventType, 
+                //                     objectData: objectData, playerData: playerData, 
+                //                     interceptData: interceptData, gameState: gameState};
 
-                // if (DEBUG) console.log("Caught Target Event Object", eventObject);
-                eventStream.push(eventObject)
+                // // if (DEBUG) console.log("Caught Target Event Object", eventObject);
+                // eventStream.push(eventObject)
                
             }
 
              // MS6 Checking times between catching objects for human player
-            if (caughtAnything) numFramesAfterCaughtTarget=0; else numFramesAfterCaughtTarget++;
+            // if (caughtAnything) numFramesAfterCaughtTarget=0; else numFramesAfterCaughtTarget++;
 
             // ********************************** AI ONLINE CAUGHT TARGET ************************************//
 
@@ -1747,30 +1812,30 @@ function updateObjects(settings) {
                 AIplayer.score    += obj.value;
 
                 // *************************** Data Writing *********************************//
-                let gameState = extractGameState(objects);
-                let objectData    = {ID: obj.ID, value: obj.value,
-                                    x: obj.x, y: obj.y,
-                                    dx: obj.dx, dy: obj.dy,
-                                    vx: obj.vx, vy: obj.vy, speed: obj.speed,
-                                    clicked: obj.clicked, AIclicked: obj.AIclicked,
-                                    marked: obj.marked, AImarked: obj.AImarked};
+                // let gameState = extractGameState(objects);
+                // let objectData    = {ID: obj.ID, value: obj.value,
+                //                     x: obj.x, y: obj.y,
+                //                     dx: obj.dx, dy: obj.dy,
+                //                     vx: obj.vx, vy: obj.vy, speed: obj.speed,
+                //                     clicked: obj.clicked, AIclicked: obj.AIclicked,
+                //                     marked: obj.marked, AImarked: obj.AImarked};
 
 
-                let AIplayerData      = {x: AIplayer.x, y: AIplayer.y, speed: AIplayer.velocity, 
-                                    targetX: AIplayer.targetX, targetY: AIplayer.targetY,
-                                    angle: AIplayer.angle, moving: AIplayer.moving,
-                                    score:AIplayer.score};
+                // let AIplayerData      = {x: AIplayer.x, y: AIplayer.y, speed: AIplayer.velocity, 
+                //                     targetX: AIplayer.targetX, targetY: AIplayer.targetY,
+                //                     angle: AIplayer.angle, moving: AIplayer.moving,
+                //                     score:AIplayer.score};
 
-                let interceptData   = {x: AIplayer.targetX, y: AIplayer.targetY, time: 0, distance: 0, intendedTarget: AIplayer.ID};
-                // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
-                let eventType       = 'catch';
-                let eventObject     = {time: frameCountGame, eventType: eventType, 
-                                    objectData: objectData, playerData: AIplayerData, 
-                                    interceptData: interceptData,gameState: gameState};
+                // let interceptData   = {x: AIplayer.targetX, y: AIplayer.targetY, time: 0, distance: 0, intendedTarget: AIplayer.ID};
+                // // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
+                // let eventType       = 'catch';
+                // let eventObject     = {time: frameCountGame, eventType: eventType, 
+                //                     objectData: objectData, playerData: AIplayerData, 
+                //                     interceptData: interceptData,gameState: gameState};
 
-                // if (DEBUG) console.log("Caught Target Event Object", eventObject);
+                // // if (DEBUG) console.log("Caught Target Event Object", eventObject);
 
-                AIeventStream.push(eventObject)
+                // AIeventStream.push(eventObject)
             }
 
             // ********************************** AI OFFLINE CAUGHT TARGET ************************************//
@@ -1787,29 +1852,29 @@ function updateObjects(settings) {
 
                 // *************************** Data Writing *********************************//
 
-                let gameState = extractGameState(objects);
-                let objectData      = {ID: obj.ID, value: obj.value,
-                                    x: obj.x, y: obj.y,
-                                    dx: obj.dx, dy: obj.dy,
-                                    vx: obj.vx, vy: obj.vy, speed: obj.speed,
-                                    clicked: obj.clicked, AIclicked: obj.AIclicked,
-                                    marked: obj.marked, AImarked: obj.AImarked};
+                // let gameState = extractGameState(objects);
+                // let objectData      = {ID: obj.ID, value: obj.value,
+                //                     x: obj.x, y: obj.y,
+                //                     dx: obj.dx, dy: obj.dy,
+                //                     vx: obj.vx, vy: obj.vy, speed: obj.speed,
+                //                     clicked: obj.clicked, AIclicked: obj.AIclicked,
+                //                     marked: obj.marked, AImarked: obj.AImarked};
 
-                let AIplayerData      = {x: AIplayer_offline.x, y: AIplayer_offline.y, speed: AIplayer_offline.velocity, 
-                                    targetX: AIplayer_offline.targetX, targetY: AIplayer_offline.targetY,
-                                    angle: AIplayer_offline.angle, moving: AIplayer_offline.moving,
-                                    score: AIplayer_offline.score};
+                // let AIplayerData      = {x: AIplayer_offline.x, y: AIplayer_offline.y, speed: AIplayer_offline.velocity, 
+                //                     targetX: AIplayer_offline.targetX, targetY: AIplayer_offline.targetY,
+                //                     angle: AIplayer_offline.angle, moving: AIplayer_offline.moving,
+                //                     score: AIplayer_offline.score};
 
-                let interceptData   = {x: AIplayer_offline.targetX, y: AIplayer_offline.targetY, time: 0, distance: 0, intendedTarget: AIplayer_offline.ID};
-                // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
-                let eventType       = 'catch';
-                let eventObject     = {time: frameCountGame, eventType: eventType, 
-                                    objectData: objectData, playerData: AIplayerData, 
-                                    interceptData: interceptData, gameState: gameState};
+                // let interceptData   = {x: AIplayer_offline.targetX, y: AIplayer_offline.targetY, time: 0, distance: 0, intendedTarget: AIplayer_offline.ID};
+                // // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
+                // let eventType       = 'catch';
+                // let eventObject     = {time: frameCountGame, eventType: eventType, 
+                //                     objectData: objectData, playerData: AIplayerData, 
+                //                     interceptData: interceptData, gameState: gameState};
 
-                // if (DEBUG) console.log("Caught Target Event Object", eventObject);
+                // // if (DEBUG) console.log("Caught Target Event Object", eventObject);
 
-                AIeventStream_offline.push(eventObject)
+                // AIeventStream_offline.push(eventObject)
             }
         }
     });
@@ -1947,38 +2012,37 @@ function spawnObject(settings){
 
         setVelocityTowardsObservableArea(newObject);
 
-        // push to objects array in order to render and update
-        objects.push(newObject);
-        spawnData[frameCountGame] = newObject;
-        // place event object here
+         // ********* Broadcast new object to Firebase  ********* //
+        let pathBase = `spawn`
+        updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
 
         // ************************* Event Object for Spawning ******************** //   
-        let gameState = extractGameState(objects);
-        let objectData      = {ID: newObject.ID, value: newObject.value,
-                            x: newObject.x, y: newObject.y,
-                            dx: newObject.dx, dy: newObject.dy,
-                            vx: newObject.vx, vy: newObject.vy, speed: newObject.speed,
-                            clicked: newObject.clicked, AIclicked: newObject.AIclicked,
-                            marked: newObject.marked, AImarked: newObject.AImarked};
+        // let gameState = extractGameState(objects);
+        // let objectData      = {ID: newObject.ID, value: newObject.value,
+        //                     x: newObject.x, y: newObject.y,
+        //                     dx: newObject.dx, dy: newObject.dy,
+        //                     vx: newObject.vx, vy: newObject.vy, speed: newObject.speed,
+        //                     clicked: newObject.clicked, AIclicked: newObject.AIclicked,
+        //                     marked: newObject.marked, AImarked: newObject.AImarked};
 
-        let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
-                            dx: player.dx, dy: player.dy,
-                            targetX: player.targetX, targetY: player.targetY,
-                            angle: player.angle, moving: player.moving,
-                            score:player.score, AIscore: AIplayer.score};
+        // let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
+        //                     dx: player.dx, dy: player.dy,
+        //                     targetX: player.targetX, targetY: player.targetY,
+        //                     angle: player.angle, moving: player.moving,
+        //                     score:player.score, AIscore: AIplayer.score};
 
-        let interceptData   = {x: player.targetX, y: player.targetY, time: 0, distance: 0, 
-                                intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
-        // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
-        let eventType       = 'spawn';
+        // let interceptData   = {x: player.targetX, y: player.targetY, time: 0, distance: 0, 
+        //                         intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
+        // // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
+        // let eventType       = 'spawn';
 
-        let eventObject     = {time: frameCountGame, eventType: eventType, 
-                            objectData: objectData, playerData: playerData, 
-                            interceptData: interceptData, gameState: gameState};
+        // let eventObject     = {time: frameCountGame, eventType: eventType, 
+        //                     objectData: objectData, playerData: playerData, 
+        //                     interceptData: interceptData, gameState: gameState};
 
-        // if (DEBUG) console.log("Spawn Event Object", eventObject);
+        // // if (DEBUG) console.log("Spawn Event Object", eventObject);
 
-        eventStream.push(eventObject)
+        // eventStream.push(eventObject)
 
     }
     location.lastSpawnTime = elapsedTime;
@@ -2063,6 +2127,8 @@ function setVelocityTowardsObservableArea(obj) {
     obj.dx = obj.vx * obj.speed;
     obj.dy = obj.vy * obj.speed;
     // console.log(`Initial Velocity for object: vx = ${obj.vx}, vy = ${obj.vy}`);
+
+    // updatestatedirect the new object dx and dy
 }
 
 function checkCollision(player, obj) {
@@ -2957,7 +3023,7 @@ $(document).ready( function(){
         let success, travelTime, interceptPosX, interceptPosY, totalDistanceTraveled = 0;
 
         // Extract the game state for the click and then push into the playerClicks dataframe
-        let gameSnapshot = extractGameState(objects);
+        // let gameSnapshot = extractGameState(objects);
         // if (DEBUG) console.log('gameSnapshot:', gameSnapshot);  
 
         // check if player clicked on a target
@@ -3012,31 +3078,40 @@ $(document).ready( function(){
                 // Make sure these vars are first updated to mplib/firebase and then create assignments
                 // Intercept the clicked object using the optimal intercept location
                 // Firebase function handler should be leading these reassignments.
-                player.targetX = interceptPosX + center.x; //+ center.x;
-                player.targetY = interceptPosY + center.y; //+ center.y;
-                player.moving = true;
-                player.targetObjID = objects[i].ID;
-                player.timeToIntercept = travelTime;
-
+                if (settings.visualizeAIPlayer == 1){
+                    player.targetX = interceptPosX + center.x; //+ center.x;
+                    player.targetY = interceptPosY + center.y; //+ center.y;
+                    player.moving = true;
+                    player.targetObjID = objects[i].ID;
+                    player.timeToIntercept = travelTime;
+                }
+                
+               
                 if (DEBUG) console.log("player's new target location:", player.targetX, player.targetY);
 
                 // ********* Update location to firebase for remote partner ********* //
-                let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-                let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
+                let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`;
+                let targetLocationDict = {'x':(interceptPosX + center.x), 'y':(interceptPosY + center.y), 
+                                        'id': objects[i].ID, 'moving': true, 'travelTime': travelTime,
                                         'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
                 };
+
                 updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
 
-                pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`
-                updateStateDirect(pathBase, targetLocationDict, 'updateIntention');
+                // this should handle all player movement.
+                pathBase =  `clicks/${player.fbID}`;
+                updateStateDirect(pathBase, targetLocationDict, 'playerMovementUpdate');
+
+                // pathBase = `players/${player.fbID}/${frameCountGame}/playerIntention`;
+                // updateStateDirect(pathBase, targetLocationDict, 'updateIntention');
                 //if (DEBUG) console.log("player.targetObjID:", player.targetObjID);
 
-                let movementDict = {'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-                                    'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
-                }
+                // let movementDict = {'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
+                //                     'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
+                // }
 
-                pathBase = `players/${player.fbID}/${frameCountGame}/velocity`; 
-                updateStateDirect(pathBase,movementDict,'updatePlayerMovement');
+                // pathBase = `players/${player.fbID}/${frameCountGame}/velocity`; 
+                // updateStateDirect(pathBase,movementDict,'updatePlayerMovement');
 
 
                 // (Sanity Check) Only in the case that the object speed is beyond the player speed 
@@ -3049,30 +3124,30 @@ $(document).ready( function(){
                 if (DEBUG) console.log("ai frame delay relative to human :", planDelayFrames);
 
                 // Values for writing to dataframe
-                let objectData      = {ID: objects[i].ID, value: objects[i].value,
-                                    x: objects[i].x, y: objects[i].y,
-                                    dx: objects[i].dx, dy: objects[i].dy,
-                                    vx: objects[i].vx, vy: objects[i].vy, speed: objects[i].speed,
-                                    clicked: objects[i].clicked, marked: objects[i].marked, AImarked: objects[i].AImarked};
+                // let objectData      = {ID: objects[i].ID, value: objects[i].value,
+                //                     x: objects[i].x, y: objects[i].y,
+                //                     dx: objects[i].dx, dy: objects[i].dy,
+                //                     vx: objects[i].vx, vy: objects[i].vy, speed: objects[i].speed,
+                //                     clicked: objects[i].clicked, marked: objects[i].marked, AImarked: objects[i].AImarked};
 
-                let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
-                                    dx: player.dx, dy: player.dy,
-                                    targetX: player.targetX, targetY: player.targetY,
-                                    angle: player.angle, moving: player.moving,
-                                    score:player.score, AIscore: AIplayer.score, 
-                                    playerDelay: numFramesPlayernotMoving, AIplayerDelay: planDelayFrames};
+                // let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
+                //                     dx: player.dx, dy: player.dy,
+                //                     targetX: player.targetX, targetY: player.targetY,
+                //                     angle: player.angle, moving: player.moving,
+                //                     score:player.score, AIscore: AIplayer.score, 
+                //                     playerDelay: numFramesPlayernotMoving, AIplayerDelay: planDelayFrames};
 
-                let interceptData   = {x: interceptPosX, y: interceptPosY, time: travelTime, distance: totalDistanceTraveled,  
-                                        intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
-                // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
-                let eventType       = 'clickObject';
+                // let interceptData   = {x: interceptPosX, y: interceptPosY, time: travelTime, distance: totalDistanceTraveled,  
+                //                         intendedTarget: player.targetObjID, AIintendedTarget: AIplayer.ID};
+                // // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
+                // let eventType       = 'clickObject';
 
-                // collapse the 4 object events (spawning, collision, clicking, exiting) into one 1 dataframe
-                let eventObject     = {time: frameCountGame, eventType: eventType, 
-                                    objectData: objectData, playerData: playerData, 
-                                    interceptData: interceptData, gameState: gameSnapshot};
+                // // collapse the 4 object events (spawning, collision, clicking, exiting) into one 1 dataframe
+                // let eventObject     = {time: frameCountGame, eventType: eventType, 
+                //                     objectData: objectData, playerData: playerData, 
+                //                     interceptData: interceptData, gameState: gameSnapshot};
 
-                eventStream.push(eventObject)
+                // eventStream.push(eventObject)
             }  
             // if click is around the center, then allow movement there
             if ( isClickOnCenter(clickX,clickY) ) {
