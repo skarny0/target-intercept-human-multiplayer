@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0422-newSpawning-debug";
+   studyId    = "multiplayer-main-0429-debug";
 } else {
-    studyId   = "multiplayer-main-0422";
+    studyId   = "multiplayer-main-0429";
 }
 
 
@@ -322,7 +322,7 @@ function updateOngoingSession() {
 function receiveStateChange(path, childKey, childValue, typeChange) {
 
     if (path === "interception") console.log("interception!");
-    if (noAssignment) parseConditions(childValue)
+    if (noAssignment && typeChange == "onChildAdded") parseConditions(childValue)
 
     if (currentRound == 2 && childKey == remoteId) parseStatus(childValue)
 
@@ -341,6 +341,13 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         //     objects.splice(objIndex, 1);
         // }
         console.log('received remove object', childValue);
+        
+        // objects.splice(childValue.id,1)
+        const objIndex = objects.findIndex(obj => obj.ID === childValue.ID);
+        if (objIndex !== -1) {
+            objects.splice(objIndex, 1);
+        }
+        
     }
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildChanged")){
         objects.forEach((obj) => {
@@ -1926,10 +1933,6 @@ function updateObjects(settings) {
 
     if (settings.visualizeAIPlayer == 1){
         // do something else
-        for (let i = toRemove.length - 1; i >= 0; i--) {
-            objects.splice(toRemove[i], 1);
-        }
-    } else {
         for (let i = toRemove.length - 1; i >= 0; i--) {
             objects.splice(toRemove[i], 1);
         }
