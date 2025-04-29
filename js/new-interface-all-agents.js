@@ -321,10 +321,16 @@ function updateOngoingSession() {
  */
 function receiveStateChange(path, childKey, childValue, typeChange) {
 
-    if (path === "interception") console.log("interception!");
+    // if (path === "interception") console.log("interception!");
     if (noAssignment && typeChange == "onChildAdded") parseConditions(childValue)
 
-    if (currentRound == 2 && childKey == remoteId) parseStatus(childValue)
+    if (currentRound == 2 && childKey == remoteId) parseStatus(childValue);
+
+    if (path == 'score' && settings.visualizeHumanPartner == 1 && typeChange == 'onChildChanged'){
+        console.log("score obj:", childValue);
+        if (childKey == remoteId) player2.score = childValue;
+        if (childKey == player.fbId) player.score = childValue;
+    }
 
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildAdded")){
         //  console.log("spawnObject", childValue);
@@ -340,7 +346,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         // if (objIndex !== -1) {
         //     objects.splice(objIndex, 1);
         // }
-        console.log('received remove object', childValue);
+        // console.log('received remove object', childValue);
         
         // objects.splice(childValue.id,1)
         const objIndex = objects.findIndex(obj => obj.ID === childValue.ID);
@@ -353,22 +359,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         objects.forEach((obj) => {
             if (obj.ID == childValue.ID && !obj.intercepted) {
                 obj.intercepted = childValue.intercepted;
-
-                // first attempt to get players in the same locations. we just need to updatestatedirect the final landing locaiton when player.moving =false
-                // if (childKey == remoteId && player2.targetObjID == obj.ID) {
-                    // player2.x = player2.targetX;
-                    // player2.y = player2.targetY;
-                // }
             }
-            // console.log("intercepted object" , childValue.intercepted)
-            // console.log("childValue:", childValue);
-
-            // if (obj.ID == player.targetObjID){
-            //     obj.marked  = true;
-            //     obj.clicekd = true;
-            // }
-
-            // if (path == `objects/${obj.ID}/marked`) console.log("found the marked object!");
         });
     }
 
@@ -382,10 +373,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
             // console.log("velocity update mplib to local player", childValue);
             player.dx = childValue.dx;
             player.dy = childValue.dy;
-            // if (childValue.contains('x')){
-            //     player.x = childValue.x;
-            //     player.y = childValue.y;
-            // }
+
         } else if (childKey == remoteId && settings.visualizeHumanPartner == 1){
             player2.dx = childValue.dx;
             player2.dy = childValue.dy;
@@ -403,27 +391,8 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
             player2.x       = childValue.x;
             player2.y       = childValue.y;
             player2.moving  =   childValue.moving;
-
-            player2Loc = childValue;
-
-            console.log("player2loc", player2Loc);
-        }
-        if (childKey == remoteId){
-           
-        //     player2.x = childValue.x;
-        //     player2.y = childValue.y;
-        //     player2.moving  =   childValue.moving;
         }
     }
-
-    // if (childKey === remoteId && settings.visualizeHumanPartner==1) {
-        // console.log("path", childValue.path);
-        // console.log("childvalue ", childValue);
-        // parseLocationDictionary(childValue);
-        // parseIntentions(childValue);
-        // parseObjectChanges(childValue);
-        // parseScreenFocus(childValue)
-    // }
 
     // detect new spawn and then push object to the objects list
 }
@@ -541,258 +510,57 @@ function parseStatus(childValue){
     if (remoteComplete) handleCompleteness();
 }
 
-let otherPlayersLocations = {};
-let otherPlayersTargets = {};
-let otherPlayersVelocities = {};
-
-/**
- * Scans childValue to find the highest frame number
- * with valid location, target, and velocity data.
- *
- * @param {object} childValue - The object containing frameKey -> frameData structure.
- * @returns {object} An object with { highestFrame, location, target, velocity }.
- */
-function getMostRecentPlayerData(childValue) {
-    let highestFrame = -1;
-    let mostRecentLocation = null;
-    let mostRecentTarget = null;
-    let mostRecentVelocity = null;
-
-    // Loop through all frames in reverse order
-    const frameKeys = Object.keys(childValue).sort((a,b) => parseInt(b) - parseInt(a));
-    for (const frameKey of frameKeys) {
-        if (!childValue.hasOwnProperty(frameKey)) continue;
-
-        const frameNum = parseInt(frameKey);
-        const frameData = childValue[frameKey];
-
-        // Since we're going in reverse order, the first valid data we find will be the most recent
-        // Check location
-        if (!mostRecentLocation && 
-            frameData.location &&
-            typeof frameData.location.x === 'number' &&
-            typeof frameData.location.y === 'number') {
-            mostRecentLocation = {
-                x: frameData.location.x,
-                y: frameData.location.y
-            };
-        }
-
-        // Check target location
-        if (!mostRecentTarget &&
-            frameData.targetLocation &&
-            typeof frameData.targetLocation.x === 'number' &&
-            typeof frameData.targetLocation.y === 'number') {
-            mostRecentTarget = {
-                targetX: frameData.targetLocation.x,
-                targetY: frameData.targetLocation.y
-            };
-        }
-
-        // Check velocity
-        if (!mostRecentVelocity &&
-            frameData.location &&
-            typeof frameData.location.dx === 'number' &&
-            typeof frameData.location.dy === 'number' &&
-            typeof frameData.location.moving === 'boolean') {
-            highestFrame = frameNum;
-            mostRecentVelocity = {
-                dx: frameData.location.dx,
-                dy: frameData.location.dy,
-                moving: frameData.location.moving
-            };
-        }
-
-        // If we've found all data types, we can break early
-        if (mostRecentLocation && mostRecentTarget && mostRecentVelocity) {
-            break;
-        }
-    }
-
-    return {
-        highestFrame,
-        location: mostRecentLocation,
-        target: mostRecentTarget,
-        velocity: mostRecentVelocity
-    };
-}
-
-/**
- * Updates the otherPlayersLocations, otherPlayersTargets, and otherPlayersVelocities
- * with the newest values based on the provided highestFrame.
- *
- * @param {number} frame - The highest frame number found
- * @param {object|null} location - The most recent location (or null if none)
- * @param {object|null} target - The most recent target location (or null if none)
- * @param {object|null} velocity - The most recent velocity (or null if none)
- */
-function storeMostRecentData(frame, location, target, velocity) {
-    if (location) {
-        otherPlayersLocations[frame] = location;
-    }
-    if (target) {
-        otherPlayersTargets[frame] = target;
-    }
-    if (velocity) {
-        otherPlayersVelocities[frame] = velocity;
-    }
-}
-
-/**
- * Updates the state of player2 with the most recent data
- * found in otherPlayersLocations, otherPlayersTargets, and otherPlayersVelocities.
- */
-function updatePlayer2Movement() {
-    const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
-    if (frameNumbers.length === 0) return; // No recorded frames
-
-    const mostRecentFrame = Math.max(...frameNumbers);
-    // const position = otherPlayersLocations[mostRecentFrame]; // not using this for now
-    // const target = otherPlayersTargets[mostRecentFrame];
-    const target = player2.targetObjID;
-    // const velocity = otherPlayersVelocities[mostRecentFrame];
-
-    // Update the player's target location
-    if (target) {
-        player2.targetX = target.targetX;
-        player2.targetY = target.targetY;
-    }
-
-    // // Update velocity if a newer frame is found.
-    // if (velocity && (mostRecentFrame > player2.lastProcessedFrame)) {
-    //     const EPSILON = 0.0001;
-    //     const velocityChanged = (
-    //         Math.abs(player2.dx - velocity.dx) > EPSILON ||
-    //         Math.abs(player2.dy - velocity.dy) > EPSILON
-    //     );
-
-    //     player2.dx = velocity.dx;
-    //     player2.dy = velocity.dy;
-    //     player2.moving = velocity.moving;
-    //     player2.lastProcessedFrame = mostRecentFrame;
-    // }
-}
-
-/**
- * Main function that orchestrates scanning for the latest data,
- * storing it in "otherPlayers..." objects, and finally updating player2.
- *
- * @param {object} childValue - The firebase data structure for a particular player
- */
-function parseLocationDictionary(childValue) {
-    // 1) Find the most recent data from all frames
-    const {
-        highestFrame,
-        location,
-        target,
-        velocity
-    } = getMostRecentPlayerData(childValue);
-
-    // If there are no frames or it never got updated, just return
-    if (highestFrame === -1) return;
-
-    // 2) Store the retrieved data in global objects
-    storeMostRecentData(highestFrame, location, target, velocity);
-
-    // 3) Update player2 with the newest location, target, velocity
-    // updatePlayer2Movement();
-}
-
-const otherPlayersIntentions = {};
-function parseIntentions(childValue) {
-    // Parse the intentions of the other player
-    for (const frameKey in childValue) {
-        if (!childValue.hasOwnProperty(frameKey)) continue;
-        
-        const frameNum = parseInt(frameKey);
-        const frameData = childValue[frameKey];
-
-        if (frameData.playerIntention) {
-            otherPlayersIntentions[frameNum] = {
-                ID: frameData.playerIntention.id
-            };
-        }
-    }
-
-    // Get most recent intention
-    const frameNumbers = Object.keys(otherPlayersIntentions).map(Number);
-    if (frameNumbers.length > 0) {
-        const mostRecentFrame = Math.max(...frameNumbers);
-        const intention = otherPlayersIntentions[mostRecentFrame];
-        
-        // Update player2's intended target
-        player2.targetObjID = intention.ID;
-    }
-
-    // Mark the object as marked
-    objects.forEach((obj) => {
-        if (obj.active && obj.ID === player2.targetObjID) {
-            obj.marked2 = true;
-        } else if (obj.active){
-            obj.marked2 = false;
-        }
-    });
-
-    if (player2.targetObjID === -1){
-        player2.toCenter = true;
-        if (DEBUG) console.log("player2.toCenter:", player2.toCenter);
-    } else{
-        player2.toCenter = false;
-    }
-
-    if (DEBUG) console.log("player2.targetObjID:", player2.targetObjID);
-}
 
 const otherPlayersObjects = {};
-function parseObjectChanges(childValue) {
-    let highestFrame = -1;
-    let mostRecentObject = null;
+// function parseObjectChanges(childValue) {
+//     let highestFrame = -1;
+//     let mostRecentObject = null;
 
-    // First pass: find the highest frame number with valid data
-    for (const frameKey in childValue) {
-        if (!childValue.hasOwnProperty(frameKey)) continue;
+//     // First pass: find the highest frame number with valid data
+//     for (const frameKey in childValue) {
+//         if (!childValue.hasOwnProperty(frameKey)) continue;
         
-        const frameNum = parseInt(frameKey);
-        const frameData = childValue[frameKey];
+//         const frameNum = parseInt(frameKey);
+//         const frameData = childValue[frameKey];
 
-        if (frameData.objectStatus &&
-            typeof frameData.objectStatus.ID === 'number' && 
-            typeof frameData.objectStatus.value === 'number' && 
-            typeof frameData.objectStatus.intercepted === 'boolean'
-        ) {
-            // If this frame is newer than our current highest frame with valid object info
-            if (frameNum > highestFrame) {
-                highestFrame = frameNum;
-                mostRecentObject = {
-                    ID: frameData.objectStatus.ID,
-                    intercepted: frameData.objectStatus.intercepted,
-                    value: frameData.objectStatus.value
-                };
-            }
-        }
-    }
+//         if (frameData.objectStatus &&
+//             typeof frameData.objectStatus.ID === 'number' && 
+//             typeof frameData.objectStatus.value === 'number' && 
+//             typeof frameData.objectStatus.intercepted === 'boolean'
+//         ) {
+//             // If this frame is newer than our current highest frame with valid object info
+//             if (frameNum > highestFrame) {
+//                 highestFrame = frameNum;
+//                 mostRecentObject = {
+//                     ID: frameData.objectStatus.ID,
+//                     intercepted: frameData.objectStatus.intercepted,
+//                     value: frameData.objectStatus.value
+//                 };
+//             }
+//         }
+//     }
 
-    // Only do something if we actually found a mostRecentObject
-    if (mostRecentObject) {
-        if (!otherPlayersObjects[highestFrame]) {
-            // Mark it so we don't process again
-            otherPlayersObjects[highestFrame] = mostRecentObject;
+//     // Only do something if we actually found a mostRecentObject
+//     if (mostRecentObject) {
+//         if (!otherPlayersObjects[highestFrame]) {
+//             // Mark it so we don't process again
+//             otherPlayersObjects[highestFrame] = mostRecentObject;
 
-            // Loop through and find the matching object ID:
-            objects.forEach((obj) => {
-                if (obj.active && obj.ID === mostRecentObject.ID && !obj.intercepted) {
-                    // Only intercept it once
-                    obj.intercepted = true;
-                    player2.score += obj.value; 
-                }
-            });
-        }
-    }
-}
+//             // Loop through and find the matching object ID:
+//             objects.forEach((obj) => {
+//                 if (obj.active && obj.ID === mostRecentObject.ID && !obj.intercepted) {
+//                     // Only intercept it once
+//                     obj.intercepted = true;
+//                     player2.score += obj.value; 
+//                 }
+//             });
+//         }
+//     }
+// }
 
-function parseScreenFocus(childValue){
+// function parseScreenFocus(childValue){
     
-}
+// }
 
 // *********************************************** Write to Database *****************************************************//
 
@@ -1866,6 +1634,10 @@ function updateObjects(settings) {
                 // Collision detected
                 // obj.intercepted   = true; // MS2: added this flag
                 // caughtAnything    = true;    //MS6
+                let pathBase = `score/${player.fbID}`;
+                player.score += obj.value;
+                updateStateDirect(pathBase, player.score, 'scoreUpdate');
+
 
                 if (settings.visualizeAIPlayer == 1){
                     obj.intercepted     = true
@@ -1883,7 +1655,7 @@ function updateObjects(settings) {
                 };
                 // updateStateDirect(pathBase, interceptDict, 'interception');
 
-                let pathBase = `objects/${obj.ID}/intercepted`;
+                pathBase = `objects/${obj.ID}/intercepted`;
                 updateStateDirect(pathBase, true, 'interception');
 
                 //  updatestatedirect and push an empty object towards the path with the object ID being the leaf node
@@ -2687,7 +2459,7 @@ function drawScore() {
     // add a new line space between this right and the next
     scoreCtx.font = '14px Roboto';
 
-    scoreCtx.fillText('You: ' + score, 10, 40); // Adjust the positioning as needed
+    scoreCtx.fillText('You: ' + player.score, 10, 40); // Adjust the positioning as needed
     scoreCtx.fillText('Partner: ' + partnerScore, 10, 60); // Adjust the positioning as needed
 }
 
