@@ -1012,7 +1012,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
+    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1246,7 +1246,7 @@ async function initExperimentSettings() {
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
         // teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
-        teamingDraw = 2;
+        teamingDraw = 1;
         // console.log("Calling blockRandomization with:", {
         //     db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
         // });
@@ -1598,13 +1598,6 @@ function updateObjects(settings) {
                                       'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
             updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
-
-            // pathBase = `location/${player.fbID}`;
-            // let mvmntDict = {
-            //     'x':player.x, 'y':player.x, 'moving':false
-            // };
-            // updateStateDirect(pathBase, mvmntDict, 'updateMovement');
-            
         }   
     }
     
@@ -1758,10 +1751,10 @@ function updateObjects(settings) {
     player.y    = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
 
     // TODO: This can be removed eventually after all the mplib updates happen, tho other player's location will be directly broadcasted so no need to infer locations as much.
-    // if (settings.visualizeHumanPartner==1) {    
-    //     player2.x   = Math.max(player2.width / 2, Math.min(canvas.width - player2.width / 2, player2.x));
-    //     player2.y   = Math.max(player2.height / 2, Math.min(canvas.height - player2.height / 2, player2.y));
-    // }
+    if (settings.visualizeHumanPartner==1) {    
+        player2.x   = Math.max(player2.width / 2, Math.min(canvas.width - player2.width / 2, player2.x));
+        player2.y   = Math.max(player2.height / 2, Math.min(canvas.height - player2.height / 2, player2.y));
+    }
 
     // MS5: Update AI player position if it is moving
     if (settings.visualizeAIPlayer == 1){
@@ -2597,7 +2590,6 @@ function drawTargetMarker(centerX, centerY, radius1, radius2, triangleBase = 5, 
     const angles = [0 + offset, Math.PI / 2 + offset, Math.PI + offset, (3 * Math.PI) / 2 + offset]; // angles for the 4 triangles
 
     context.save();
-    // ctx.fillStyle = color;
     if (type == 'player') ctx.fillStyle = 'red';
 
     if (type == 'AI' || type == 'player2'){
