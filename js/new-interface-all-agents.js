@@ -331,7 +331,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         //  TO ADD: only push if the remote player has also received it. 
         objects.push(childValue);
     } 
-    
+
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildRemoved")) {
         // do a pull from the childvalue at that id
         // Find the index of the object with the matching ID
@@ -365,11 +365,11 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         });
     }
 
-    if (path == 'clicks' && settings.visualizeHumanPartner == 1 && typeChange == "onChildChanged"){
+    if (path == 'clicks' && typeChange == "onChildChanged"){
         updatePlayerClicks(childKey, childValue)
     }
 
-    if (path == 'velocity' && settings.visualizeHumanPartner == 1 && typeChange == "onChildChanged"){
+    if (path == 'velocity' && typeChange == "onChildChanged"){
         // update the velocities accordingly
         if (childKey == player.fbID) {
             // console.log("velocity update mplib to local player", childValue);
@@ -379,20 +379,20 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
             //     player.x = childValue.x;
             //     player.y = childValue.y;
             // }
-        } else if (childKey == remoteId){
+        } else if (childKey == remoteId && settings.visualizeHumanPartner == 1){
             player2.dx = childValue.dx;
             player2.dy = childValue.dy;
         }
     }
 
     // Handling stopping locations (the value is the targetx,targety values)
-    if (path == 'location' && settings.visualizeHumanPartner == 1 && typeChange == "onChildChanged"){
+    if (path == 'location' && typeChange == "onChildChanged"){
         if (childKey == player.fbID) {
             // console.log("velocity update mplib to local player", childValue);
             player.x        = childValue.x;
             player.y        = childValue.y;
             player.moving   = childValue.moving;
-        } else if (childKey == remoteId){
+        } else if (childKey == remoteId && settings.visualizeHumanPartner == 1){
             player2.x       = childValue.x;
             player2.y       = childValue.y;
             player2.moving  =   childValue.moving;
@@ -456,7 +456,7 @@ function updatePlayerClicks(childKey, childValue){
             }
         });
 
-    } else if (childKey == remoteId){
+    } else if (childKey == remoteId && settings.visualizeHumanPartner == 1){
         player2.targetX = childValue.x; //+ center.x;
         player2.targetY = childValue.y; //+ center.y;
         player2.moving = childValue.moving;
@@ -1015,7 +1015,7 @@ let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
 if (DEBUG){
-    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
+    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1411,7 +1411,11 @@ async function endGame() {
         if (currentRound < 3){
             // if (currentRound > 1) await runGameSequence("Click OK to continue to the next round of play.");
             $("#full-game-container").attr("hidden", true);
-            await startCountdown(settings.countDownSeconds);
+            if (!DEBUG) {
+                await startCountdown(settings.countDownSeconds);
+            } else {
+                await startCountdown(3);
+            }
             await resetGame(); 
             // set the correct partner (human or ai) given the current round
             setAgent();
@@ -2063,8 +2067,14 @@ function spawnObject(settings){
         setVelocityTowardsObservableArea(newObject);
 
          // ********* Broadcast new object to Firebase  ********* //
-        let pathBase = `objects`
-        updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
+
+        if (settings.visualizeHumanPartner == 1) {
+            let pathBase = `objects`
+            updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
+        } else {
+            objects.push(newObject);
+        }
+        
     }
     location.lastSpawnTime = elapsedTime;
 }
