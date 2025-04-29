@@ -435,14 +435,11 @@ function removePlayerState() {
 function updatePlayerClicks(childKey, childValue){
     if (childKey == player.fbID){
         console.log("click childValue", childValue);
-        player.targetX  = childValue.x; //+ center.x;
-        player.targetY  = childValue.y; //+ center.y;
-        // player.x        = childValue.startX;
-        // player.y        = childValue.startY;
-        player.moving   = childValue.moving;
+        player.targetX          = childValue.x; //+ center.x;
+        player.targetY          = childValue.y; //+ center.y;
+        player.moving           = childValue.moving;
         player.targetObjID      = childValue.id;
         player.timeToIntercept  = childValue.travelTime;
-        // player.toCenter = false; // if the targetobjid is -1
 
         if (player.targetObjID === -1) {
             player.toCenter = true;
@@ -1248,7 +1245,8 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
+        // teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
+        teamingDraw = 2;
         // console.log("Calling blockRandomization with:", {
         //     db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
         // });
@@ -1822,7 +1820,7 @@ function updateObjects(settings) {
         if (player.arrivalIdx === 1 && settings.visualizeHumanPartner === 1){
             // broadcast new object details to firebase by calling spawnObject
             spawnObject(settings);    
-        } else if (settings.visualizeAIPlayer === 1){ // TODO: Think about how to transition from human to AI rounds when it comes to spawning. Do we transition from broadcasting to local representations only?
+        } else if (settings.visualizeAIPlayer == 1){ // TODO: Think about how to transition from human to AI rounds when it comes to spawning. Do we transition from broadcasting to local representations only?
             spawnObject(settings); 
         }
     }
@@ -1932,10 +1930,17 @@ function updateObjects(settings) {
 
     // MS4: Remove items starting from the end
     // TODO: Consider taking the representation of all objects to 
-    for (let i = toRemove.length - 1; i >= 0; i--) {
-        objects.splice(toRemove[i], 1);
-    }
 
+    if (settings.visualizeAIPlayer == 1){
+        // do something else
+        for (let i = toRemove.length - 1; i >= 0; i--) {
+            objects.splice(toRemove[i], 1);
+        }
+    } else {
+        for (let i = toRemove.length - 1; i >= 0; i--) {
+            objects.splice(toRemove[i], 1);
+        }
+    }
     // handle the mplib case for now... if the object has exited on one person's screen, but hasn't on the other screen, then remove it here by flagging the object
 
     // **************************************** Run the Collab AI Planner ****************************************//
@@ -2411,66 +2416,144 @@ function drawObjects() {
     });
 }
 
+// function drawCompositeShape(obj) {
+//     let type;
+//     // If the object is clicked, draw a green highlight around it.
+//     if (obj.marked && obj.AImarked){
+//         let offset = true;
+//         if (!player.toCenter){
+//             type = 'player';
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//         } else{
+//             offset = false;
+//         }
+//         if (!player2.toCenter){
+//             type = 'player2';
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//         } else{
+//             offset = false;
+//         }
+
+//         type = 'AI';
+//         if (offset && !planDelay){
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+//         } else if (!planDelay) {
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//         }
+//     }
+
+//     if (obj.marked && obj.marked2){
+//         let offset = true;
+//         if (!player.toCenter){
+//             type = 'player';
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//         } else{
+//             offset = false;
+//         }
+
+//         type = 'player2';
+//         if (offset){
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+//         } else {
+//             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//         }
+//     }
+
+//     if (obj.marked2 && !obj.marked){
+//         type = 'player2';
+//         drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+//     } 
+    
+//     if (obj.AImarked && !obj.marked && !planDelay){
+//         type = 'AI';
+//         drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+//     } 
+
+//     if (obj.marked && !obj.AImarked && !player.toCenter){
+//         type = 'player';
+//         drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//     } else if (obj.marked && !obj.marked2 && !player.toCenter){
+//         type = 'player';
+//         drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+//     }
+
+//     // if (obj.willOverlap && DEBUG) drawDebugOverlap(obj, obj.willOverlap);
+
+//     if (DEBUG) drawDebugID(obj);   
+
+//     // Draw the outer circle first
+//     drawCircle(obj.x, obj.y, obj.size, obj.outerColor); // Outer circle
+
+//     // Then draw the inner circle on top
+//     drawCircle(obj.x, obj.y, obj.fill, obj.innerColor); // Inner circle, smaller radius
+
+//     // if (DEBUG && obj.willOverlap) drawDebugOverlap(obj, obj.willOverlap);
+    
+// }
+
 function drawCompositeShape(obj) {
     let type;
     // If the object is clicked, draw a green highlight around it.
-    if (obj.marked && obj.AImarked){
-        let offset = true;
-        if (!player.toCenter){
-            type = 'player';
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
-        } else{
-            offset = false;
-        }
-        if (!player2.toCenter){
-            type = 'player2';
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
-        } else{
-            offset = false;
-        }
-
-        type = 'AI';
-        if (offset && !planDelay){
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
-        } else if (!planDelay) {
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
-        }
-    }
-
-    if (obj.marked && obj.marked2){
-        let offset = true;
-        if (!player.toCenter){
-            type = 'player';
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
-        } else{
-            offset = false;
-        }
-
-        type = 'player2';
-        if (offset){
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
-        } else {
-            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
-        }
-    }
-
-    if (obj.marked2 && !obj.marked){
-        type = 'player2';
-        drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
-    } 
+    if (settings.visualizeHumanPartner == 1){
+        if (obj.marked && obj.marked2){
+            let offset = true;
+            if (!player.toCenter){
+                type = 'player';
+                drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+            } else{
+                offset = false;
+            }
     
-    if (obj.AImarked && !obj.marked && !planDelay){
-        type = 'AI';
-        drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
-    } 
+            type = 'player2';
+            if (offset){
+                drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+            } else {
+                drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+            }
+        }
+    
+        if (obj.marked2 && !obj.marked){
+            type = 'player2';
+            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+        } 
+        
+        if (obj.marked && !obj.marked2 && !player.toCenter){
+            type = 'player';
+            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+        }
+    } else {
+        if (obj.marked && obj.AImarked){
+            let offset = true;
+            if (!player.toCenter){
+                type = 'player';
+                drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+            } else{
+                offset = false;
+            }
+    
+            type = 'AI';
+            if (offset){
+                drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+            } else {
+                drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+            }
 
-    if (obj.marked && !obj.AImarked && !player.toCenter){
-        type = 'player';
-        drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
-    } else if (obj.marked && !obj.marked2 && !player.toCenter){
-        type = 'player';
-        drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+        }
+    
+     
+        
+        if (obj.AImarked && !obj.marked){
+            type = 'AI';
+            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
+        } 
+    
+        if (obj.marked && !obj.AImarked && !player.toCenter){
+            type = 'player';
+            drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
+        }
     }
+
+  
 
     // if (obj.willOverlap && DEBUG) drawDebugOverlap(obj, obj.willOverlap);
 
@@ -2496,12 +2579,16 @@ function drawCircle(centerX, centerY, radius, color) {
 }
 
 function drawCenterMarker(centerX=400, centerY=400, radius=10, color = "rgba(128, 128, 128, 0.5)"){
-    if (player.toCenter) drawCircle(centerX, centerY, 
-                                    radius + 5,'red');
-    if (player2.toCenter) drawCircle(centerX, centerY, 
-                                    radius + 5,'green');
-    if (AIplayer.toCenter && !planDelay) drawCircle(centerX, centerY,
-                                    radius + 5, AIplayer.color);
+    if (player.toCenter) drawCircle(centerX, centerY, radius + 5,'red');
+
+    if ((player2.toCenter || AIplayer.toCenter) && currentRound == 1) {
+        drawCircle(centerX, centerY, radius + 5,'green');
+    } else if ((player2.toCenter || AIplayer.toCenter) && currentRound > 1){
+        drawCircle(centerX, centerY, radius + 5,'blue');
+    }
+                
+    if (AIplayer.toCenter && !planDelay) drawCircle(centerX, centerY, radius + 5, AIplayer.color);
+    
     drawCircle(centerX, centerY, radius, color);
 }
 
@@ -2512,14 +2599,17 @@ function drawTargetMarker(centerX, centerY, radius1, radius2, triangleBase = 5, 
 
     context.save();
     // ctx.fillStyle = color;
-    if (type == 'player') ctx.fillStyle = 'red';
-    if (type == 'player2') ctx.fillStyle = 'green';
+    if (type == 'AI') ctx.fillStyle = AIplayer.color;
+    if (type == 'player') ctx.fillStyle = player.color;
+    if (type == 'player2') ctx.fillStyle = player2.color;
+    // if (type == 'player') ctx.fillStyle = 'red';
+    // if (type == 'player2') ctx.fillStyle = 'green';
 
     // AI Players have their own marker colors by collab type and the game condition
     // if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 5) ctx.fillStyle = 'green';
     // if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 5) ctx.fillStyle = 'purple';
-    if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 5) ctx.fillStyle = 'blue';
-    if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 5) ctx.fillStyle = 'rgba(176, 97, 23)';// 'rgba(184, 115, 51)';
+    // if ((type == 'AI') && (settings.teamingCondition == 1 || setting/s.teamingCondition == 0)) ctx.fillStyle = 'blue';
+    // if ((type == 'AI') && (settings.teamingCondition == 2 || settings.teamingCondition == 3)) ctx.fillStyle = 'rgba(176, 97, 23)';// 'rgba(184, 115, 51)';
 
     angles.forEach((angle) => {
         const tipX = centerX + radius1 * Math.cos(angle);
@@ -3214,29 +3304,29 @@ $(document).ready( function(){
                 // updateStateDirect(`${pathBase}/ID`, player.targetObjID, 'updateIntention');
                 if (DEBUG) console.log("player.targetObjID:", player.targetObjID);
 
-                let eventType       = 'clickCenter';
-                // let objectData      = 0;
+                // let eventType       = 'clickCenter';
+                // // let objectData      = 0;
 
-                let objectData      = {ID:0, value:0,
-                                    x: center.x, y: center.y,
-                                    dx: 0, dy: 0,
-                                    vx: 0, vy: 0, speed: 0,
-                                    clicked: true, marked: true};
+                // let objectData      = {ID:0, value:0,
+                //                     x: center.x, y: center.y,
+                //                     dx: 0, dy: 0,
+                //                     vx: 0, vy: 0, speed: 0,
+                //                     clicked: true, marked: true};
 
-                let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
-                                    dx: player.dx, dy: player.dy,
-                                    targetX: player.targetX, targetY: player.targetY,
-                                    angle: player.angle, moving: player.moving,
-                                    score:player.score, AIscore: AIplayer.score};
-                let interceptData   = null;
-                // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
+                // let playerData      = {x: player.x, y: player.y, speed: player.velocity, 
+                //                     dx: player.dx, dy: player.dy,
+                //                     targetX: player.targetX, targetY: player.targetY,
+                //                     angle: player.angle, moving: player.moving,
+                //                     score:player.score, AIscore: AIplayer.score};
+                // let interceptData   = null;
+                // // let drtStatus       = {isOn: isLightOn, duration: drtCount, initFrame:drtInitFrame, location:drtLightChoice}; // consider adding more to this
 
-                // collapse the 4 object events (spawning, collision, clicking, exiting) into one 1 dataframe
-                let eventObject     = {time: frameCountGame, eventType: eventType, 
-                                    objectData: objectData, playerData: playerData, 
-                                    interceptData: interceptData, gameState: gameSnapshot};
+                // // collapse the 4 object events (spawning, collision, clicking, exiting) into one 1 dataframe
+                // let eventObject     = {time: frameCountGame, eventType: eventType, 
+                //                     objectData: objectData, playerData: playerData, 
+                //                     interceptData: interceptData, gameState: gameSnapshot};
 
-                eventStream.push(eventObject)
+                // eventStream.push(eventObject)
 
                 // if (DEBUG) console.log('Center Click eventObject:', eventObject);
 
