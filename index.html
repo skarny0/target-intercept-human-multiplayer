@@ -35,6 +35,11 @@
                 background-color: #0064a4 !important;
                 padding-top: 5px;
                 padding-bottom: 5px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
             }
             #anteater-img {
                 position: absolute;
@@ -129,13 +134,13 @@
                     <div class="col-2">
                         <img id="anteater-img" src="images/BCeater-right.png" width='70px' height='30px' />
                     </div>
-                    <div class="col-8 text-center">
+                    <div class="col-8 text-center d-flex justify-content-center align-items-center">
                         <!--
                         ****************************************************************
                         *                       EXPERIMENT NAME                        *
                         ****************************************************************
                         -->
-                        <h2 id="experiment-title">Experiment Name Goes Here width = "600px" height = '30px'</h2>
+                        <h2 id="experiment-title">Experiment Name Goes Here</h2>
                     </div>
                     <div class="col-2">
                         <img class="float-right" id="anteater-img" src="images/BCeater-left.png" width="70px" height="30px" />

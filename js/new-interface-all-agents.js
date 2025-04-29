@@ -142,7 +142,7 @@ let funList = {
 // List the node names where we place listeners for any changes to the children of these nodes; set to '' if listening to changes for children of the root
 // let listenerPaths = [ 'coins' , 'players' ];
 // let listenerPaths = [ 'players' ];
-let listenerPaths = ['objects', 'players', 'objectStatus', 'clicks', 'score', 'velocity'];
+let listenerPaths = ['objects', 'players', 'objectStatus', 'clicks', 'score', 'velocity', 'location'];
 
 // Set the session configuration for MPLIB
 initializeMPLIB( sessionConfig , studyId , funList, listenerPaths, verbosity );
@@ -331,6 +331,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         //  TO ADD: only push if the remote player has also received it. 
         objects.push(childValue);
     } 
+    
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildRemoved")) {
         // do a pull from the childvalue at that id
         // Find the index of the object with the matching ID
@@ -364,18 +365,6 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         });
     }
 
-
-
-    // if (path === 'objectStatus' && (typeChange == 'onChildChanged')){
-    //     // console.log("interception", childValue);
-    //     // console.log("interception", objects[childValue.ID]);
-    //     objects.forEach((obj) => {
-    //         if (obj.ID == childValue.ID && !obj.intercepted) {
-    //             obj.intercepted = true;
-    //         }
-    //     });
-    // }
-
     if (path == 'clicks' && settings.visualizeHumanPartner == 1 && typeChange == "onChildChanged"){
         updatePlayerClicks(childKey, childValue)
     }
@@ -396,14 +385,38 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         }
     }
 
-    if (childKey === remoteId && settings.visualizeHumanPartner==1) {
+    // Handling stopping locations (the value is the targetx,targety values)
+    if (path == 'location' && settings.visualizeHumanPartner == 1 && typeChange == "onChildChanged"){
+        if (childKey == player.fbID) {
+            // console.log("velocity update mplib to local player", childValue);
+            player.x        = childValue.x;
+            player.y        = childValue.y;
+            player.moving   = childValue.moving;
+        } else if (childKey == remoteId){
+            player2.x       = childValue.x;
+            player2.y       = childValue.y;
+            player2.moving  =   childValue.moving;
+
+            player2Loc = childValue;
+
+            console.log("player2loc", player2Loc);
+        }
+        if (childKey == remoteId){
+           
+        //     player2.x = childValue.x;
+        //     player2.y = childValue.y;
+        //     player2.moving  =   childValue.moving;
+        }
+    }
+
+    // if (childKey === remoteId && settings.visualizeHumanPartner==1) {
         // console.log("path", childValue.path);
         // console.log("childvalue ", childValue);
-        parseLocationDictionary(childValue);
+        // parseLocationDictionary(childValue);
         // parseIntentions(childValue);
         // parseObjectChanges(childValue);
         // parseScreenFocus(childValue)
-    }
+    // }
 
     // detect new spawn and then push object to the objects list
 }
@@ -422,11 +435,13 @@ function removePlayerState() {
 function updatePlayerClicks(childKey, childValue){
     if (childKey == player.fbID){
         console.log("click childValue", childValue);
-        player.targetX = childValue.x; //+ center.x;
-        player.targetY = childValue.y; //+ center.y;
-        player.moving = childValue.moving;
-        player.targetObjID = childValue.id;
-        player.timeToIntercept = childValue.travelTime;
+        player.targetX  = childValue.x; //+ center.x;
+        player.targetY  = childValue.y; //+ center.y;
+        // player.x        = childValue.startX;
+        // player.y        = childValue.startY;
+        player.moving   = childValue.moving;
+        player.targetObjID      = childValue.id;
+        player.timeToIntercept  = childValue.travelTime;
         // player.toCenter = false; // if the targetobjid is -1
 
         if (player.targetObjID === -1) {
@@ -630,8 +645,8 @@ function updatePlayer2Movement() {
     const mostRecentFrame = Math.max(...frameNumbers);
     // const position = otherPlayersLocations[mostRecentFrame]; // not using this for now
     // const target = otherPlayersTargets[mostRecentFrame];
-    const target = player2.targetObjID
-    const velocity = otherPlayersVelocities[mostRecentFrame];
+    const target = player2.targetObjID;
+    // const velocity = otherPlayersVelocities[mostRecentFrame];
 
     // Update the player's target location
     if (target) {
@@ -639,19 +654,19 @@ function updatePlayer2Movement() {
         player2.targetY = target.targetY;
     }
 
-    // Update velocity if a newer frame is found.
-    if (velocity && (mostRecentFrame > player2.lastProcessedFrame)) {
-        const EPSILON = 0.0001;
-        const velocityChanged = (
-            Math.abs(player2.dx - velocity.dx) > EPSILON ||
-            Math.abs(player2.dy - velocity.dy) > EPSILON
-        );
+    // // Update velocity if a newer frame is found.
+    // if (velocity && (mostRecentFrame > player2.lastProcessedFrame)) {
+    //     const EPSILON = 0.0001;
+    //     const velocityChanged = (
+    //         Math.abs(player2.dx - velocity.dx) > EPSILON ||
+    //         Math.abs(player2.dy - velocity.dy) > EPSILON
+    //     );
 
-        player2.dx = velocity.dx;
-        player2.dy = velocity.dy;
-        player2.moving = velocity.moving;
-        player2.lastProcessedFrame = mostRecentFrame;
-    }
+    //     player2.dx = velocity.dx;
+    //     player2.dy = velocity.dy;
+    //     player2.moving = velocity.moving;
+    //     player2.lastProcessedFrame = mostRecentFrame;
+    // }
 }
 
 /**
@@ -1101,6 +1116,8 @@ const player2 = {
     lastProcessedFrame: -1,
 };
 
+let player2Loc = {};
+
 let humanImg = new Image();
 let anonImg = new Image();
 
@@ -1523,7 +1540,6 @@ function gameLoop(timestamp) {
         updateObjects(settings);
     }
     render(); 
-
     // Schedule the next frame
     requestAnimationFrame(gameLoop); 
 }
@@ -1580,6 +1596,13 @@ function updateObjects(settings) {
                                       'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
             updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
+
+            // pathBase = `location/${player.fbID}`;
+            // let mvmntDict = {
+            //     'x':player.x, 'y':player.x, 'moving':false
+            // };
+            // updateStateDirect(pathBase, mvmntDict, 'updateMovement');
+            
         }   
     }
     
@@ -1632,6 +1655,12 @@ function updateObjects(settings) {
             let pathBase = `velocity/${player.fbID}`;
             updateStateDirect(pathBase, velocityDict, 'updateVelocity')
 
+             let mvmntDict = {
+                'x':player.x, 'y':player.x, 'moving':false
+            };
+            updateStateDirect(pathBase, mvmntDict, 'updateMovement');
+
+
             // The following player updates should now be hinged on mplib
             // player.dx = playerDeltaX;
             // player.dy = playerDeltaY;
@@ -1639,11 +1668,11 @@ function updateObjects(settings) {
             player.x +=  player.dx;
             player.y +=  player.dy;
 
-            if (settings.visualizeHumanPartner == 1){
-                player2.x = player.dx;
-                player2.y = player.dy;
-                // player2.moving = velocity.moving;
-            }
+            // if (settings.visualizeHumanPartner == 1){
+            //     player2.x += player2.dx;
+            //     player2.y += player2.dy;
+            //     // player2.moving = velocity.moving;
+            // }
 
 
             playerLocation.push({frame: frameCountGame, x: player.x, y: player.y});
@@ -1653,6 +1682,12 @@ function updateObjects(settings) {
         let velocityDict = {'dx':0, 'dy':0, 'frame':frameCountGame}
         let pathBase = `velocity/${player.fbID}`;
         updateStateDirect(pathBase, velocityDict, 'updateVelocity')
+
+        // pathBase = `location/${player.fbID}`;
+        // let mvmntDict = {
+        //         'x':player.x, 'y':player.x, 'moving':false
+        // };
+        // updateStateDirect(pathBase, mvmntDict, 'updateMovement');
 
         if (settings.visualizeAIPlayer == 1){
             player.dx = 0;
@@ -1672,6 +1707,12 @@ function updateObjects(settings) {
                 'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
             updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
+
+            pathBase = `location/${player.fbID}`;
+            let mvmntDict = {
+                'x':player.x, 'y':player.y, 'moving':false
+            };
+            updateStateDirect(pathBase, mvmntDict, 'playerStop');
         }
     }
 
@@ -1687,18 +1728,27 @@ function updateObjects(settings) {
         player2.y += scaledSpeed.dy;
         // console.log("Player 2 Location", player2.x, player2.y);
     } else if (settings.visualizeHumanPartner == 1 && !player2.moving) {
-        // console.log("Player 2 is not moving");
+        console.log("Player 2 is not moving");
         // console.log("Other player's location:", otherPlayersLocations);
+
+
         // Get the most recent frame number from otherPlayersLocations
 
         // hacky solution to get the actual stopping location of the other player
-        const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
-        if (frameNumbers.length > 0) {
-            const mostRecentFrame = Math.max(...frameNumbers);
-            const position = otherPlayersLocations[mostRecentFrame];
-            player2.x = position.x;
-            player2.y = position.y;
-        }
+        // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
+        // if (frameNumbers.length > 0) {
+        //     const mostRecentFrame = Math.max(...frameNumbers);
+        //     const position = otherPlayersLocations[mostRecentFrame];
+        //     player2.x = position.x;
+        //     player2.y = position.y;
+        // }
+
+        // console.log("current player position:", player2.x, player2.y);
+
+        // console.log("player2Loc Vlaue: ", player2Loc);
+
+        // player2.x = player2Loc.x;
+        // player2.y = player2Loc.y
     }
 
     // Prevent player from moving off-screen
@@ -1706,10 +1756,10 @@ function updateObjects(settings) {
     player.y    = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
 
     // TODO: This can be removed eventually after all the mplib updates happen, tho other player's location will be directly broadcasted so no need to infer locations as much.
-    if (settings.visualizeHumanPartner==1) {    
-        player2.x   = Math.max(player2.width / 2, Math.min(canvas.width - player2.width / 2, player2.x));
-        player2.y   = Math.max(player2.height / 2, Math.min(canvas.height - player2.height / 2, player2.y));
-    }
+    // if (settings.visualizeHumanPartner==1) {    
+    //     player2.x   = Math.max(player2.width / 2, Math.min(canvas.width - player2.width / 2, player2.x));
+    //     player2.y   = Math.max(player2.height / 2, Math.min(canvas.height - player2.height / 2, player2.y));
+    // }
 
     // MS5: Update AI player position if it is moving
     if (settings.visualizeAIPlayer == 1){
@@ -3068,6 +3118,7 @@ $(document).ready( function(){
 
                 // ********* Update location to firebase for remote partner ********* //
                 let targetLocationDict = {'x':(interceptPosX + center.x), 'y':(interceptPosY + center.y), 
+                                        'startX':playerStartX, 'startY':playerStartY,
                                         'id': objects[i].ID, 'moving': true, 'travelTime': travelTime,
                                         'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
                 };
