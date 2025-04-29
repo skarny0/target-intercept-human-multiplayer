@@ -2588,28 +2588,25 @@ function drawCenterMarker(centerX=400, centerY=400, radius=10, color = "rgba(128
     }
                 
     if (AIplayer.toCenter && !planDelay) drawCircle(centerX, centerY, radius + 5, AIplayer.color);
-    
+
     drawCircle(centerX, centerY, radius, color);
 }
 
 function drawTargetMarker(centerX, centerY, radius1, radius2, triangleBase = 5, type, offset =0) {
     const context = document.querySelector('canvas').getContext('2d'); // Assuming there's a canvas element in your HTML
     const angles = [0 + offset, Math.PI / 2 + offset, Math.PI + offset, (3 * Math.PI) / 2 + offset]; // angles for the 4 triangles
-    const triangleHeight = radius2 - radius1; // Calculate the height of the triangles
 
     context.save();
     // ctx.fillStyle = color;
-    if (type == 'AI') ctx.fillStyle = AIplayer.color;
-    if (type == 'player') ctx.fillStyle = player.color;
-    if (type == 'player2') ctx.fillStyle = player2.color;
-    // if (type == 'player') ctx.fillStyle = 'red';
-    // if (type == 'player2') ctx.fillStyle = 'green';
+    if (type == 'player') ctx.fillStyle = 'red';
 
-    // AI Players have their own marker colors by collab type and the game condition
-    // if ((type == 'AI') && AIplayer.collabOrder == 1 && settings.maxTargets == 5) ctx.fillStyle = 'green';
-    // if ((type == 'AI') && AIplayer.collabOrder == 2 && settings.maxTargets == 5) ctx.fillStyle = 'purple';
-    // if ((type == 'AI') && (settings.teamingCondition == 1 || setting/s.teamingCondition == 0)) ctx.fillStyle = 'blue';
-    // if ((type == 'AI') && (settings.teamingCondition == 2 || settings.teamingCondition == 3)) ctx.fillStyle = 'rgba(176, 97, 23)';// 'rgba(184, 115, 51)';
+    if (type == 'AI' || type == 'player2'){
+        if (currentRound == 1) {
+            ctx.fillStyle = 'green';
+        } else {
+            ctx.fillStyle = 'blue';
+        }
+    }
 
     angles.forEach((angle) => {
         const tipX = centerX + radius1 * Math.cos(angle);
