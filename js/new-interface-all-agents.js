@@ -142,7 +142,7 @@ let funList = {
 // List the node names where we place listeners for any changes to the children of these nodes; set to '' if listening to changes for children of the root
 // let listenerPaths = [ 'coins' , 'players' ];
 // let listenerPaths = [ 'players' ];
-let listenerPaths = ['objects', 'players', 'objectStatus', 'clicks', 'score', 'velocity', 'location'];
+let listenerPaths = ['objects', 'players', 'objectStatus', 'clicks', 'score', 'velocity', 'location', 'end'];
 
 // Set the session configuration for MPLIB
 initializeMPLIB( sessionConfig , studyId , funList, listenerPaths, verbosity );
@@ -320,41 +320,38 @@ function updateOngoingSession() {
  * So, if someone intercepts the object, then remove the object from mplib.
  */
 function receiveStateChange(path, childKey, childValue, typeChange) {
-
+    
     // if (path === "interception") console.log("interception!");
-    if (noAssignment && typeChange == "onChildAdded") parseConditions(childValue)
+    if (noAssignment && (typeChange == "onChildAdded")) parseConditions(childValue)
 
-    if (currentRound == 2 && childKey == remoteId) parseStatus(childValue);
+    if ((currentRound == 2) &&( childKey == remoteId)) parseStatus(childValue);
+    
+    if ((path == 'end') && ((typeChange == "onChildAdded") || (typeChange == "onChildChanged"))){
+        // console.log("meet the end!");
+        console.log("path", path);
+        // endGame();
+        endGameBool = true;
+    }
 
-    if (path == 'score' && settings.visualizeHumanPartner == 1 && typeChange == 'onChildChanged'){
+    if ((path == 'score') && (settings.visualizeHumanPartner == 1) && (typeChange == 'onChildChanged')){
         console.log("score obj:", childValue);
         if (childKey == remoteId) player2.score = childValue;
         if (childKey == player.fbId) player.score = childValue;
     }
 
+    // ******* HANDLE OBJECT CHANGES ***** //
+    // Spawn event
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildAdded")){
-        //  console.log("spawnObject", childValue);
-        //  TO ADD: only push if the remote player has also received it. 
         objects.push(childValue);
     } 
-
+    // inactive object removal
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildRemoved")) {
-        // do a pull from the childvalue at that id
-        // Find the index of the object with the matching ID
-        // const objIndex = objects.findIndex(obj => obj.ID === childValue.ID);
-        // // Remove the object at that index if found
-        // if (objIndex !== -1) {
-        //     objects.splice(objIndex, 1);
-        // }
-        // console.log('received remove object', childValue);
-        
-        // objects.splice(childValue.id,1)
         const objIndex = objects.findIndex(obj => obj.ID === childValue.ID);
         if (objIndex !== -1) {
             objects.splice(objIndex, 1);
         }
-        
     }
+    // intercepted object event
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildChanged")){
         objects.forEach((obj) => {
             if (obj.ID == childValue.ID && !obj.intercepted) {
@@ -362,12 +359,14 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
             }
         });
     }
-
-    if (path == 'clicks' && typeChange == "onChildChanged"){
+    // ***********************************//
+    // update player clicks (i.e. intentions) and movement changes (velocity and stopping)
+    if ((path == 'clicks') && (typeChange == "onChildChanged")){
         updatePlayerClicks(childKey, childValue)
     }
 
-    if (path == 'velocity' && typeChange == "onChildChanged"){
+    // update player direction
+    if ((path == 'velocity') && (typeChange == "onChildChanged")){
         // update the velocities accordingly
         if (childKey == player.fbID) {
             // console.log("velocity update mplib to local player", childValue);
@@ -379,9 +378,8 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
             player2.dy = childValue.dy;
         }
     }
-
     // Handling stopping locations (the value is the targetx,targety values)
-    if (path == 'location' && typeChange == "onChildChanged"){
+    if ((path == 'location') && (typeChange == "onChildChanged")){
         if (childKey == player.fbID) {
             // console.log("velocity update mplib to local player", childValue);
             player.x        = childValue.x;
@@ -786,8 +784,9 @@ let drtCount            = 0; // frame count for the DRT task for displaying the 
 let drtLightChoice      = 0; // random choice of light to display
 
 let maxFrames = null;
+let endGameBool = false;
 if (DEBUG){
-    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
+    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1231,6 +1230,8 @@ function handleCompleteness(){
 }
 
 async function resetGame(){
+    endGameBool             = false;
+
     objects                 = null;
     spawnData               = null;
     caughtTargets           = null;
@@ -1296,10 +1297,24 @@ function gameLoop(timestamp) {
     }
 
     if (frameCountGame >= maxFrames) {
+        let pathBase = `end/${player.fbID}`
+        updateStateDirect(pathBase, true, 'maxFramesReached')
+
+        console.log("endGame round time:", roundTime);
+
+        if (settings.visualizeAIPlayer == 1){
+            endGame();
+            return;
+        }
+    }
+    if (settings.visualizeHumanPartner == 1 && endGameBool) {
         endGame();
-        // console.log("Game Over!", frameCountGame);
         return;
     }
+    // if (settings.visualizeHumanPartner == 1 && endGameBool == true){
+    //     endGame();
+    //     return;
+    // } 
 
     elapsedTime = Date.now() - gameStartTime;
     roundTime = Date.now() - firstRender;
