@@ -1656,8 +1656,8 @@ function updateObjects(settings) {
 
                 if (settings.visualizeAIPlayer == 1){
                     obj.intercepted     = true
-                    score               += obj.value;
-                    player.score        += obj.value;
+                    // score               += obj.value;
+                    // player.score        += obj.value;
                 }
                 // stop player after catching intended target
                 caughtTargets.push(obj);
