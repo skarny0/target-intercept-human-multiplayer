@@ -2089,7 +2089,7 @@ function drawPlayer() {
     // Draw coordinates text above player
     ctx.fillStyle = 'black';
     ctx.font = '12px Arial';
-    if (DEBUG) ctx.fillText(`(${Math.round(player.x)}, ${Math.round(player.y)})`, topLeftX, topLeftY - 5);
+    // if (DEBUG) ctx.fillText(`(${Math.round(player.x)}, ${Math.round(player.y)})`, topLeftX, topLeftY - 5);
 
     ctx.fillStyle = player.color;
     ctx.fillRect(topLeftX, topLeftY, player.width, player.height);
@@ -2292,7 +2292,7 @@ function drawCompositeShape(obj) {
 
     // if (obj.willOverlap && DEBUG) drawDebugOverlap(obj, obj.willOverlap);
 
-    if (DEBUG) drawDebugID(obj);   
+    // if (DEBUG) drawDebugID(obj);   
 
     // Draw the outer circle first
     drawCircle(obj.x, obj.y, obj.size, obj.outerColor); // Outer circle
