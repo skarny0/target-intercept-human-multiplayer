@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0429-debug";
+   studyId    = "multiplayer-main-0505-debug";
 } else {
-    studyId   = "multiplayer-main-0429";
+    studyId   = "multiplayer-main-0505";
 }
 
 
@@ -352,7 +352,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         }
     }
     // intercepted object event
-    if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildChanged")){
+    if ((path == 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildChanged")){
         objects.forEach((obj) => {
             if (obj.ID == childValue.ID && !obj.intercepted) {
                 obj.intercepted = childValue.intercepted;
@@ -360,6 +360,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
         });
     }
     // ***********************************//
+
     // update player clicks (i.e. intentions) and movement changes (velocity and stopping)
     if ((path == 'clicks') && (typeChange == "onChildChanged")){
         updatePlayerClicks(childKey, childValue)
@@ -510,55 +511,6 @@ function parseStatus(childValue){
 
 
 const otherPlayersObjects = {};
-// function parseObjectChanges(childValue) {
-//     let highestFrame = -1;
-//     let mostRecentObject = null;
-
-//     // First pass: find the highest frame number with valid data
-//     for (const frameKey in childValue) {
-//         if (!childValue.hasOwnProperty(frameKey)) continue;
-        
-//         const frameNum = parseInt(frameKey);
-//         const frameData = childValue[frameKey];
-
-//         if (frameData.objectStatus &&
-//             typeof frameData.objectStatus.ID === 'number' && 
-//             typeof frameData.objectStatus.value === 'number' && 
-//             typeof frameData.objectStatus.intercepted === 'boolean'
-//         ) {
-//             // If this frame is newer than our current highest frame with valid object info
-//             if (frameNum > highestFrame) {
-//                 highestFrame = frameNum;
-//                 mostRecentObject = {
-//                     ID: frameData.objectStatus.ID,
-//                     intercepted: frameData.objectStatus.intercepted,
-//                     value: frameData.objectStatus.value
-//                 };
-//             }
-//         }
-//     }
-
-//     // Only do something if we actually found a mostRecentObject
-//     if (mostRecentObject) {
-//         if (!otherPlayersObjects[highestFrame]) {
-//             // Mark it so we don't process again
-//             otherPlayersObjects[highestFrame] = mostRecentObject;
-
-//             // Loop through and find the matching object ID:
-//             objects.forEach((obj) => {
-//                 if (obj.active && obj.ID === mostRecentObject.ID && !obj.intercepted) {
-//                     // Only intercept it once
-//                     obj.intercepted = true;
-//                     player2.score += obj.value; 
-//                 }
-//             });
-//         }
-//     }
-// }
-
-// function parseScreenFocus(childValue){
-    
-// }
 
 // *********************************************** Write to Database *****************************************************//
 
@@ -786,7 +738,7 @@ let drtLightChoice      = 0; // random choice of light to display
 let maxFrames = null;
 let endGameBool = false;
 if (DEBUG){
-    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
+    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1375,13 +1327,13 @@ function updateObjects(settings) {
     if (deltaFrameCount == 10){
         deltaFrameCount = 0;
         if (settings.visualizeHumanPartner == 1){
-            let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
+            // let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
 
-            let locationDict = {'x':player.x, 'y':player.y, 
-                                'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-                                'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
-            };
-            updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
+            // let locationDict = {'x':player.x, 'y':player.y, 
+            //                     'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
+            //                     'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
+            // };
+            // updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
 
             pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
             let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
