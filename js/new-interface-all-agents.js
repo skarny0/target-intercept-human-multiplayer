@@ -142,7 +142,7 @@ let funList = {
 // List the node names where we place listeners for any changes to the children of these nodes; set to '' if listening to changes for children of the root
 // let listenerPaths = [ 'coins' , 'players' ];
 // let listenerPaths = [ 'players' ];
-let listenerPaths = ['objects', 'players', 'objectStatus', 'clicks', 'score', 'velocity', 'location', 'end'];
+let listenerPaths = ['objects', 'players', 'clicks', 'score', 'velocity', 'location', 'end'];
 
 // Set the session configuration for MPLIB
 initializeMPLIB( sessionConfig , studyId , funList, listenerPaths, verbosity );
@@ -1335,7 +1335,7 @@ function updateObjects(settings) {
             // };
             // updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
 
-            pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
+            let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
             let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
                                       'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
             };
