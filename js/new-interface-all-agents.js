@@ -516,7 +516,7 @@ const otherPlayersObjects = {};
 
 function writeGameDatabase(){
     let pathBase = `players/${player.fbID}/roundComplete`;
-    updateStateDirect(`${pathBase}`, currentRound, 'roundComplete');
+    updateStateDirect(`${pathBase}`, currentRound - 1, 'roundComplete');
 
     // First, write summary statistics to the MPLib database
     let summaryStatsBase = `summaryStats/round/${currentRound-1}`;
@@ -530,7 +530,7 @@ function writeGameDatabase(){
     }
     
     updateStateDirect(`${summaryStatsBase}/totalScore`, totalScore, 'totalScore');
-    updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
+    // updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
     updateStateDirect(`${summaryStatsBase}/round`, currentRound-1, 'currentRound');
     
     // Player2 statistics - add otherPlayersObjects for partner object updates
@@ -738,7 +738,7 @@ let drtLightChoice      = 0; // random choice of light to display
 let maxFrames = null;
 let endGameBool = false;
 if (DEBUG){
-    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
+    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
