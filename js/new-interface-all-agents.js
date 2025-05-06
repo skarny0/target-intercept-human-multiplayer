@@ -478,6 +478,8 @@ async function parseConditions(childValue){
     }
     
     $("#full-game-container").attr("hidden", false); // reveal the game container
+    let pathBase = `start/${player.fbID}/${currentRound-1}`
+    updateStateDirect(pathBase, true, 'startRound')
 
     startGame(currentRound, currentCondition, currentBlock, curSeeds);
 }
@@ -519,7 +521,7 @@ function writeGameDatabase(){
     updateStateDirect(`${pathBase}`, currentRound - 1, 'roundComplete');
 
     // First, write summary statistics to the MPLib database
-    let summaryStatsBase = `summaryStats/round/${currentRound-1}`;
+    let summaryStatsBase = `summaryStats/${player.fbID}/round/${currentRound-1}`;
     
     // Player statistics
     updateStateDirect(`${summaryStatsBase}/playerScore`, player.score, 'playerScore');
@@ -738,7 +740,7 @@ let drtLightChoice      = 0; // random choice of light to display
 let maxFrames = null;
 let endGameBool = false;
 if (DEBUG){
-    maxFrames         = settings.maxSeconds * fps;// settings.maxSeconds * fps;
+    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -1149,6 +1151,9 @@ async function endGame() {
             // Pause the game and wait for the other player to complete their ai round
             if (currentTeamingCondition.order == 1) handleCompleteness();
 
+            let pathBase = `start/${player.fbID}/${currentRound-1}`
+            updateStateDirect(pathBase, true, 'startRound')
+
             startGame(currentRound, currentCondition, currentBlock, curSeeds); // Start the next round
             
         }
@@ -1159,7 +1164,7 @@ async function endGame() {
     // currentRound ++
 
     if (visitedBlocks >= 1){
-        writeGameDatabase();
+        // writeGameDatabase();
         // visitedBlocks++
         // prevSetting = settings
         await loadFullSurvey();
@@ -1253,13 +1258,15 @@ function gameLoop(timestamp) {
 
         if (settings.visualizeHumanPartner === 1){
             let pathBase = `end/${player.fbID}`
-        updateStateDirect(pathBase, true, 'maxFramesReached')
-
+            updateStateDirect(pathBase, true, 'maxFramesReached')
         }
         
         console.log("endGame round time:", roundTime);
 
         if (settings.visualizeAIPlayer == 1){
+            let pathBase = `end/${player.fbID}`
+            updateStateDirect(pathBase, false, 'maxFramesReached_AIround')
+            endGameBool = false;
             endGame();
             // let pathBase = `end/${player.fbID}`
             // updateStateDirect(pathBase, [], 'maxFramesReached')
@@ -1331,9 +1338,9 @@ function updateObjects(settings) {
         isPaused = false;
     }
 
-    if (deltaFrameCount == 10){
-        deltaFrameCount = 0;
-        if (settings.visualizeHumanPartner == 1){
+    // if (deltaFrameCount == 10){
+    //     deltaFrameCount = 0;
+        // if (settings.visualizeHumanPartner == 1){
             // let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
 
             // let locationDict = {'x':player.x, 'y':player.y, 
@@ -1342,13 +1349,13 @@ function updateObjects(settings) {
             // };
             // updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
 
-            let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-            let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
-                                      'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
-            };
-            updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
-        }   
-    }
+            // let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
+            // let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
+            //                           'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
+            // };
+            // updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
+    //     }   
+    // }
     
     /* 
         To implement dynamic time warping we need to ensure that
