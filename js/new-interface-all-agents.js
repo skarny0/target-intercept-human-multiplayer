@@ -523,18 +523,18 @@ function writeGameDatabase(){
     
     // Player statistics
     updateStateDirect(`${summaryStatsBase}/playerScore`, player.score, 'playerScore');
+    if (settings.visualizeHumanPartner === 1) {
+        // updateStateDirect(`${summaryStatsBase}/player2`, player2, 'player2Object');
+        // updateStateDirect(`${summaryStatsBase}/otherPlayersObjects`, otherPlayersObjects, 'player2Interceptions');
+        updateStateDirect(`${summaryStatsBase}/playerScore`, player2.score, 'player2Score');
+    }
+    
     updateStateDirect(`${summaryStatsBase}/totalScore`, totalScore, 'totalScore');
     updateStateDirect(`${summaryStatsBase}/targetsIntercepted`, caughtTargets.length, 'targetsIntercepted');
     updateStateDirect(`${summaryStatsBase}/round`, currentRound-1, 'currentRound');
     
     // Player2 statistics - add otherPlayersObjects for partner object updates
-    if (settings.visualizeHumanPartner === 1) {
-        // updateStateDirect(`${summaryStatsBase}/player2`, player2, 'player2Object');
-        updateStateDirect(`${summaryStatsBase}/otherPlayersObjects`, otherPlayersObjects, 'player2Interceptions');
-        updateStateDirect(`${summaryStatsBase}/playerScore`, player2.score, 'player2Score');
-        
-    }
-    
+   
     // AI statistics if applicable
     if (settings.visualizeAIPlayer === 1) {
         updateStateDirect(`${summaryStatsBase}/aiScore`, aiScore, 'aiScore');
@@ -972,6 +972,7 @@ async function initExperimentSettings() {
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
         // teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
+        // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
         teamingDraw = 1;
         // console.log("Calling blockRandomization with:", {
         //     db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
@@ -1249,13 +1250,19 @@ function gameLoop(timestamp) {
     }
 
     if (frameCountGame >= maxFrames) {
-        let pathBase = `end/${player.fbID}`
+
+        if (settings.visualizeHumanPartner === 1){
+            let pathBase = `end/${player.fbID}`
         updateStateDirect(pathBase, true, 'maxFramesReached')
 
+        }
+        
         console.log("endGame round time:", roundTime);
 
         if (settings.visualizeAIPlayer == 1){
             endGame();
+            // let pathBase = `end/${player.fbID}`
+            // updateStateDirect(pathBase, [], 'maxFramesReached')
             return;
         }
     }
@@ -2104,7 +2111,7 @@ function drawPlayer2() {
     // Draw coordinates text above player
     ctx.fillStyle = 'black';
     ctx.font = '12px Arial';
-    if (DEBUG) ctx.fillText(`(${Math.round(player2.x)}, ${Math.round(player2.y)})`, topLeftX, topLeftY - 5);
+    // if (DEBUG) ctx.fillText(`(${Math.round(player2.x)}, ${Math.round(player2.y)})`, topLeftX, topLeftY - 5);
 
     ctx.fillStyle = player2.color;
     ctx.fillRect(topLeftX, topLeftY, player2.width, player2.height);
