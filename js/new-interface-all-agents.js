@@ -962,7 +962,7 @@ async function initExperimentSettings() {
     let teamingDraw = null;
 
     if (!DEBUG){
-        teamingDraw = 1; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
+        teamingDraw = 3; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
         // teamingDraw = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
         // console.log("teaming condition " + teamingDraw + ":" , assignedTeamingCondition);
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
