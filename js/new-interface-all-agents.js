@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0506-debug";
+   studyId    = "multiplayer-main-0507-debug";
 } else {
-    studyId   = "multiplayer-main-0506-test";
+    studyId   = "multiplayer-main-0507-test";
 }
 
 
@@ -975,7 +975,7 @@ async function initExperimentSettings() {
         */
         // teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
         // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
-        teamingDraw = 1;
+        teamingDraw = 3;
         // console.log("Calling blockRandomization with:", {
         //     db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
         // });
