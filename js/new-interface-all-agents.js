@@ -104,7 +104,7 @@ let studyId = 'placeHolder';
 if (DEBUG){
    studyId    = "multiplayer-main-0506-debug";
 } else {
-    studyId   = "multiplayer-main-0506";
+    studyId   = "multiplayer-main-0506-test";
 }
 
 
