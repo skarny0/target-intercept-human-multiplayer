@@ -1826,6 +1826,8 @@ function spawnObject(settings){
             let pathBase = `objects`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
         } else {
+            let pathBase = `objects/AIround`
+            updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             objects.push(newObject);
         }
         
