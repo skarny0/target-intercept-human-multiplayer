@@ -972,8 +972,8 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
-        teamingDraw = 1;
+        teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
+        // teamingDraw = 1;
         console.log("teaming condition " + teamingDraw);
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
     }
@@ -1189,6 +1189,7 @@ async function resetGame(){
     playerLocation          = null;
     score                   = null;
     player.score            = null;
+    player.toCenter         = false;
 
     aiScore                 = null;
     AIplayer.score          = null
@@ -1600,6 +1601,11 @@ function updateObjects(settings) {
                 updateStateDirect(pathBase, null, 'removeObject')
                 obj.active = false; // Set the object to inactive
                 toRemove.push( index );
+
+                if (settings.visualizeAIPlayer == 1){
+                    let pathBase = `objects_aiRound/${obj.ID}`
+                    updateStateDirect(pathBase, null, 'removeObject')
+                }
             }
             
             // ********************************** Human CAUGHT TARGET ************************************//
@@ -1819,7 +1825,7 @@ function spawnObject(settings){
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             // spawnData.append(newObj)
         } else {
-            let pathBase = `objects/AIround`
+            let pathBase = `objects_aiRound`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             objects.push(newObject);
             // spawnData.append(newObj)
@@ -2895,7 +2901,7 @@ $(document).ready( function(){
                 // objects[i].marked = true;
 
                 let object = objects[i];
-                console.log("marking this object:", object);
+                if (DEBUG) console.log("marking this object:", object);
                 let path = `objects/${object.ID}/clicked`;
                 updateStateDirect(path, true, 'clickObject');
                 path =  `objects/${object.ID}/marked`;
