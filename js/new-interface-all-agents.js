@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0507-debug";
+   studyId    = "multiplayer-main-0513-debug";
 } else {
-    studyId   = "multiplayer-main-0507-test";
+    studyId   = "multiplayer-main-0513";
 }
 
 
@@ -962,8 +962,8 @@ async function initExperimentSettings() {
     let teamingDraw = null;
 
     if (!DEBUG){
-        teamingDraw = 3; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
-        // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
+        // teamingDraw = 3; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
+        teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
         // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
     } else {
@@ -972,16 +972,9 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        // teamingDraw = Math.floor(Math.random() * 2);; // Get either 0 or 1 from the set [0,1]
         // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
-        teamingDraw = 3;
-        // console.log("Calling blockRandomization with:", {
-        //     db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws
-        // });
-        // teamingDraw = await blockRandomization(db1, fbStudyId, teamingCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
-
+        teamingDraw = 1;
         console.log("teaming condition " + teamingDraw);
-
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
     }
     pathBase = `players/${player.fbID}/condition/team`;
@@ -1824,10 +1817,12 @@ function spawnObject(settings){
         if (settings.visualizeHumanPartner == 1) {
             let pathBase = `objects`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
+            // spawnData.append(newObj)
         } else {
             let pathBase = `objects/AIround`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             objects.push(newObject);
+            // spawnData.append(newObj)
         }
         
     }

@@ -75,9 +75,9 @@ var COLLAB = getCollabTypeParams(); // 0=ignorant; 1=omit; 2=divide; 3=delay
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-0506-debug";
+   studyId    = "multiplayer-test-0513-debug";
 } else {
-    studyId   = "multiplayer-test-0506";
+    studyId   = "multiplayer-test-0513";
 }
 // window.studyId = studyId
 
@@ -98,10 +98,10 @@ function writeGameDatabase(){
 
     // console.log("Writing to database");
     let path1   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/spawnData';
-    let path2   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/caughtTargets';
-    let path3   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/eventStream'; 
-    let path4   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerClicks';
-    let path5   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerLocation';
+    // let path2   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/caughtTargets';
+    // let path3   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/eventStream'; 
+    // let path4   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerClicks';
+    // let path5   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerLocation';
     let path6   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/settings';
     let path7   = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/roundTime';
     let path11  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/playerScore';
@@ -112,20 +112,20 @@ function writeGameDatabase(){
     // let path10  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/aiScore';
     // let path17  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIeventStream';
 
-    let path18  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIcaughtTargets_offline';
-    let path19  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks_offline';
+    // let path18  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIcaughtTargets_offline';
+    // let path19  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks_offline';
     let path20 = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/aiScore_offline';
     // let path20  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIClicks_Adjusted_offline';
     // let path21  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIplayerLocation_offline';
     // let path22  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIplayerLocation';
-    let path23  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIeventStream_offline';
+    // let path23  = studyId + '/participantData/' + firebaseUserId1 + '/competence' + '/AIeventStream_offline';
 
 
     writeRealtimeDatabase(db1, path1, spawnData);
-    writeRealtimeDatabase(db1, path2, caughtTargets);
-    writeRealtimeDatabase(db1, path3, eventStream); 
-    writeRealtimeDatabase(db1, path4, playerClicks);
-    writeRealtimeDatabase(db1, path5, playerLocation);
+    // writeRealtimeDatabase(db1, path2, caughtTargets);
+    // writeRealtimeDatabase(db1, path3, eventStream); 
+    // writeRealtimeDatabase(db1, path4, playerClicks);
+    // writeRealtimeDatabase(db1, path5, playerLocation);
     writeRealtimeDatabase(db1, path6, roundSettings);
     writeRealtimeDatabase(db1, path7, roundTime);
     // writeRealtimeDatabase(db1, path8, AIcaughtTargets);
@@ -136,12 +136,12 @@ function writeGameDatabase(){
     // writeRealtimeDatabase(db1, path15, drtResponses);
     // writeRealtimeDatabase(db1, path16, drtFalseAlarm);
     // writeRealtimeDatabase(db1, path17, AIeventStream);
-    writeRealtimeDatabase(db1, path18, AIcaughtTargets_offline);
-    writeRealtimeDatabase(db1, path19, aiClicks_offline);
+    // writeRealtimeDatabase(db1, path18, AIcaughtTargets_offline);
+    // writeRealtimeDatabase(db1, path19, aiClicks_offline);
     writeRealtimeDatabase(db1, path20, aiScore_offline);
     // writeRealtimeDatabase(db1, path21, AIplayerLocation_offline);
     // writeRealtimeDatabase(db1, path22, AIplayerLocation);
-    writeRealtimeDatabase(db1, path23, AIeventStream_offline);
+    // writeRealtimeDatabase(db1, path23, AIeventStream_offline);
 
 }
 
@@ -621,28 +621,7 @@ let blockOrderCondition, teamingBlockCondition;
 let conditionsArray = [];
 // Assign a condition to each new participant.
 if (noAssignment){
-    if (DEBUG){ // adjust value as needed for debuggin default is the same as the main experiment
-        conditionsArray = await initExperimentSettings();
-        // conditionsArray = await initExperimentSettings();
-        
-        // check if the initExperimentSettings double call explains the misfunc
-        
-        console.log('assignedCondition:', currentCondition); // Add this line
-        console.log('assignedTeamingCondition:', currentTeamingCondition); // Add this line 
-        console.log('assignedSeed:', curSeeds); // Add this line
-
-        console.log("block order condition", blockOrderCondition);
-        console.log("teaming block condition", teamingBlockCondition);
-
-    } else {
-        conditionsArray = await initExperimentSettings();
-        // blockOrderCondition = conditionsArray[0];
-        // teamingBlockCondition = conditionsArray[1];
-    
-        // await initExperimentSettings();
-        // console.log('assignedCondition:', currentCondition); // Add this line
-        // console.log('assignedSeed:', curSeeds); // Add this line
-    }
+    conditionsArray = await initExperimentSettings();
     startGame(currentRound, currentCondition, currentBlock, curSeeds, currentTeamingCondition); // Start the next round
     noAssignment = false;
 }
