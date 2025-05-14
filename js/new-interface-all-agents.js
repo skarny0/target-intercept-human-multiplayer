@@ -324,12 +324,10 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
     // if (path === "interception") console.log("interception!");
     if (noAssignment && (typeChange == "onChildAdded")) parseConditions(childValue)
 
-    if ((currentRound == 2) &&( childKey == remoteId)) parseStatus(childValue);
+    if ((currentRound == 2) && (childKey == remoteId)) parseStatus(childValue);
     
     if ((path == 'end') && ((typeChange == "onChildAdded") || (typeChange == "onChildChanged"))){
-        // console.log("meet the end!");
-        console.log("path", path);
-        // endGame();
+        if (DEBUG) console.log('game end', Date.now());
         endGameBool = true;
     }
 
@@ -553,6 +551,8 @@ function writeGameDatabase(){
     if (DEBUG) console.log("Writing to database from block", currentBlock, "round", currentRound);
 
     updateStateDirect(`${summaryStatsBase}/spawn`, spawnData, 'spawnData');
+
+    updateStateDirect(`${summaryStatsBase}/totalValue`, totalValue, 'totalValue');
 }
 
 //************************************************ ENVIRONMENT INITIALIZATION ********************************************//
@@ -789,6 +789,7 @@ let mouseX = 0, mouseY = 0;
 
 // Varaiables for HTML elements
 let totalScore = 0;
+let totalValue = 0;
 let score = 0;
 let aiScore = 0;
 let aiScore_offline = 0;
@@ -1213,6 +1214,7 @@ async function resetGame(){
     playerClicks            = [];
     playerLocation          = [];
     score                   = 0;   
+    totalValue              = 0;
 
     AIeventStream           = [];
     aiScore                 = 0;
@@ -1227,7 +1229,7 @@ async function resetGame(){
 
     // AIeventStream_offline           = [];
     aiScore_offline                 = 0;
-    AIplayer_offline.score          = 0
+    AIplayer_offline.score          = 0;
     // aiClicks_adjusted_offline       = [];
     AIcaughtTargets_offline         = [];
     // AIplayerLocation_offline        = [];
@@ -1307,10 +1309,8 @@ function render() {
     ctx.save();
     drawWorldBoundary();                         
     drawPlayer();          
-    if (settings.visualizeHumanPartner==1) drawPlayer2();        
-    // drawOtherPlayers();             
+    if (settings.visualizeHumanPartner==1) drawPlayer2();                 
     if (settings.visualizeAIPlayer==1) drawAIPlayer();
-    // if (settings.visualizeAIPlayerOffline==1) drawAIPlayerOffline();
     displayAIStatus();                                // Display which ai
     drawObjects();         
     drawLight(drtLightChoice);
@@ -1330,25 +1330,6 @@ function updateObjects(settings) {
 
         isPaused = false;
     }
-
-    // if (deltaFrameCount == 10){
-    //     deltaFrameCount = 0;
-        // if (settings.visualizeHumanPartner == 1){
-            // let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
-
-            // let locationDict = {'x':player.x, 'y':player.y, 
-            //                     'dx':player.dx, 'dy':player.dy, 'moving':player.moving,
-            //                     'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
-            // };
-            // updateStateDirect(pathBase, locationDict, 'updatePlayerMovement');
-
-            // let pathBase = `players/${player.fbID}/${frameCountGame}/targetLocation`
-            // let targetLocationDict = {'x':player.targetX, 'y':player.targetY, 'id': player.targetObjID, 
-            //                           'frame':frameCountGame, 'round':currentRound, 'timestamp': serverTimestamp()
-            // };
-            // updateStateDirect(pathBase, targetLocationDict, 'updateTargetLocation');
-    //     }   
-    // }
     
     /* 
         To implement dynamic time warping we need to ensure that
@@ -1559,7 +1540,7 @@ function updateObjects(settings) {
         // send an update to firebause under the path spawnObject
         // let pathBase = {objects/ID}
 
-        if (player.arrivalIdx === 1 && settings.visualizeHumanPartner === 1){
+        if (player.arrivalIdx == 1 && settings.visualizeHumanPartner == 1){
             // broadcast new object details to firebase by calling spawnObject
             spawnObject(settings);    
         } else if (settings.visualizeAIPlayer == 1){ // TODO: Think about how to transition from human to AI rounds when it comes to spawning. Do we transition from broadcasting to local representations only?
@@ -1824,6 +1805,7 @@ function spawnObject(settings){
             let pathBase = `objects`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             // spawnData.append(newObj)
+            totalValue += newObject.value;
         } else {
             let pathBase = `objects_aiRound`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
