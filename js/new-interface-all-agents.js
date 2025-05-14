@@ -1803,7 +1803,7 @@ function spawnObject(settings){
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
         } else {
             let pathBase = `objects_aiRound`
-            updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
+            updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject_AI');
             objects.push(newObject);
             totalValue += newObject.value;
         }
