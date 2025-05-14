@@ -341,6 +341,7 @@ function receiveStateChange(path, childKey, childValue, typeChange) {
     // Spawn event
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildAdded")){
         objects.push(childValue);
+        totalValue += childValue.value;
     } 
     // inactive object removal
     if ((path === 'objects') && (settings.visualizeHumanPartner == 1) && (typeChange == "onChildRemoved")) {
@@ -1536,10 +1537,6 @@ function updateObjects(settings) {
 
     // MS: and inserted the following code
     if (frameCountGame % settings.spawnInterval === 0) {
-        // spawnObject(settings);    
-        // send an update to firebause under the path spawnObject
-        // let pathBase = {objects/ID}
-
         if (player.arrivalIdx == 1 && settings.visualizeHumanPartner == 1){
             // broadcast new object details to firebase by calling spawnObject
             spawnObject(settings);    
@@ -1804,14 +1801,11 @@ function spawnObject(settings){
         if (settings.visualizeHumanPartner == 1) {
             let pathBase = `objects`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
-            // spawnData.append(newObj)
-            totalValue += newObject.value;
         } else {
             let pathBase = `objects_aiRound`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             objects.push(newObject);
             totalValue += newObject.value;
-            // spawnData.append(newObj)
         }
         
     }
