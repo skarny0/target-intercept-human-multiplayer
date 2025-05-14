@@ -1810,6 +1810,7 @@ function spawnObject(settings){
             let pathBase = `objects_aiRound`
             updateStateDirect(`${pathBase}/${newObject.ID}`, newObject, 'spawnObject');
             objects.push(newObject);
+            totalValue += newObject.value;
             // spawnData.append(newObj)
         }
         
