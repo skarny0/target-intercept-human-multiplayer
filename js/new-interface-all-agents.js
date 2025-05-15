@@ -975,8 +975,8 @@ async function initExperimentSettings() {
         Order: 0,1     --> 0: Human goes first, 1: AI goes first
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
-        teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
-        // teamingDraw = 1;
+        // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
+        teamingDraw = 2;
         console.log("teaming condition " + teamingDraw);
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
     }
