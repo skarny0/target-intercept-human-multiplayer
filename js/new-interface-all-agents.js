@@ -554,6 +554,8 @@ function writeGameDatabase(){
     updateStateDirect(`${summaryStatsBase}/spawn`, spawnData, 'spawnData');
 
     updateStateDirect(`${summaryStatsBase}/totalValue`, totalValue, 'totalValue');
+
+    updateStateDirect(`${summaryStatsBase}/seeds`, curSeeds, 'seeds');
 }
 
 //************************************************ ENVIRONMENT INITIALIZATION ********************************************//
