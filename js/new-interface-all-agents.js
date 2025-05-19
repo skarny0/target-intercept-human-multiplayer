@@ -555,7 +555,12 @@ function writeGameDatabase(){
 
     updateStateDirect(`${summaryStatsBase}/totalValue`, totalValue, 'totalValue');
 
-    updateStateDirect(`${summaryStatsBase}/seeds`, curSeeds, 'seeds');
+
+    if (player.arrivalIdx == 1){
+        console.log(curSeeds);
+        updateStateDirect(`${summaryStatsBase}/seeds`, {curSeeds}, 'seeds');
+    }
+    
 }
 
 //************************************************ ENVIRONMENT INITIALIZATION ********************************************//
@@ -743,7 +748,7 @@ let drtLightChoice      = 0; // random choice of light to display
 let maxFrames = null;
 let endGameBool = false;
 if (DEBUG){
-    maxFrames         = 30 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 3 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
