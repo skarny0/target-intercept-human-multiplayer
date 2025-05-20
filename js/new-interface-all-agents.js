@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0514-debug";
+   studyId    = "multiplayer-main-0519-debug";
 } else {
-    studyId   = "multiplayer-main-0514-run2";
+    studyId   = "multiplayer-main-0519";
 }
 
 
@@ -748,7 +748,7 @@ let drtLightChoice      = 0; // random choice of light to display
 let maxFrames = null;
 let endGameBool = false;
 if (DEBUG){
-    maxFrames         = 3 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 15 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
