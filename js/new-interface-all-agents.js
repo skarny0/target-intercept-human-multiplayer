@@ -1642,7 +1642,7 @@ function runCollabPlanner(type){
     //     objectsRemoved = objects; // ignorant agent
     // } 
 
-    // Apply the AI Collab type to remove certain objects (this is only for some rule-based agents)
+    // All agents are omit agents if not the ignorant (type == 0)
     if (type > 0) {
         objectsRemoved = objects.filter(obj => !obj.willOverlap); // all agents remove overlapping objects
     } else {
@@ -1673,13 +1673,6 @@ function runCollabPlanner(type){
             if (obj.ID == AIplayer.ID){
                 obj.AImarked = true;
                 obj.AIclicked = true
-
-                // SK: update state direct the new ai intention
-
-                // pause before a new object is clicked
-                // if (settings.AICollab == 3) planDelay = true;
-
-                // if (type== 3) planDelay = true;
                 planDelay = true;
             } 
             if (obj.ID == prevFirstStepCollab.ID){
@@ -1692,15 +1685,20 @@ function runCollabPlanner(type){
     if ((prevFirstStepCollab != null) && (bestSolCollab.ID != prevBestSolCollab.ID)) {
         // push AI intention array
         // aiIntention.push();
-        let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID, planDelay: planDelay};
-        aiClicks.push(aiIntention);
+        let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID, planDelay: planDelay, time: serverTimestamp()};
+        // aiClicks.push(aiIntention);
+
+        let pathBase =  `clicks_AI/${player.fbID}`; 
+        updateStateDirect(pathBase, aiIntention, 'newClick');
         // aiClicks_adjusted.push(aiIntention);
         numAIChanges++;
     } else if (prevBestSolCollab == null) {
         // aiIntention.push
-        let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID};
-        aiClicks.push(aiIntention);
+        let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID, planDelay: planDelay, time: serverTimestamp()};
+        // aiClicks.push(aiIntention);
             // aiClicks_adjusted.push(aiIntention);
+        let pathBase =  `clicks_AI/${player.fbID}`; 
+        updateStateDirect(pathBase, aiIntention, 'newClick')
     }
     
       // **************************************** Run the Offline AI Planner ****************************************//
