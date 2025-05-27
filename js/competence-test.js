@@ -75,9 +75,9 @@ var COLLAB = getCollabTypeParams(); // 0=ignorant; 1=omit; 2=divide; 3=delay
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-test-0513-debug";
+   studyId    = "multiplayer-test-0527-debug";
 } else {
-    studyId   = "multiplayer-test-0513";
+    studyId   = "multiplayer-test-0527";
 }
 // window.studyId = studyId
 
