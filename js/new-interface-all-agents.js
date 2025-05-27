@@ -594,6 +594,7 @@ let settings = {
     AIadviceThresholdHigh: 0.7,         // MS6: threshold on value to give AI advice in adaptive AI setting
     AIadviceAngleThreshold: 30,         // MS6: angle tolerance for accepting move in adaptive AI setting
     AIframeDelay: 30,                   // Delaying advice so that it doesn't overwhelm the player
+    AIchangeProbability: 0.01,           // Change from one AI to another
     spawnProbability:  1.0,
     spawnInterval: 10,
     valueSkew: 2,
@@ -748,7 +749,7 @@ let drtLightChoice      = 0; // random choice of light to display
 let maxFrames = null;
 let endGameBool = false;
 if (DEBUG){
-    maxFrames         = 15 * fps;// settings.maxSeconds * fps;
+    maxFrames         = 60 * fps;// settings.maxSeconds * fps;
 } else{ // set it to whatever you want
     maxFrames         = settings.maxSeconds * fps; //120 * 60; // Two minutes in frames
 }
@@ -972,7 +973,8 @@ async function initExperimentSettings() {
 
     if (!DEBUG){
         // teamingDraw = 3; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
-        teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
+        // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
+        teamingDraw = Math.random() < 0.5 ? 1 : 3; // choose either the human first or second opaque draw.
         // teamingDraw = 2;
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
         // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
@@ -983,7 +985,9 @@ async function initExperimentSettings() {
         Identity: 0,1  --> 0: transparent, 1: ambiguous
         */
         // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
-        teamingDraw = 2;
+
+        teamingDraw = Math.random() < 0.5 ? 1 : 3;
+        // teamingDraw = 3;
         console.log("teaming condition " + teamingDraw);
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
     }
@@ -1079,6 +1083,7 @@ function setLocations(){
 // ****************************************************** UPDATE FUNCTIONS ********************************************************//
 let AIroundComplete     = false;
 let humanRoundComplete  = false;
+let aiType = 1;
 
 // Start Game function
 async function startGame(round, condition, block, seeds) {
@@ -1339,18 +1344,11 @@ function updateObjects(settings) {
 
         isPaused = false;
     }
-    
-    /* 
-        To implement dynamic time warping we need to ensure that
-        --  framecounts accross each player are directly in sync (this allows for the spawning of object to never outrun each other)
-        --  we may be able to do this by adjusting the call to updateobjects
-    */
     frameCountGame++;                           // MS: increment scene update count
     deltaFrameCount++;                          // Limit the amount of data pushes
     
     player.velocity = settings.playerSpeed;
 
-    
     // Update player position if it is moving
     if (player.moving) {
         const deltaX = player.targetX - player.x;
@@ -1394,20 +1392,8 @@ function updateObjects(settings) {
             };
             updateStateDirect(pathBase, mvmntDict, 'updateMovement');
 
-
-            // The following player updates should now be hinged on mplib
-            // player.dx = playerDeltaX;
-            // player.dy = playerDeltaY;
-
             player.x +=  player.dx;
             player.y +=  player.dy;
-
-            // if (settings.visualizeHumanPartner == 1){
-            //     player2.x += player2.dx;
-            //     player2.y += player2.dy;
-            //     // player2.moving = velocity.moving;
-            // }
-
 
             playerLocation.push({frame: frameCountGame, x: player.x, y: player.y});
         }
@@ -1417,20 +1403,10 @@ function updateObjects(settings) {
         let pathBase = `velocity/${player.fbID}`;
         updateStateDirect(pathBase, velocityDict, 'updateVelocity')
 
-        // pathBase = `location/${player.fbID}`;
-        // let mvmntDict = {
-        //         'x':player.x, 'y':player.x, 'moving':false
-        // };
-        // updateStateDirect(pathBase, mvmntDict, 'updateMovement');
-
         if (settings.visualizeAIPlayer == 1){
             player.dx = 0;
             player.dy = 0;
         }
-        // player.dx = 0;
-        // player.dy = 0;
-
-        // if (settings.visualizeHumanPartner == 1) writeMovement();   
 
         if (settings.visualizeHumanPartner == 1){
             let pathBase = `players/${player.fbID}/${frameCountGame}/location`;
@@ -1461,28 +1437,6 @@ function updateObjects(settings) {
         player2.x += scaledSpeed.dx;
         player2.y += scaledSpeed.dy;
         // console.log("Player 2 Location", player2.x, player2.y);
-    } else if (settings.visualizeHumanPartner == 1 && !player2.moving) {
-        console.log("Player 2 is not moving");
-        // console.log("Other player's location:", otherPlayersLocations);
-
-
-        // Get the most recent frame number from otherPlayersLocations
-
-        // hacky solution to get the actual stopping location of the other player
-        // const frameNumbers = Object.keys(otherPlayersLocations).map(Number);
-        // if (frameNumbers.length > 0) {
-        //     const mostRecentFrame = Math.max(...frameNumbers);
-        //     const position = otherPlayersLocations[mostRecentFrame];
-        //     player2.x = position.x;
-        //     player2.y = position.y;
-        // }
-
-        // console.log("current player position:", player2.x, player2.y);
-
-        // console.log("player2Loc Vlaue: ", player2Loc);
-
-        // player2.x = player2Loc.x;
-        // player2.y = player2Loc.y
     }
 
     // Prevent player from moving off-screen
@@ -1504,7 +1458,7 @@ function updateObjects(settings) {
         const deltaY            = AIplayer.targetY - AIplayer.y;
         const distanceToTarget  = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        if (distanceToTarget < AIplayer.velocity) {
+        if ((distanceToTarget < AIplayer.velocity )) {
             // AI Player has arrived at the target location
             AIplayer.x         = AIplayer.targetX;
             AIplayer.y         = AIplayer.targetY;
@@ -1647,40 +1601,31 @@ function updateObjects(settings) {
                 aiScore           += obj.value;
                 AIplayer.score    += obj.value;
             }
-
-            // ********************************** AI OFFLINE CAUGHT TARGET ************************************//
-
-            // if (!obj.AIintercepted && checkCollision(AIplayer_offline, obj)) { // MS5: added a condition
-            //     // Collision detected
-            //     obj.AIintercepted = true; // MS2: added this flag             
-            //     let caughtObj     = {frame: frameCountGame, target: obj}   
-            //     AIcaughtTargets_offline.push(caughtObj);
-
-            //     aiScore_offline           += obj.value;
-            //     AIplayer_offline.score    += obj.value;
-            //     if (DEBUG) console.log("AI Offline Score: ", AIplayer_offline.score);
-            // }
         }
     });
 
     // ********************************** ONLY Remove Objects that have EXITED ************************************//
-
-    // MS4: Remove items starting from the end
-    // TODO: Consider taking the representation of all objects to 
-
+    // This is done locally in the AI partner round instead of the callback function mplib version
     if (settings.visualizeAIPlayer == 1){
         // do something else
         for (let i = toRemove.length - 1; i >= 0; i--) {
             objects.splice(toRemove[i], 1);
         }
     }
-    // handle the mplib case for now... if the object has exited on one person's screen, but hasn't on the other screen, then remove it here by flagging the object
-
     // **************************************** Run the Collab AI Planner ****************************************//
-    if (settings.visualizeAIPlayer === 1) runCollabPlanner();
+    let randomThreshold = randomGenerator();
+    if (randomThreshold > 0.99){
+        aiType = Math.floor(randomGenerator() * 3);
+        // aiType = 2;
+        let pathBase    =   `players/${player.fbID}/condition`;
+        updateStateDirect(pathBase, aiType, 'aiTypeChange');
+        if (DEBUG) console.log('ai change', aiType);
+    }
+
+    if (settings.visualizeAIPlayer === 1) runCollabPlanner(aiType);
 }
 
-function runCollabPlanner(){
+function runCollabPlanner(type){
     // Collab player
     let prevBestSolCollab = bestSolCollab;
     let prevFirstStepCollab = firstStepCollab;
@@ -1688,66 +1633,76 @@ function runCollabPlanner(){
     let objectsRemoved;
 
     // Apply the AI Collab type to remove certain objects (this is only for some rule-based agents)
-    if ((settings.AICollab > 0) && !(settings.AICollab == 2)) {
+    // if ((settings.AICollab > 0) && !(settings.AICollab == 2)) {
+    //     objectsRemoved = objects.filter(obj => !obj.willOverlap); // all agents remove overlapping objects
+    // } else if (settings.AICollab == 2) {
+    //     objectsRemoved = objects.filter(obj => obj.inPlayerRegion);
+    //     objectsRemoved = objectsRemoved.filter(obj => !obj.willOverlap);
+    // } else {
+    //     objectsRemoved = objects; // ignorant agent
+    // } 
+
+    // Apply the AI Collab type to remove certain objects (this is only for some rule-based agents)
+    if (type > 0) {
         objectsRemoved = objects.filter(obj => !obj.willOverlap); // all agents remove overlapping objects
-    } else if (settings.AICollab == 2) {
-        objectsRemoved = objects.filter(obj => obj.inPlayerRegion);
-        objectsRemoved = objectsRemoved.filter(obj => !obj.willOverlap);
     } else {
         objectsRemoved = objects; // ignorant agent
     } 
 
     let isBottomFeeder = false;
-    if (settings.AICollab == 4) isBottomFeeder = true;
+    if (type == 2) isBottomFeeder = true;
 
-    if (settings.visualizeAIPlayer==1){ // bound the collab AI player to conditions where it is visible
-        [ firstStepCollab, bestSolCollab ] = runAIPlanner(objectsRemoved, AIplayer , observableRadius , center, 'collab', 
-                settings.AIStabilityThreshold, prevBestSolCollab, frameCountGame, settings.alpha, isBottomFeeder );
-        
-        // AI intention for click,target pair
-        AIplayer.targetX = firstStepCollab.x; // MS7 -- just save the firstStepOffline object to firebase
-        AIplayer.targetY = firstStepCollab.y; 
-        AIplayer.ID      = firstStepCollab.ID; // MS8 // ID of the object to intercept
+    // bound the collab AI player to conditions where it is visible
+    [ firstStepCollab, bestSolCollab ] = runAIPlanner(objectsRemoved, AIplayer , observableRadius , center, 'collab', 
+            settings.AIStabilityThreshold, prevBestSolCollab, frameCountGame, settings.alpha, isBottomFeeder );
+    
+    // AI intention for click,target pair
+    AIplayer.targetX = firstStepCollab.x; // MS7 -- just save the firstStepOffline object to firebase
+    AIplayer.targetY = firstStepCollab.y; 
+    AIplayer.ID      = firstStepCollab.ID; // MS8 // ID of the object to intercept
 
-        if (AIplayer.ID == -1){
-            AIplayer.toCenter = true; 
-        } else{
-            AIplayer.toCenter = false;
-        }
-
-        // Mark the object as currently being targetted
-        if ((prevFirstStepCollab!= null) && (prevFirstStepCollab.ID != AIplayer.ID)){
-            objects.forEach((obj, index) => {
-                if (obj.ID == AIplayer.ID){
-                    obj.AImarked = true;
-                    obj.AIclicked = true
-
-                    // SK: update state direct the new ai intention
-
-                    // pause before a new object is clicked
-                    if (settings.AICollab == 3) planDelay = true;
-                } 
-                if (obj.ID == prevFirstStepCollab.ID){
-                    obj.AImarked = false;
-                }
-            });
-        } 
-        
-        // Keep track of collab agent decisions
-        if ((prevFirstStepCollab != null) && (bestSolCollab.ID != prevBestSolCollab.ID)) {
-            // push AI intention array
-            // aiIntention.push();
-            let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID, planDelay: planDelay};
-            aiClicks.push(aiIntention);
-            // aiClicks_adjusted.push(aiIntention);
-            numAIChanges++;
-        } else if (prevBestSolCollab == null) {
-            // aiIntention.push
-            let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID};
-            aiClicks.push(aiIntention);
-                // aiClicks_adjusted.push(aiIntention);
-        }
+    if (AIplayer.ID == -1){
+        AIplayer.toCenter = true; 
+    } else{
+        AIplayer.toCenter = false;
     }
+
+    // Mark the object as currently being targetted
+    if ((prevFirstStepCollab!= null) && (prevFirstStepCollab.ID != AIplayer.ID)){
+        objects.forEach((obj, index) => {
+            if (obj.ID == AIplayer.ID){
+                obj.AImarked = true;
+                obj.AIclicked = true
+
+                // SK: update state direct the new ai intention
+
+                // pause before a new object is clicked
+                // if (settings.AICollab == 3) planDelay = true;
+
+                // if (type== 3) planDelay = true;
+                planDelay = true;
+            } 
+            if (obj.ID == prevFirstStepCollab.ID){
+                obj.AImarked = false;
+            }
+        });
+    } 
+    
+    // Keep track of collab agent decisions
+    if ((prevFirstStepCollab != null) && (bestSolCollab.ID != prevBestSolCollab.ID)) {
+        // push AI intention array
+        // aiIntention.push();
+        let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID, planDelay: planDelay};
+        aiClicks.push(aiIntention);
+        // aiClicks_adjusted.push(aiIntention);
+        numAIChanges++;
+    } else if (prevBestSolCollab == null) {
+        // aiIntention.push
+        let aiIntention = {frame: frameCountGame, x: AIplayer.targetX, y: AIplayer.targetY, id: bestSolCollab.ID};
+        aiClicks.push(aiIntention);
+            // aiClicks_adjusted.push(aiIntention);
+    }
+    
       // **************************************** Run the Offline AI Planner ****************************************//
 
       let prevBestSolOffline = bestSolOffline;
@@ -2268,17 +2223,14 @@ function drawCompositeShape(obj) {
             }
     
             type = 'AI';
-            if (offset){
+            if (offset & !planDelay){
                 drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
-            } else {
+            } else if (!planDelay){
                 drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type);
             }
-
         }
-    
-     
         
-        if (obj.AImarked && !obj.marked){
+        if (obj.AImarked && !obj.marked && !planDelay){
             type = 'AI';
             drawTargetMarker(obj.x, obj.y, obj.size + 2, obj.size + 12, 10, type, Math.PI/4);
         } 
