@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0519-debug";
+   studyId    = "multiplayer-main-0527-debug";
 } else {
-    studyId   = "multiplayer-main-0519";
+    studyId   = "multiplayer-main-0527";
 }
 
 
