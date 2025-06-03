@@ -974,7 +974,8 @@ async function initExperimentSettings() {
     if (!DEBUG){
         // teamingDraw = 3; // options: 0-1, [0,1] - human first (transaprent, ambiguous), [2,3] human second (trans, amb)
         // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
-        teamingDraw = Math.random() < 0.5 ? 1 : 3; // choose either the human first or second opaque draw.
+        // teamingDraw = Math.random() < 0.5 ? 1 : 3; // choose either the human first or second opaque draw.
+        teamingDraw = Math.random() < 0.5 ? 0 : 2;
         // teamingDraw = 2;
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
         // assignedTeamingCondition = await blockRandomization(db1, studyId, teamingBlockCondition, numTeamingConditions, maxCompletionTimeMinutes, numDraws);
@@ -986,7 +987,8 @@ async function initExperimentSettings() {
         */
         // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
 
-        teamingDraw = Math.random() < 0.5 ? 1 : 3;
+        // teamingDraw = Math.random() < 0.5 ? 1 : 3;
+        teamingDraw = Math.random() < 0.5 ? 0 : 2;
         // teamingDraw = 3;
         console.log("teaming condition " + teamingDraw);
         assignedTeamingCondition = newDifficultySettings[teamingDraw];
