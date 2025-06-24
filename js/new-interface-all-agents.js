@@ -584,6 +584,7 @@ let settings = {
     countDownSeconds: 10,               // SK: time waiting for countdown to complete before beginning round
     AIMode:0,                           // MS4: 0=no assistance; 1=always on; 2=adaptive
     AICollab: 0,                        // MS4: 0=ignorant; 1=intentional; 2=cognitive model
+    policyShift: 0,                     // SK:  0=sticks to assigned AICollab type; 1=shuffles between three different policies + the movement delay
     alpha: 0.9,                         // MS8: discounting parameter for AI planner
     AIDisplayMode: 1,                   // MS4: 0=show movement path; 1=show where to click; 2=show which targets to intercept
     AIMaxDisplayLength: 3,              // MS4: can be used to truncate the AI path length shown
@@ -1621,19 +1622,24 @@ function updateObjects(settings) {
         }
     }
     // **************************************** Run the Collab AI Planner ****************************************//
-    let randomThreshold = randomGenerator();
-    if (randomThreshold > 0.99){
-        aiType = Math.floor(randomGenerator() * 3);
-        // aiType = 2;
-        let pathBase    =   `players/${player.fbID}/condition`;
-        updateStateDirect(pathBase, aiType, 'aiTypeChange');
-        if (DEBUG) console.log('ai change', aiType);
+
+    if (settings.policyShift == 1){
+        let randomThreshold = randomGenerator();
+        if (randomThreshold > 0.99){
+            aiType = Math.floor(randomGenerator() * 3);
+            // aiType = 2;
+            let pathBase    =   `players/${player.fbID}/condition`;
+            updateStateDirect(pathBase, aiType, 'aiTypeChange');
+            if (DEBUG) console.log('ai change', aiType);
+        }
     }
+    
 
     if (settings.visualizeAIPlayer === 1) runCollabPlanner(aiType);
 }
 
-function runCollabPlanner(type){
+// default the planner to just the omit agent
+function runCollabPlanner(type = 1){
     // Collab player
     let prevBestSolCollab = bestSolCollab;
     let prevFirstStepCollab = firstStepCollab;
@@ -1681,7 +1687,13 @@ function runCollabPlanner(type){
             if (obj.ID == AIplayer.ID){
                 obj.AImarked = true;
                 obj.AIclicked = true
-                planDelay = true;
+
+                // engage the plan delay only when exectuing experiment 2
+                if (settings.policyShift == 1){
+                    planDelay = true;
+                } else {
+                    planDelay = false;
+                } 
             } 
             if (obj.ID == prevFirstStepCollab.ID){
                 obj.AImarked = false;
