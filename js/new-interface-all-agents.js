@@ -102,9 +102,9 @@ var IDENTITY = getIdentityParams();
 let studyId = 'placeHolder';
 
 if (DEBUG){
-   studyId    = "multiplayer-main-0624-debug";
+   studyId    = "multiplayer-main-0625-debug";
 } else {
-    studyId   = "multiplayer-main-0624-exp1";
+    studyId   = "multiplayer-main-0625-exp1";
 }
 
 
@@ -992,10 +992,10 @@ async function initExperimentSettings() {
         //     teamingDraw = Math.floor(Math.random() * 4);
         //     console.log(`Teaming draw ${i + 1}: ${teamingDraw}`);
         // }
-        teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
+        // teamingDraw = Math.floor(Math.random() * 4); // Random integer between 1 and 4 inclusive
 
         // teamingDraw = Math.random() < 0.5 ? 1 : 3;
-        // teamingDraw = Math.random() < 0.5 ? 0 : 2;
+        teamingDraw = Math.random() < 0.5 ? 0 : 2;
         // teamingDraw = 3;
         console.log("teaming condition " + teamingDraw);
         assignedTeamingCondition = newDifficultySettings[teamingDraw];

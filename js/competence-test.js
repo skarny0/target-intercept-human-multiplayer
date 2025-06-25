@@ -77,7 +77,7 @@ let studyId = 'placeHolder';
 if (DEBUG){
    studyId    = "multiplayer-exp2-0619-debug";
 } else {
-    studyId   = "multiplayer-exp2-0619";
+    studyId   = "multiplayer-exp1-0625";
 }
 // window.studyId = studyId
 
