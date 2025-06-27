@@ -104,7 +104,7 @@ let studyId = 'placeHolder';
 if (DEBUG){
    studyId    = "multiplayer-main-0625-debug";
 } else {
-    studyId   = "multiplayer-main-0625-exp1";
+    studyId   = "multiplayer-main-0627-exp2";
 }
 
 
@@ -580,11 +580,11 @@ let roundSettings = {};
 // NOTE: Start with default parameters --> make changes that are critical between rounds (to remove duplication)
 
 let settings = {
-    maxSeconds: 240,                    // maximum number of seconds per round --> 3 minutes (consider doing 2.5 minutes)
+    maxSeconds: 240,                    // maximum number of seconds per round --> 4 minutes
     countDownSeconds: 10,               // SK: time waiting for countdown to complete before beginning round
     AIMode:0,                           // MS4: 0=no assistance; 1=always on; 2=adaptive
     AICollab: 0,                        // MS4: 0=ignorant; 1=intentional; 2=cognitive model
-    policyShift: 0,                     // SK:  0=sticks to assigned AICollab type; 1=shuffles between three different policies + the movement delay
+    policyShift: 1,                     // SK:  0=sticks to assigned AICollab type; 1=shuffles between three different policies + the movement delay
     alpha: 0.9,                         // MS8: discounting parameter for AI planner
     AIDisplayMode: 1,                   // MS4: 0=show movement path; 1=show where to click; 2=show which targets to intercept
     AIMaxDisplayLength: 3,              // MS4: can be used to truncate the AI path length shown
