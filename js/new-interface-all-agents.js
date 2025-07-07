@@ -104,7 +104,7 @@ let studyId = 'placeHolder';
 if (DEBUG){
    studyId    = "multiplayer-main-0625-debug";
 } else {
-    studyId   = "multiplayer-main-0627-exp2";
+    studyId   = "multiplayer-main-0707-exp3";
 }
 
 
@@ -1623,6 +1623,7 @@ function updateObjects(settings) {
     }
     // **************************************** Run the Collab AI Planner ****************************************//
 
+    // Uncomment if you want to have the policy shift. Add type to be different.
     // if (settings.policyShift == 1){
     //     let randomThreshold = randomGenerator();
     //     if (randomThreshold > 0.99){
