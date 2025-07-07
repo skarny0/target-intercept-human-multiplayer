@@ -1623,16 +1623,16 @@ function updateObjects(settings) {
     }
     // **************************************** Run the Collab AI Planner ****************************************//
 
-    if (settings.policyShift == 1){
-        let randomThreshold = randomGenerator();
-        if (randomThreshold > 0.99){
-            aiType = Math.floor(randomGenerator() * 3);
-            // aiType = 2;
-            let pathBase    =   `players/${player.fbID}/condition`;
-            updateStateDirect(pathBase, aiType, 'aiTypeChange');
-            if (DEBUG) console.log('ai change', aiType);
-        }
-    }
+    // if (settings.policyShift == 1){
+    //     let randomThreshold = randomGenerator();
+    //     if (randomThreshold > 0.99){
+    //         aiType = Math.floor(randomGenerator() * 3);
+    //         // aiType = 2;
+    //         let pathBase    =   `players/${player.fbID}/condition`;
+    //         updateStateDirect(pathBase, aiType, 'aiTypeChange');
+    //         if (DEBUG) console.log('ai change', aiType);
+    //     }
+    // }
     
 
     if (settings.visualizeAIPlayer === 1) runCollabPlanner(aiType);
@@ -1645,16 +1645,6 @@ function runCollabPlanner(type = 1){
     let prevFirstStepCollab = firstStepCollab;
 
     let objectsRemoved;
-
-    // Apply the AI Collab type to remove certain objects (this is only for some rule-based agents)
-    // if ((settings.AICollab > 0) && !(settings.AICollab == 2)) {
-    //     objectsRemoved = objects.filter(obj => !obj.willOverlap); // all agents remove overlapping objects
-    // } else if (settings.AICollab == 2) {
-    //     objectsRemoved = objects.filter(obj => obj.inPlayerRegion);
-    //     objectsRemoved = objectsRemoved.filter(obj => !obj.willOverlap);
-    // } else {
-    //     objectsRemoved = objects; // ignorant agent
-    // } 
 
     // All agents are omit agents if not the ignorant (type == 0)
     if (type > 0) {
